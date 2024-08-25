@@ -80,7 +80,6 @@ export default function Form() {
 
   useEffect(() => {
     setTable(createTable(items, people, tip, tax, tipAsProportion));
-    console.log("table", table);
   }, [items, people, tip, tax, tipAsProportion]);
 
   useEffect(() => {
@@ -112,7 +111,7 @@ export default function Form() {
                   <TableRow key={i}>
                     {row.map((item: any, j: number) => {
                       if (item.hasOwnProperty("id")) {
-                        return <TableCell className="text-right p-0">
+                        return <TableCell key={j} className="text-right p-0">
                           <Button variant="ghost" className="h-full w-full text-right items-end justify-end p-3" onClick={() => toggleBuyer(item.id, item.buyer)}>
                             {getPartialPrice(items, item.id, item.buyer) != "0.00"
                               ? `$${getPartialPrice(items, item.id, item.buyer)}`
@@ -123,10 +122,10 @@ export default function Form() {
                       else {
                         let classnames = "text-right font-bold";
                         if (j == row.length - 1 && row[j - 1].id && items[row[j - 1].id].buyers.length == 0) {
-                          return <TableCell className={`${classnames} text-red-500`}>{item}</TableCell>
+                          return <TableCell key={j} className={`${classnames} text-red-500`}>{item}</TableCell>
                         }
                         else if (i == table.length - 1 && !validateTotals(people, tip, tax, tipAsProportion, items)) {
-                          return <TableCell className={`${classnames} text-red-500`}>{item}</TableCell>
+                          return <TableCell key={j} className={`${classnames} text-red-500`}>{item}</TableCell>
                         }
                         return <TableCell key={j} className={classnames}>{item}</TableCell>
                       }
