@@ -9,3 +9,6 @@ and when the bill comes someones saying that they didn't actually eat any of the
 how the hell do you manage all this?
 
 the solution i eventually settled on was a spreadsheet but i eventually decided that i didnt want to manually make that spreadsheet all the time so i made an app to automate a spreadsheet
+
+
+![image](https://github.com/user-attachments/assets/3f24bafe-c4e1-4603-ac21-3f73413cb187)
