@@ -21,7 +21,12 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { createTable, getPartialPrice, Item, validateTotals } from "@/lib/utils";
+import {
+  createTable,
+  getPartialPrice,
+  Item,
+  validateTotals,
+} from "@/lib/utils";
 import { useEffect, useState } from "react";
 
 export default function Form() {
@@ -33,7 +38,9 @@ export default function Form() {
   const [tipInput, setTipInput] = useState<number>(0);
   const [taxInput, setTaxInput] = useState<number>(0);
   const [tipAsProportion, setTipAsProportion] = useState<boolean>(false);
-  const [table, setTable] = useState<(string | { id: string; buyer: string })[][]>([[]]);
+  const [table, setTable] = useState<
+    (string | { id: string; buyer: string })[][]
+  >([[]]);
   const [tip, setTip] = useState<number>(0);
   const [tax, setTax] = useState<number>(0);
 
@@ -94,47 +101,95 @@ export default function Form() {
         <CardDescription>created by jasonw</CardDescription>
       </CardHeader>
       <CardContent className="grid gap-4">
-        {(items.length !== 0 || people.length !== 0) ? (
+        {items.length !== 0 || people.length !== 0 ? (
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead className="w-[100px] text-right" key="blank"></TableHead>
+                <TableHead
+                  className="w-[100px] text-right"
+                  key="blank"
+                ></TableHead>
                 {people.map((person) => (
-                  <TableHead key={person} className="text-right px-3">{person}</TableHead>
+                  <TableHead key={person} className="text-right px-3">
+                    {person}
+                  </TableHead>
                 ))}
-                <TableHead className="text-right" key="price">Price</TableHead>
+                <TableHead className="text-right" key="price">
+                  Price
+                </TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {table.map((row: any, i: number) => (
-                (i === 0) ? <></> :
+              {table.map((row: any, i: number) =>
+                i === 0 ? (
+                  <></>
+                ) : (
                   <TableRow key={i}>
                     {row.map((item: any, j: number) => {
                       if (item.hasOwnProperty("id")) {
-                        return <TableCell key={j} className="text-right p-0">
-                          <Button variant="ghost" className="h-full w-full text-right items-end justify-end p-3" onClick={() => toggleBuyer(item.id, item.buyer)}>
-                            {getPartialPrice(items, item.id, item.buyer) != "0.00"
-                              ? `$${getPartialPrice(items, item.id, item.buyer)}`
-                              : "-"}
-                          </Button>
-                        </TableCell>
-                      }
-                      else {
+                        return (
+                          <TableCell key={j} className="text-right p-0">
+                            <Button
+                              variant="ghost"
+                              className="h-full w-full text-right items-end justify-end p-3"
+                              onClick={() => toggleBuyer(item.id, item.buyer)}
+                            >
+                              {getPartialPrice(items, item.id, item.buyer) !=
+                              "0.00"
+                                ? `$${getPartialPrice(items, item.id, item.buyer)}`
+                                : "-"}
+                            </Button>
+                          </TableCell>
+                        );
+                      } else {
                         let classnames = "text-right font-bold";
-                        if (j == row.length - 1 && row[j - 1].id && items[row[j - 1].id].buyers.length == 0) {
-                          return <TableCell key={j} className={`${classnames} text-red-500`}>{item}</TableCell>
+                        if (
+                          j == row.length - 1 &&
+                          row[j - 1].id &&
+                          items[row[j - 1].id].buyers.length == 0
+                        ) {
+                          return (
+                            <TableCell
+                              key={j}
+                              className={`${classnames} text-red-500`}
+                            >
+                              {item}
+                            </TableCell>
+                          );
+                        } else if (
+                          i == table.length - 1 &&
+                          !validateTotals(
+                            people,
+                            tip,
+                            tax,
+                            tipAsProportion,
+                            items,
+                          )
+                        ) {
+                          return (
+                            <TableCell
+                              key={j}
+                              className={`${classnames} text-red-500`}
+                            >
+                              {item}
+                            </TableCell>
+                          );
                         }
-                        else if (i == table.length - 1 && !validateTotals(people, tip, tax, tipAsProportion, items)) {
-                          return <TableCell key={j} className={`${classnames} text-red-500`}>{item}</TableCell>
-                        }
-                        return <TableCell key={j} className={classnames}>{item}</TableCell>
+                        return (
+                          <TableCell key={j} className={classnames}>
+                            {item}
+                          </TableCell>
+                        );
                       }
                     })}
                   </TableRow>
-              ))}
+                ),
+              )}
             </TableBody>
           </Table>
-        ) : <></>}
+        ) : (
+          <></>
+        )}
       </CardContent>
       <CardFooter className="flex flex-col w-full">
         <div className="flex flex-col w-full border rounded-md p-5 gap-5">
@@ -211,7 +266,12 @@ export default function Form() {
               onCheckedChange={(checked) => setTipAsProportion(checked)}
             ></Switch>
           </div>
-          <Button variant="secondary" className="w-full" type="submit" onClick={reset}>
+          <Button
+            variant="secondary"
+            className="w-full"
+            type="submit"
+            onClick={reset}
+          >
             reset
           </Button>
           <Footer></Footer>
