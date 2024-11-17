@@ -37,7 +37,7 @@ export default function Form() {
   const [currentPerson, setCurrentPerson] = useState<string>("");
   const [tipInput, setTipInput] = useState<number>(0);
   const [taxInput, setTaxInput] = useState<number>(0);
-  const [tipAsProportion, setTipAsProportion] = useState<boolean>(false);
+  const [tipAsProportion, setTipAsProportion] = useState<boolean>(true);
   const [table, setTable] = useState<
     (string | { id: string; buyer: string })[][]
   >([[]]);
@@ -135,7 +135,7 @@ export default function Form() {
                               onClick={() => toggleBuyer(item.id, item.buyer)}
                             >
                               {getPartialPrice(items, item.id, item.buyer) !=
-                              "0.00"
+                                "0.00"
                                 ? `$${getPartialPrice(items, item.id, item.buyer)}`
                                 : "-"}
                             </Button>
