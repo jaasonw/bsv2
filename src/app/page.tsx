@@ -30,6 +30,8 @@ import {
 import { useEffect, useState } from "react";
 
 export default function Form() {
+  const [mobile, setMobile] = useState(false);
+
   const [items, setItems] = useState<Item[]>([]);
   const [people, setPeople] = useState<string[]>([]);
   const [currentItem, setCurrentItem] = useState<string>("");
@@ -82,7 +84,7 @@ export default function Form() {
     setCurrentPerson("");
     setTipInput(0);
     setTaxInput(0);
-    setTipAsProportion(false);
+    setTipAsProportion(true);
   }
 
   useEffect(() => {
@@ -135,7 +137,7 @@ export default function Form() {
                               onClick={() => toggleBuyer(item.id, item.buyer)}
                             >
                               {getPartialPrice(items, item.id, item.buyer) !=
-                                "0.00"
+                              "0.00"
                                 ? `$${getPartialPrice(items, item.id, item.buyer)}`
                                 : "-"}
                             </Button>

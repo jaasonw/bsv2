@@ -73,14 +73,14 @@ function getTotal(tip: number, tax: number, items: Item[]) {
 }
 
 // returns the subtotal of all items on the bill (no tip no tax)
-function getSubtotal(items: Item[]) {
+export function getSubtotal(items: Item[]) {
   return Object.entries(items).reduce((acc, [name, { price, buyers }]) => {
     return acc + price;
   }, 0);
 }
 
 // returns the total of the entire bill
-function getPartialTotal(
+export function getPartialTotal(
   person: string,
   tip: number,
   tax: number,
@@ -100,7 +100,7 @@ function getPartialTotal(
 }
 
 // returns the individual subtotal for a person
-function getPartialSubtotal(person: string, items: Item[]) {
+export function getPartialSubtotal(person: string, items: Item[]) {
   return Object.entries(items).reduce((acc, [name, { price, buyers }]) => {
     if (buyers.includes(person)) {
       return acc + price / buyers.length;
@@ -110,7 +110,7 @@ function getPartialSubtotal(person: string, items: Item[]) {
 }
 
 // returns the individual percentage amount (tip/tax) for a person
-function getPartialAmount(person: string, total: number, items: Item[]) {
+export function getPartialAmount(person: string, total: number, items: Item[]) {
   const subtotal = getSubtotal(items);
   if (subtotal === 0) return 0;
   const percentage = total / getSubtotal(items);
