@@ -59,7 +59,7 @@ export default function Form() {
 
   // adds a person to the group
   function addPerson() {
-    setPeople([...people, currentPerson]);
+    setPeople([...people, (currentPerson != "") ? currentPerson : `person ${people.length + 1}`]);
     setCurrentPerson("");
   }
 
@@ -68,7 +68,7 @@ export default function Form() {
     setItems([
       ...items,
       {
-        name: currentItem,
+        name: (currentItem != "") ? currentItem : `item ${items.length + 1}`,
         price: Number(currentPrice),
         buyers: [],
       },
@@ -138,8 +138,9 @@ export default function Form() {
                               onClick={() => toggleBuyer(item.id, item.buyer)}
                             >
                               {getPartialPrice(items, item.id, item.buyer) !=
-                              "0.00"
-                                ? `$${getPartialPrice(items, item.id, item.buyer)}`
+                                "0.00"
+                                ? `$${getPartialPrice(items, item.id, item.buyer)
+                                } `
                                 : "-"}
                             </Button>
                           </TableCell>
@@ -154,7 +155,7 @@ export default function Form() {
                           return (
                             <TableCell
                               key={j}
-                              className={`${classnames} text-red-500`}
+                              className={`${classnames} text - red - 500`}
                             >
                               {item}
                             </TableCell>
@@ -172,7 +173,7 @@ export default function Form() {
                           return (
                             <TableCell
                               key={j}
-                              className={`${classnames} text-red-500`}
+                              className={`${classnames} text - red - 500`}
                             >
                               {item}
                             </TableCell>
