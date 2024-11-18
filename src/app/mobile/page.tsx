@@ -414,7 +414,7 @@ export default function Form() {
                           {item.buyers.includes(person) ? item.name : ""}
                         </span>
                         <span>
-                          {item.buyers.includes(person) ? `$${item.price}` : ""}
+                          {item.buyers.includes(person) ? `$${(item.price / item.buyers.length).toFixed(2)}` : ""}
                         </span>
                       </li>
                     ))}
@@ -444,7 +444,7 @@ export default function Form() {
                           .reduce(
                             (acc, item) =>
                               item.buyers.includes(person)
-                                ? acc + item.price
+                                ? acc + (item.price / item.buyers.length)
                                 : acc,
                             0,
                           )
