@@ -27,6 +27,7 @@ import {
   Item,
   validateTotals,
 } from "@/lib/utils";
+import Link from "next/link";
 import { useEffect, useState } from "react";
 
 export default function Form() {
@@ -276,6 +277,9 @@ export default function Form() {
           >
             reset
           </Button>
+          <a className="block mt-4 underline">
+            <Link href="/mobile">Try the new mobile UI</Link>
+          </a>
           <Footer></Footer>
         </div>
       </CardFooter>

@@ -50,6 +50,7 @@ import {
   validateTotals,
 } from "@/lib/utils";
 import { useEffect, useState } from "react";
+import Link from "next/link";
 
 export default function Form() {
   const [mobile, setMobile] = useState(false);
@@ -73,7 +74,7 @@ export default function Form() {
   }, [api]);
 
   const [items, setItems] = useState<Item[]>([]);
-  const [people, setPeople] = useState<string[]>([])
+  const [people, setPeople] = useState<string[]>([]);
   const [currentItem, setCurrentItem] = useState<string>("");
   const [currentPrice, setCurrentPrice] = useState(0);
   const [currentPerson, setCurrentPerson] = useState<string>("");
@@ -148,10 +149,17 @@ export default function Form() {
       <Table>
         <TableBody>
           {items.map((item, i) => (
-            <TableRow key={i} onClick={() => { toggleBuyer(i, people[current - 1]) }}>
+            <TableRow
+              key={i}
+              onClick={() => {
+                toggleBuyer(i, people[current - 1]);
+              }}
+            >
               <TableCell>
                 <div className="flex">
-                  <div className={`bg-black mr-1 w-1 ${(item.buyers.includes(people[current - 1])) ? '' : "hidden"}`}></div>
+                  <div
+                    className={`bg-black mr-1 w-1 ${item.buyers.includes(people[current - 1]) ? "" : "hidden"}`}
+                  ></div>
                   <div className="flex flex-col">
                     {item.name}
                     <div className="flex flex-row gap-2">
@@ -414,7 +422,9 @@ export default function Form() {
                           {item.buyers.includes(person) ? item.name : ""}
                         </span>
                         <span>
-                          {item.buyers.includes(person) ? `$${(item.price / item.buyers.length).toFixed(2)}` : ""}
+                          {item.buyers.includes(person)
+                            ? `$${(item.price / item.buyers.length).toFixed(2)}`
+                            : ""}
                         </span>
                       </li>
                     ))}
@@ -433,7 +443,11 @@ export default function Form() {
                     <li className="flex justify-between font-bold">
                       <span>Tip</span>
                       <span>
-                        ${((tipAsProportion) ? getPartialAmount(person, tip, items) : tip / people.length).toFixed(2)}
+                        $
+                        {(tipAsProportion
+                          ? getPartialAmount(person, tip, items)
+                          : tip / people.length
+                        ).toFixed(2)}
                       </span>
                     </li>
                     <li className="flex justify-between font-bold">
@@ -444,7 +458,7 @@ export default function Form() {
                           .reduce(
                             (acc, item) =>
                               item.buyers.includes(person)
-                                ? acc + (item.price / item.buyers.length)
+                                ? acc + item.price / item.buyers.length
                                 : acc,
                             0,
                           )
@@ -466,8 +480,10 @@ export default function Form() {
       >
         reset
       </Button>
-
+      <a className="block mt-4 underline">
+        <Link href="/">Return to the classic UI</Link>
+      </a>
       <Footer></Footer>
-    </Card >
+    </Card>
   );
 }

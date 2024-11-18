@@ -11,7 +11,7 @@ export default function Footer() {
           open source under{" "}
           <a
             className="underline"
-            href={`https://github.com/jaasonw//blob/main/LICENSE`}
+            href={`https://github.com/jaasonw/bsv2/blob/main/LICENSE`}
           >
             mit license
           </a>
