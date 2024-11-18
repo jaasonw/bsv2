@@ -433,7 +433,7 @@ export default function Form() {
                     <li className="flex justify-between font-bold">
                       <span>Tip</span>
                       <span>
-                        ${getPartialAmount(person, tip, items).toFixed(2)}
+                        ${((tipAsProportion) ? getPartialAmount(person, tip, items) : tip / people.length).toFixed(2)}
                       </span>
                     </li>
                     <li className="flex justify-between font-bold">
