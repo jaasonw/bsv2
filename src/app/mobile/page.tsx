@@ -46,6 +46,7 @@ import {
   getPartialPrice,
   getPartialSubtotal,
   getSubtotal,
+  getTotal,
   Item,
   validateTotals,
 } from "@/lib/utils";
@@ -189,7 +190,7 @@ export default function Form() {
                   </div>
                 </div>
               </TableCell>
-              <TableCell className="text-right">${item.price}</TableCell>
+              <TableCell className="text-right">${(item.price).toFixed(2)}</TableCell>
             </TableRow>
           ))}
           <TableRow>
@@ -286,11 +287,7 @@ export default function Form() {
                 <TableCell className="font-bold">Total</TableCell>
                 <TableCell className="text-right font-bold">
                   $
-                  {(
-                    items.reduce((acc, item) => acc + item.price, 0) +
-                    tax +
-                    tip
-                  ).toFixed(2)}
+                  {getTotal(tip, tax, items)}
                 </TableCell>
               </TableRow>
             </>
@@ -454,14 +451,14 @@ export default function Form() {
                       <span>Total</span>
                       <span>
                         $
-                        {items
+                        {(items
                           .reduce(
                             (acc, item) =>
                               item.buyers.includes(person)
                                 ? acc + item.price / item.buyers.length
                                 : acc,
                             0,
-                          )
+                          ) + ((tipAsProportion) ? getPartialAmount(person, tip, items) : tip / people.length) + getPartialAmount(person, tax, items))
                           .toFixed(2)}
                       </span>
                     </li>

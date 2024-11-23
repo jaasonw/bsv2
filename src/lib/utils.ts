@@ -68,7 +68,7 @@ export function getPartialPrice(items: Item[], itemId: number, person: string) {
   return "0.00";
 }
 
-function getTotal(tip: number, tax: number, items: Item[]) {
+export function getTotal(tip: number, tax: number, items: Item[]) {
   return getSubtotal(items) + tip + tax;
 }
 
