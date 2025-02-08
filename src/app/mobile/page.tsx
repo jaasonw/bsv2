@@ -2,14 +2,11 @@
 import Footer from "@/components/Footer";
 import {
   AlertDialog,
-  AlertDialogAction,
   AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,
-  AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import {
   Carousel,
@@ -22,40 +19,28 @@ import {
 import { Button } from "@/components/ui/button";
 import {
   Card,
-  CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
 import {
   createTable,
   getPartialAmount,
-  getPartialPrice,
   getPartialSubtotal,
   getSubtotal,
   getTotal,
   Item,
-  validateTotals,
 } from "@/lib/utils";
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 import Link from "next/link";
+import { BillContext, BillContextType, BillProvider } from "@/components/BillProvider";
+import PhotoUpload from "@/components/PhotoUpload";
 
 export default function Form() {
-  const [mobile, setMobile] = useState(false);
-
   const [api, setApi] = useState<CarouselApi>();
   const [current, setCurrent] = useState(0);
   const [personFormOpen, setPersonFormOpen] = useState(false);
@@ -73,20 +58,31 @@ export default function Form() {
       setCurrent(api.selectedScrollSnap() + 1);
     });
   }, [api]);
+  const context = use(BillContext) as BillContextType;
+  const {
+    items,
+    setItems,
+    people,
+    setPeople,
+    currentItem,
+    setCurrentItem,
+    currentPrice,
+    setCurrentPrice,
+    currentPerson,
+    setCurrentPerson,
+    tipInput,
+    setTipInput,
+    taxInput,
+    setTaxInput,
+    tipAsProportion,
+    setTipAsProportion,
+    tip,
+    setTip,
+    tax,
+    setTax,
+    setTable
+  } = context;
 
-  const [items, setItems] = useState<Item[]>([]);
-  const [people, setPeople] = useState<string[]>([]);
-  const [currentItem, setCurrentItem] = useState<string>("");
-  const [currentPrice, setCurrentPrice] = useState(0);
-  const [currentPerson, setCurrentPerson] = useState<string>("");
-  const [tipInput, setTipInput] = useState<number>(0);
-  const [taxInput, setTaxInput] = useState<number>(0);
-  const [tipAsProportion, setTipAsProportion] = useState<boolean>(true);
-  const [table, setTable] = useState<
-    (string | { id: string; buyer: string })[][]
-  >([[]]);
-  const [tip, setTip] = useState<number>(0);
-  const [tax, setTax] = useState<number>(0);
 
   // adds or removes a person from the list of buyers of an item
   function toggleBuyer(item: number, person: string) {
@@ -190,7 +186,9 @@ export default function Form() {
                   </div>
                 </div>
               </TableCell>
-              <TableCell className="text-right">${(item.price).toFixed(2)}</TableCell>
+              <TableCell className="text-right">
+                ${item.price.toFixed(2)}
+              </TableCell>
             </TableRow>
           ))}
           <TableRow>
@@ -244,8 +242,8 @@ export default function Form() {
                             type="button"
                             onClick={() => setItemFormOpen(false)}
                           >
-                            Cancel
                           </AlertDialogCancel>
+
                         </div>
                       </form>
                     </AlertDialogDescription>
@@ -286,8 +284,7 @@ export default function Form() {
               <TableRow>
                 <TableCell className="font-bold">Total</TableCell>
                 <TableCell className="text-right font-bold">
-                  $
-                  {getTotal(tip, tax, items)}
+                  ${getTotal(tip, tax, items)}
                 </TableCell>
               </TableRow>
             </>
@@ -451,15 +448,19 @@ export default function Form() {
                       <span>Total</span>
                       <span>
                         $
-                        {(items
-                          .reduce(
+                        {(
+                          items.reduce(
                             (acc, item) =>
                               item.buyers.includes(person)
                                 ? acc + item.price / item.buyers.length
                                 : acc,
                             0,
-                          ) + ((tipAsProportion) ? getPartialAmount(person, tip, items) : tip / people.length) + getPartialAmount(person, tax, items))
-                          .toFixed(2)}
+                          ) +
+                          (tipAsProportion
+                            ? getPartialAmount(person, tip, items)
+                            : tip / people.length) +
+                          getPartialAmount(person, tax, items)
+                        ).toFixed(2)}
                       </span>
                     </li>
                   </ol>
@@ -477,6 +478,7 @@ export default function Form() {
       >
         reset
       </Button>
+      <PhotoUpload></PhotoUpload>
       <a className="block mt-4 underline">
         <Link href="/">Return to the classic UI</Link>
       </a>

@@ -1,5 +1,7 @@
 "use client";
+import { BillContext, BillContextType } from "@/components/BillProvider";
 import Footer from "@/components/Footer";
+import PhotoUpload from "@/components/PhotoUpload";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -28,24 +30,49 @@ import {
   validateTotals,
 } from "@/lib/utils";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import React from "react";
+import { use, useEffect, useState } from "react";
 
 export default function Form() {
   const [mobile, setMobile] = useState(false);
-
-  const [items, setItems] = useState<Item[]>([]);
-  const [people, setPeople] = useState<string[]>([]);
-  const [currentItem, setCurrentItem] = useState<string>("");
-  const [currentPrice, setCurrentPrice] = useState(0);
-  const [currentPerson, setCurrentPerson] = useState<string>("");
-  const [tipInput, setTipInput] = useState<number>(0);
-  const [taxInput, setTaxInput] = useState<number>(0);
-  const [tipAsProportion, setTipAsProportion] = useState<boolean>(true);
-  const [table, setTable] = useState<
-    (string | { id: string; buyer: string })[][]
-  >([[]]);
-  const [tip, setTip] = useState<number>(0);
-  const [tax, setTax] = useState<number>(0);
+  const context = use(BillContext) as BillContextType;
+  const {
+    items,
+    setItems,
+    people,
+    setPeople,
+    currentItem,
+    setCurrentItem,
+    currentPrice,
+    setCurrentPrice,
+    currentPerson,
+    setCurrentPerson,
+    tipInput,
+    setTipInput,
+    taxInput,
+    setTaxInput,
+    tipAsProportion,
+    setTipAsProportion,
+    tip,
+    setTip,
+    tax,
+    setTax,
+    table,
+    setTable
+  } = context;
+  // const [items, setItems] = useState<Item[]>([]);
+  // const [people, setPeople] = useState<string[]>([]);
+  // const [currentItem, setCurrentItem] = useState<string>("");
+  // const [currentPrice, setCurrentPrice] = useState(0);
+  // const [currentPerson, setCurrentPerson] = useState<string>("");
+  // const [tipInput, setTipInput] = useState<number>(0);
+  // const [taxInput, setTaxInput] = useState<number>(0);
+  // const [tipAsProportion, setTipAsProportion] = useState<boolean>(true);
+  // const [table, setTable] = useState<
+  //   (string | { id: string; buyer: string })[][]
+  // >([[]]);
+  // const [tip, setTip] = useState<number>(0);
+  // const [tax, setTax] = useState<number>(0);
 
   // adds or removes a person from the list of buyers of an item
   function toggleBuyer(item: number, person: string) {
@@ -59,7 +86,10 @@ export default function Form() {
 
   // adds a person to the group
   function addPerson() {
-    setPeople([...people, (currentPerson != "") ? currentPerson : `person ${people.length + 1}`]);
+    setPeople([
+      ...people,
+      currentPerson != "" ? currentPerson : `person ${people.length + 1}`,
+    ]);
     setCurrentPerson("");
   }
 
@@ -68,7 +98,7 @@ export default function Form() {
     setItems([
       ...items,
       {
-        name: (currentItem != "") ? currentItem : `item ${items.length + 1}`,
+        name: currentItem != "" ? currentItem : `item ${items.length + 1}`,
         price: Number(currentPrice),
         buyers: [],
       },
@@ -125,7 +155,7 @@ export default function Form() {
             <TableBody>
               {table.map((row: any, i: number) =>
                 i === 0 ? (
-                  <></>
+                  <React.Fragment key="header-spacer"></React.Fragment>
                 ) : (
                   <TableRow key={i}>
                     {row.map((item: any, j: number) => {
@@ -139,8 +169,11 @@ export default function Form() {
                             >
                               {getPartialPrice(items, item.id, item.buyer) !=
                                 "0.00"
-                                ? `$${getPartialPrice(items, item.id, item.buyer)
-                                } `
+                                ? `$${getPartialPrice(
+                                  items,
+                                  item.id,
+                                  item.buyer,
+                                )} `
                                 : "-"}
                             </Button>
                           </TableCell>
@@ -235,6 +268,7 @@ export default function Form() {
               add item
             </Button>
           </form>
+          <PhotoUpload />
           <div className="flex flex-col gap-1 w-full">
             <Label className="w-1/3">Tax paid</Label>
             <Input
@@ -278,6 +312,7 @@ export default function Form() {
           >
             reset
           </Button>
+
           <a className="block mt-4 underline">
             <Link href="/mobile">Try the new mobile UI</Link>
           </a>

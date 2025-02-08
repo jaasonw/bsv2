@@ -17,6 +17,7 @@
     "@radix-ui/react-slot": "^1.1.0",
     "@radix-ui/react-switch": "^1.1.1",
     "@types/dataframe-js": "^1.4.3",
+    "ai": "^4.0.34",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "dataframe-js": "^1.4.4",
@@ -24,11 +25,13 @@
     "lucide-react": "^0.468.0",
     "next": "15.0.4",
     "next-themes": "^0.4.4",
+    "openai": "^4.82.0",
     "prettier": "^3.4.2",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "tailwind-merge": "^2.5.5",
-    "tailwindcss-animate": "^1.0.7"
+    "tailwindcss-animate": "^1.0.7",
+    "zod": "^3.24.1"
   },
   "devDependencies": {
     "@types/node": "^22.10.1",
