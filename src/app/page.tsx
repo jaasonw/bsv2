@@ -31,6 +31,12 @@ import {
 import Link from "next/link";
 import React from "react";
 import { use, useEffect } from "react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 export default function Form() {
   const context = use(BillContext) as BillContextType;
@@ -71,6 +77,11 @@ export default function Form() {
   // >([[]]);
   // const [tip, setTip] = useState<number>(0);
   // const [tax, setTax] = useState<number>(0);
+
+  const [editingItemIndex, setEditingItemIndex] = React.useState<number | null>(null);
+  const [editingItemName, setEditingItemName] = React.useState('');
+  const [editingItemPrice, setEditingItemPrice] = React.useState(0);
+
 
   // adds or removes a person from the list of buyers of an item
   function toggleBuyer(item: number, person: string) {
@@ -125,6 +136,26 @@ export default function Form() {
     setTax(Number(taxInput));
   }, [tipInput, taxInput]);
 
+  useEffect(() => {
+    if (editingItemIndex !== null) {
+      const item = items[editingItemIndex];
+      setEditingItemName(item.name);
+      setEditingItemPrice(item.price);
+    }
+  }, [editingItemIndex, items]);
+
+  function handleSaveEdit() {
+    if (editingItemIndex === null) return;
+    const newItems = [...items];
+    newItems[editingItemIndex] = {
+      ...newItems[editingItemIndex],
+      name: editingItemName,
+      price: editingItemPrice,
+    };
+    setItems(newItems);
+    setEditingItemIndex(null);
+  }
+
   return (
     <Card className="w-6xl">
       <CardHeader>
@@ -177,7 +208,20 @@ export default function Form() {
                           </TableCell>
                         );
                       } else {
-                        let classnames = "text-right font-bold";
+                        const classnames = "text-right font-bold";
+                        const isItemRow = i <= items.length;
+                        // Make first cell clickable for item rows
+                        if (j === 0 && isItemRow) {
+                          return (
+                            <TableCell
+                              key={j}
+                              className={`${classnames} cursor-pointer hover:bg-gray-100`}
+                              onClick={() => setEditingItemIndex(i - 1)}
+                            >
+                              {item}
+                            </TableCell>
+                          );
+                        }
                         if (
                           j == row.length - 1 &&
                           row[j - 1].id &&
@@ -226,6 +270,40 @@ export default function Form() {
           <></>
         )}
       </CardContent>
+      {/* Edit Dialog */}
+      <Dialog open={editingItemIndex !== null} onOpenChange={(open) => !open && setEditingItemIndex(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Edit Item</DialogTitle>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="name" className="text-right">
+                Name
+              </Label>
+              <Input
+                id="name"
+                value={editingItemName}
+                onChange={(e) => setEditingItemName(e.target.value)}
+                className="col-span-3"
+              />
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="price" className="text-right">
+                Price
+              </Label>
+              <Input
+                id="price"
+                type="number"
+                value={editingItemPrice}
+                onChange={(e) => setEditingItemPrice(Number(e.target.value))}
+                className="col-span-3"
+              />
+            </div>
+          </div>
+          <Button onClick={handleSaveEdit}>Save Changes</Button>
+        </DialogContent>
+      </Dialog>
       <CardFooter className="flex flex-col w-full">
         <div className="flex flex-col w-full border rounded-md p-5 gap-5">
           <h3 className="w-full font-lg font-bold">Input some data to begin</h3>
