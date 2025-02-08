@@ -112,8 +112,14 @@ const PhotoUpload: React.FC = () => {
             accept="image/*"
             capture="environment"
             onChange={handleImageUpload}
+            className="hidden"
           />
-
+          <Input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            onChange={handleImageUpload}
+          />
           {/* Camera controls */}
           <Button
             onClick={handleTakePhoto}
