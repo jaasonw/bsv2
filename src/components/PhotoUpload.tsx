@@ -106,14 +106,12 @@ const PhotoUpload: React.FC = () => {
     <div className="w-full">
       <Card>
         <CardContent className="flex flex-col gap-4 pt-6">
-          {/* Hidden file input for mobile camera */}
           <Input
             ref={fileInputRef}
             type="file"
             accept="image/*"
             capture="environment"
             onChange={handleImageUpload}
-            className="hidden"
           />
 
           {/* Camera controls */}
