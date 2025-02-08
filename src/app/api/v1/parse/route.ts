@@ -24,7 +24,7 @@ export async function POST(request: Request) {
     // Prepare messages with image
     const messages = [{
       role: "system",
-      content: "Read receipt information and return JSON with items, tip, and tax. Leave tip and tax as 0 if you cannot find it Leave buyers blank. Here is the response format for the JSON: { items: [{ name: string, price: number, buyers: [string] }], tip: number, tax: number } do not include anything except the json structure, the output should contain zero mixed content, only json"
+      content: "Read receipt information and return JSON with items, tip, and tax. Leave tip and tax as 0 if you cannot find it Leave buyers blank. If there is a service charge, you may consider it as part of the tip. Here is the response format for the JSON: { items: [{ name: string, price: number, buyers: [string] }], tip: number, tax: number } do not include anything except the json structure, the output should contain zero mixed content, only json"
     }, {
       role: "user",
       content: [
