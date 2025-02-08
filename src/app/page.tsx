@@ -26,15 +26,13 @@ import {
 import {
   createTable,
   getPartialPrice,
-  Item,
   validateTotals,
 } from "@/lib/utils";
 import Link from "next/link";
 import React from "react";
-import { use, useEffect, useState } from "react";
+import { use, useEffect } from "react";
 
 export default function Form() {
-  const [mobile, setMobile] = useState(false);
   const context = use(BillContext) as BillContextType;
   const {
     items,

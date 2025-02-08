@@ -1,125 +1,89 @@
+// app/api/parse-receipt/route.ts
+import { NextResponse } from 'next/server'
 
-import { NextRequest, NextResponse } from 'next/server';
+// export const runtime = 'edge' // Optional for Edge runtime
 
-
-export async function POST(req: NextRequest) {
-  const API_KEY = process.env.GOOGLE_GENERATIVE_AI_API_KEY;
+export async function POST(request: Request) {
   try {
-    // Get file buffer and content type from the request
-    const fileBuffer = await req.arrayBuffer();
-    const contentType = req.headers.get('content-type');
+    // Get the uploaded file from FormData
+    const formData = await request.formData()
+    const file = formData.get('file') as File | null
 
-    // Step 1: Upload file to Google API directly
-    const uploadResponse = await fetch(
-      `https://generativelanguage.googleapis.com/upload/v1beta/files?key=${API_KEY}`,
-      {
-        method: 'POST',
-        headers: {
-          'X-Goog-Upload-Command': 'start, upload, finalize',
-          'X-Goog-Upload-Header-Content-Length': fileBuffer.byteLength,
-          'X-Goog-Upload-Header-Content-Type': contentType,
-          'Content-Type': contentType,
-        },
-        body: Buffer.from(fileBuffer),
-      }
-    );
-
-    const uploadData = await uploadResponse.json();
-    const fileUri = uploadData?.file?.uri;
-
-    if (!fileUri) {
-      throw new Error('File URI not returned from upload API.');
+    if (!file) {
+      return NextResponse.json(
+        { error: 'No file uploaded' },
+        { status: 400 }
+      )
     }
 
-    // Step 2: Generate content with the uploaded file
-    const generationResponse = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`,
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          contents: [
-            {
-              role: 'user',
-              parts: [
-                {
-                  fileData: {
-                    fileUri,
-                    mimeType: contentType,
-                  },
-                },
-              ],
-            },
-            {
-              role: 'user',
-              parts: [
-                {
-                  text: '', // You can add specific instructions or commands.
-                },
-              ],
-            },
-          ],
-          systemInstruction: {
-            role: 'user',
-            parts: [
-              {
-                text: 'read the information in the receipt and give it to me in json format, just return an empty json structure if theres nothing to parse. you should always leave the buyers field blank',
-              },
-            ],
-          },
-          generationConfig: {
-            temperature: 0,
-            topK: 40,
-            topP: 0.95,
-            maxOutputTokens: 8192,
-            responseMimeType: 'application/json',
-            responseSchema: {
-              type: 'object',
-              properties: {
-                items: {
-                  type: 'array',
-                  items: {
-                    type: 'object',
-                    properties: {
-                      name: {
-                        type: 'string',
-                      },
-                      price: {
-                        type: 'number',
-                      },
-                      buyers: {
-                        type: 'array',
-                        items: {
-                          type: 'string',
-                        },
-                      },
-                    },
-                    required: ['name', 'price', 'buyers'],
-                  },
-                },
-                tip: {
-                  type: 'number',
-                },
-                tax: {
-                  type: 'number',
-                },
-              },
-              required: ['items', 'tip', 'tax'],
-            },
-          },
-        }),
-      }
-    );
-    const generationData = await generationResponse.json();
-    const responseText = generationData.candidates[0]?.content?.parts[0]?.text;
-    const jsonResponse = responseText ? JSON.parse(responseText) : {};
+    // Convert file to Base64
+    const buffer = await file.arrayBuffer()
+    const base64File = Buffer.from(buffer).toString('base64')
+    const mimeType = file.type
 
-    // Return only the parsed JSON response
-    return NextResponse.json(jsonResponse);
+    // Prepare messages with image
+    const messages = [{
+      role: "system",
+      content: "Read receipt information and return JSON with items, tip, and tax. Leave tip and tax as 0 if you cannot find it Leave buyers blank. Here is the response format for the JSON: { items: [{ name: string, price: number, buyers: [string] }], tip: number, tax: number } do not include anything except the json structure, the output should contain zero mixed content, only json"
+    }, {
+      role: "user",
+      content: [
+        {
+          type: "image_url",
+          image_url: {
+            url: `data:${mimeType};base64,${base64File}`
+          }
+        }
+      ]
+    }]
+
+    // Call OpenRouter API
+    const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${process.env.OPENROUTER_API_KEY}`,
+        'HTTP-Referer': request.headers.get('origin') || 'localhost:3000',
+        'X-Title': 'Bill Splitter',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        model: "google/gemini-2.0-flash-001",
+        messages,
+        // "provider": {
+        //   "order": ["Together"],
+        //   "allow_fallbacks": false
+        // },
+        response_format: { type: "json_object" },
+        schema: {
+          "properties": {
+            "items": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "name": { "type": "string" },
+                  "price": { "type": "number" },
+                  "buyers": { "type": "array", "items": { "type": "string" } }
+                }
+              }
+            },
+            "tip": { "type": "number" },
+            "tax": { "type": "number" }
+          }
+        }
+      })
+    })
+
+    const data = (await response.json())
+    console.log('Receipt data:', data)
+    return NextResponse.json(data)
+
   } catch (error) {
-    console.error('Error occurred:', error); // Log the complete error
-    return NextResponse.json({ error: (error as any).message }, { status: 500 });
+    console.error('Error processing receipt:', error)
+    return NextResponse.json(
+      { error: 'Failed to process receipt' },
+      { status: 500 }
+    )
   }
 }
+

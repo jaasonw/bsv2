@@ -1,9 +1,9 @@
 "use client"
 import React, { use, useRef, useState } from 'react';
 import { BillContext } from '@/components/BillProvider';
-import { Camera, CircleStop, Loader2 } from 'lucide-react';
+import { Camera, Loader2 } from 'lucide-react';
 import { Button } from './ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
+import { Card, CardContent } from './ui/card';
 import { Label } from './ui/label';
 import { Input } from './ui/input';
 
@@ -15,22 +15,22 @@ const PhotoUpload: React.FC = () => {
   const { setItems, setTax } = context;
   const [imageFile, setImageFile] = useState<File | null>(null);
   const videoRef = useRef<HTMLVideoElement | null>(null);
-  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  // const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
 
-  const takePicture = async () => {
-    if (videoRef.current && canvasRef.current) {
-      const canvas = canvasRef.current;
-      const context = canvas.getContext('2d');
-      if (context) {
-        context.drawImage(videoRef.current, 0, 0);
-        const dataUrl = canvas.toDataURL('image/png');
-        setImageFile(dataURLtoFile(dataUrl, 'image.png'));
-        stopCamera();
-      }
-    }
-  };
+  // const takePicture = async () => {
+  //   if (videoRef.current && canvasRef.current) {
+  //     const canvas = canvasRef.current;
+  //     const context = canvas.getContext('2d');
+  //     if (context) {
+  //       context.drawImage(videoRef.current, 0, 0);
+  //       const dataUrl = canvas.toDataURL('image/png');
+  //       setImageFile(dataURLtoFile(dataUrl, 'image.png'));
+  //       stopCamera();
+  //     }
+  //   }
+  // };
 
   const startCamera = async () => {
     try {
@@ -44,16 +44,16 @@ const PhotoUpload: React.FC = () => {
     }
   };
 
-  const stopCamera = () => {
-    if (videoRef.current && videoRef.current.srcObject) {
-      const stream = videoRef.current.srcObject as MediaStream;
-      const tracks = stream.getTracks();
-      tracks.forEach(track => track.stop());
-    }
-    if (videoRef.current) {
-      videoRef.current.srcObject = null;
-    }
-  };
+  // const stopCamera = () => {
+  //   if (videoRef.current && videoRef.current.srcObject) {
+  //     const stream = videoRef.current.srcObject as MediaStream;
+  //     const tracks = stream.getTracks();
+  //     tracks.forEach(track => track.stop());
+  //   }
+  //   if (videoRef.current) {
+  //     videoRef.current.srcObject = null;
+  //   }
+  // };
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -69,7 +69,7 @@ const PhotoUpload: React.FC = () => {
     formData.append('file', imageFile);
 
     try {
-      const response = await fetch('/api/v1/parsellama', {
+      const response = await fetch('/api/v1/parse', {
         method: 'POST',
         body: (() => {
           const formData = new FormData();
@@ -99,19 +99,19 @@ const PhotoUpload: React.FC = () => {
   };
 
   // Helper function to convert dataURL to File
-  const dataURLtoFile = (dataUrl: string, filename: string): File => {
-    const arr = dataUrl.split(',');
-    const mime = arr[0].match(/:(.*?);/)![1];
-    const bstr = atob(arr[1]);
-    let n = bstr.length;
-    const u8arr = new Uint8Array(n);
-
-    while (n--) {
-      u8arr[n] = bstr.charCodeAt(n);
-    }
-
-    return new File([u8arr], filename, { type: mime });
-  };
+  // const dataURLtoFile = (dataUrl: string, filename: string): File => {
+  //   const arr = dataUrl.split(',');
+  //   const mime = arr[0].match(/:(.*?);/)![1];
+  //   const bstr = atob(arr[1]);
+  //   let n = bstr.length;
+  //   const u8arr = new Uint8Array(n);
+  //
+  //   while (n--) {
+  //     u8arr[n] = bstr.charCodeAt(n);
+  //   }
+  //
+  //   return new File([u8arr], filename, { type: mime });
+  // };
 
   return (
     <div className="">
@@ -178,7 +178,7 @@ const PhotoUpload: React.FC = () => {
 };
 
 
-function extractJSONFromResponse(response) {
+function extractJSONFromResponse(response: string) {
   // const response = `Here is your response: {"key": "value", "anotherKey": 123} Thank you!`; // Example mixed response
 
   const match = response.match(/\{.*\}/s); // Find JSON-like content
