@@ -6,7 +6,7 @@ export default function Footer() {
     <footer className="grid grid-cols-3 w-full mt-4 text-muted-foreground text-xs">
       <ModeToggle />
       <span className="flex flex-col items-center justify-center">
-        <span>copyright 2024</span>
+        <span>copyright 2025</span>
         <span className="text-center">
           open source under{" "}
           <a
@@ -24,12 +24,14 @@ export default function Footer() {
         >
           view source on github
         </a>
-        <a
-          href="https://jason-wong.me/donate"
-          className="text-right hover:underline"
-        >
-          buy me a coffee
-        </a>
+        <span>
+          ai tokens r not free pls consider {" "}
+          <a
+            href="https://jason-wong.me/donate"
+            className="text-right underline"
+          >
+            donating
+          </a></span>
       </span>
     </footer>
   );

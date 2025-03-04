@@ -19,54 +19,10 @@ const PhotoUpload: React.FC = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
 
-  // const isMobile = () => {
-  //   return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-  // };
 
   const handleTakePhoto = () => {
     fileInputRef.current?.click();
   };
-
-  // const startDesktopCamera = async () => {
-  //   try {
-  //     const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-  //     if (videoRef.current) {
-  //       videoRef.current.srcObject = stream;
-  //       videoRef.current.style.display = 'block';
-  //       await videoRef.current.play();
-  //     }
-  //   } catch (error) {
-  //     console.error('Error accessing camera:', error);
-  //   }
-  // };
-
-  // const captureDesktopPhoto = () => {
-  //   const canvas = document.createElement('canvas');
-  //   if (videoRef.current) {
-  //     canvas.width = videoRef.current.videoWidth;
-  //     canvas.height = videoRef.current.videoHeight;
-  //     const ctx = canvas.getContext('2d');
-  //     if (ctx) {
-  //       ctx.drawImage(videoRef.current, 0, 0);
-  //       canvas.toBlob(blob => {
-  //         if (blob) {
-  //           const file = new File([blob], 'captured-photo.jpg', { type: 'image/jpeg' });
-  //           setImageFile(file);
-  //         }
-  //       }, 'image/jpeg');
-  //     }
-  //     stopDesktopCamera();
-  //   }
-  // };
-
-  // const stopDesktopCamera = () => {
-  //   if (videoRef.current?.srcObject) {
-  //     const stream = videoRef.current.srcObject as MediaStream;
-  //     stream.getTracks().forEach(track => track.stop());
-  //     videoRef.current.srcObject = null;
-  //     videoRef.current.style.display = 'none';
-  //   }
-  // };
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];

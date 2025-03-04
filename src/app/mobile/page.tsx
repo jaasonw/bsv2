@@ -33,7 +33,6 @@ import {
   getPartialSubtotal,
   getSubtotal,
   getTotal,
-  Item,
 } from "@/lib/utils";
 import { use, useEffect, useState } from "react";
 import Link from "next/link";

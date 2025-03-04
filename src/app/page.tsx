@@ -271,7 +271,7 @@ export default function Form() {
         )}
       </CardContent>
       {/* Edit Dialog */}
-      <Dialog open={editingItemIndex !== null} onOpenChange={(open) => !open && setEditingItemIndex(null)}>
+      <Dialog open={editingItemIndex !== null} onOpenChange={(open: boolean) => !open && setEditingItemIndex(null)}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Edit Item</DialogTitle>
