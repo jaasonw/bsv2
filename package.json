@@ -24,7 +24,7 @@
     "dataframe-js": "^1.4.4",
     "embla-carousel-react": "^8.5.1",
     "lucide-react": "^0.468.0",
-    "next": "15.0.4",
+    "next": "15.2.4",
     "next-themes": "^0.4.4",
     "openai": "^4.82.0",
     "prettier": "^3.4.2",
