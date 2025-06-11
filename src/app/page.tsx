@@ -58,7 +58,9 @@ export default function Form() {
     tipAsProportion,
     setTipAsProportion,
     tip,
+    setTip,
     tax,
+    setTax,
     table,
     setTable,
     deleteItem
@@ -131,9 +133,9 @@ export default function Form() {
   }, [items, people, tip, tax, tipAsProportion]);
 
   useEffect(() => {
-    setTipInput(tip);
-    setTaxInput(tax);
-  }, [tip, tax]);
+    setTip(Number(tipInput));
+    setTax(Number(taxInput));
+  }, [tipInput, taxInput]);
 
   useEffect(() => {
     if (editingItemIndex !== null) {
@@ -193,13 +195,13 @@ export default function Form() {
                             <Button
                               variant="ghost"
                               className="h-full w-full text-right items-end justify-end p-3"
-                              onClick={() => toggleBuyer(item.id, item.buyer)}
+                              onClick={() => toggleBuyer(Number(item.id), item.buyer)}
                             >
-                              {getPartialPrice(items, item.id, item.buyer) !=
+                              {getPartialPrice(items, Number(item.id), item.buyer) !=
                                 "0.00"
                                 ? `$${getPartialPrice(
                                   items,
-                                  item.id,
+                                  Number(item.id),
                                   item.buyer,
                                 )} `
                                 : "-"}
@@ -306,7 +308,7 @@ export default function Form() {
               onClick={() => {
                 if (editingItemIndex !== null) {
                   deleteItem(editingItemIndex);
-                  setEditingItemIndex(null);
+                  setEditingItemIndex(null); // Close the dialog
                 }
               }}
             >
