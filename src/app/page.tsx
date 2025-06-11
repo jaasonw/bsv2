@@ -58,9 +58,7 @@ export default function Form() {
     tipAsProportion,
     setTipAsProportion,
     tip,
-    setTip,
     tax,
-    setTax,
     table,
     setTable
   } = context;
@@ -132,9 +130,9 @@ export default function Form() {
   }, [items, people, tip, tax, tipAsProportion]);
 
   useEffect(() => {
-    setTip(Number(tipInput));
-    setTax(Number(taxInput));
-  }, [tipInput, taxInput]);
+    setTipInput(tip);
+    setTaxInput(tax);
+  }, [tip, tax]);
 
   useEffect(() => {
     if (editingItemIndex !== null) {
