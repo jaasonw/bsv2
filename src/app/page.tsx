@@ -308,7 +308,7 @@ export default function Form() {
               onClick={() => {
                 if (editingItemIndex !== null) {
                   deleteItem(editingItemIndex);
-                  setEditingItemIndex(null); // Close the dialog
+                  setEditingItemIndex(null);
                 }
               }}
             >
