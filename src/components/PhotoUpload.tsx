@@ -13,7 +13,7 @@ const PhotoUpload: React.FC = () => {
   if (!context) {
     throw new Error('useBill must be used within a BillProvider');
   }
-  const { setItems, setTax, setTip } = context;
+  const { setItems, setTax, setTip } = context; // Added setTip
 
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [isLoading, setIsLoading] = useState(false);
