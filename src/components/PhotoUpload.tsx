@@ -6,16 +6,19 @@ import { Button } from './ui/button';
 import { Card, CardContent } from './ui/card';
 import { Label } from './ui/label';
 import { Input } from './ui/input';
+import { AlertDialog, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription, AlertDialogFooter, AlertDialogAction } from '@/components/ui/alert-dialog';
 
 const PhotoUpload: React.FC = () => {
   const context = use(BillContext);
   if (!context) {
     throw new Error('useBill must be used within a BillProvider');
   }
-  const { setItems, setTax } = context;
+  const { setItems, setTax, setTip } = context; // Added setTip
 
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [showTaxAlert, setShowTaxAlert] = useState(false);
+  const [alertMessage, setAlertMessage] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
 
@@ -44,15 +47,33 @@ const PhotoUpload: React.FC = () => {
         body: formData,
       });
 
-      if (!response.ok) throw new Error('Failed to upload image');
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ message: 'Failed to upload image and parse error response' }));
+        throw new Error(errorData.error || `Failed to upload image: ${response.statusText}`);
+      }
 
       const data = await response.json();
-      const table = extractJSONFromResponse(data['choices'][0]['message']['content']);
-      setItems(table.items);
-      setTax(table.tax);
+      const taxAmount = data.tax || 0;
+      const tipAmount = data.tip || 0;
+
+      setItems(data.items || []);
+      setTax(taxAmount);
+      setTip(tipAmount);
+
+      if (taxAmount === 0 && tipAmount === 0) {
+        setAlertMessage("Neither tax nor tip information could be extracted or they were zero. Please verify these amounts manually.");
+        setShowTaxAlert(true);
+      } else if (taxAmount === 0) {
+        setAlertMessage("Tax information could not be extracted or was zero. Please verify the amount manually.");
+        setShowTaxAlert(true);
+      } else if (tipAmount === 0) {
+        setAlertMessage("Tip information could not be extracted or was zero. Please verify the amount manually.");
+        setShowTaxAlert(true);
+      }
 
     } catch (error) {
       console.error('Error uploading image', error);
+      // TODO: Consider setting an error state to display to the user
     } finally {
       setIsLoading(false);
     }
@@ -120,21 +141,25 @@ const PhotoUpload: React.FC = () => {
           </Button>
         </CardContent>
       </Card>
+      {showTaxAlert && (
+        <AlertDialog open={showTaxAlert} onOpenChange={setShowTaxAlert}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Information</AlertDialogTitle>
+              <AlertDialogDescription>
+                {alertMessage}
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogAction onClick={() => setShowTaxAlert(false)}>OK</AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+      )}
     </div >
   );
 };
 
-function extractJSONFromResponse(response: string) {
-  const match = response.match(/\{.*\}/s);
-  if (match) {
-    try {
-      return JSON.parse(match[0]);
-    } catch (error) {
-      console.error("Invalid JSON:", error);
-    }
-  }
-  console.error("No JSON found");
-  return { items: [], tax: 0 };
-}
+// Removed extractJSONFromResponse function
 
 export default PhotoUpload;
