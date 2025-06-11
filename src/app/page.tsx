@@ -61,7 +61,7 @@ export default function Form() {
     tax,
     table,
     setTable,
-    deleteItem // Added deleteItem
+    deleteItem
   } = context;
   // const [items, setItems] = useState<Item[]>([]);
   // const [people, setPeople] = useState<string[]>([]);
