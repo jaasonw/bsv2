@@ -16,7 +16,7 @@ import {
   CarouselPrevious,
   type CarouselApi,
 } from "@/components/ui/carousel";
-import { Trash2 } from 'lucide-react'; // Added Trash2
+import { Trash2 } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -81,7 +81,7 @@ export default function Form() {
     tax,
     setTax,
     setTable,
-    deleteItem // Added deleteItem
+    deleteItem
   } = context;
 
 
@@ -149,9 +149,8 @@ export default function Form() {
           {items.map((item, i) => (
             <TableRow
               key={i}
-              // onClick logic moved to individual cells if row click is still desired for selection
             >
-              <TableCell onClick={() => toggleBuyer(i, people[current - 1])}> {/* Moved onClick */}
+              <TableCell onClick={() => toggleBuyer(i, people[current - 1])}>
                 <div className="flex">
                   <div
                     className={`bg-black mr-1 w-1 ${item.buyers.includes(people[current - 1]) ? "" : "hidden"}`}
@@ -185,7 +184,7 @@ export default function Form() {
                   </div>
                 </div>
               </TableCell>
-              <TableCell className="text-right" onClick={() => toggleBuyer(i, people[current - 1])}> {/* Moved onClick */}
+              <TableCell className="text-right" onClick={() => toggleBuyer(i, people[current - 1])}>
                 ${item.price.toFixed(2)}
               </TableCell>
               <TableCell className="text-right">
@@ -193,7 +192,7 @@ export default function Form() {
                   variant="destructive"
                   size="icon"
                   onClick={(e) => {
-                    e.stopPropagation(); // Prevent row click if any
+                    e.stopPropagation();
                     deleteItem(i);
                   }}
                 >
@@ -203,7 +202,7 @@ export default function Form() {
             </TableRow>
           ))}
           <TableRow>
-            <TableCell className="font-bold" colSpan={3}> {/* Adjusted colSpan */}
+            <TableCell className="font-bold" colSpan={3}>
               <AlertDialog open={itemFormOpen}>
                 <Button
                   className="w-full"
@@ -266,13 +265,13 @@ export default function Form() {
           {items.length > 0 ? (
             <>
               <TableRow>
-                <TableCell className="font-bold" colSpan={2}>Subtotal</TableCell> {/* Adjusted colSpan */}
+                <TableCell className="font-bold" colSpan={2}>Subtotal</TableCell>
                 <TableCell className="text-right font-bold">
                   ${getSubtotal(items).toFixed(2)}
                 </TableCell>
               </TableRow>
               <TableRow>
-                <TableCell className="font-bold" colSpan={2}>Tax</TableCell> {/* Adjusted colSpan */}
+                <TableCell className="font-bold" colSpan={2}>Tax</TableCell>
                 <TableCell className="text-right font-bold">
                   <div className="flex flex-col">
                     <span>${tax.toFixed(2)}</span>
@@ -287,13 +286,13 @@ export default function Form() {
                 </TableCell>
               </TableRow>
               <TableRow>
-                <TableCell className="font-bold" colSpan={2}>Tip</TableCell> {/* Adjusted colSpan */}
+                <TableCell className="font-bold" colSpan={2}>Tip</TableCell>
                 <TableCell className="text-right font-bold">
                   ${tip.toFixed(2)}
                 </TableCell>
               </TableRow>
               <TableRow>
-                <TableCell className="font-bold" colSpan={2}>Total</TableCell> {/* Adjusted colSpan */}
+                <TableCell className="font-bold" colSpan={2}>Total</TableCell>
                 <TableCell className="text-right font-bold">
                   ${getTotal(tip, tax, items)}
                 </TableCell>
