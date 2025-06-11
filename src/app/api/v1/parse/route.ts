@@ -24,7 +24,7 @@ export async function POST(request: Request) {
     // Prepare messages with image
     const messages = [{
       role: "system",
-      content: "Read receipt information and return JSON with items, tip, and tax. Leave tip and tax as 0 if you cannot find it Leave buyers blank. If there is a service charge, you may consider it as part of the tip. Here is the response format for the JSON: { items: [{ name: string, price: number, buyers: [string] }], tip: number, tax: number } do not include anything except the json structure, the output should contain zero mixed content, only json"
+      content: "Read receipt information and return JSON with items, tip, and tax. If tax information is present, you must extract it. If it is truly absent, set tax to 0. Leave buyers blank. If there is a service charge, you may consider it as part of the tip. Here is the response format for the JSON: { items: [{ name: string, price: number, buyers: [string] }], tip: number, tax: number } do not include anything except the json structure, the output should contain zero mixed content, only json"
     }, {
       role: "user",
       content: [
@@ -74,9 +74,39 @@ export async function POST(request: Request) {
       })
     })
 
-    const data = (await response.json())
-    console.log('Receipt data:', data)
-    return NextResponse.json(data)
+    // const data = (await response.json())
+    // console.log('Receipt data:', data)
+    // return NextResponse.json(data)
+    const openRouterResponse = await response.json()
+    // Ensure the response structure is as expected
+    if (
+      !openRouterResponse.choices ||
+      !openRouterResponse.choices[0] ||
+      !openRouterResponse.choices[0].message ||
+      !openRouterResponse.choices[0].message.content
+    ) {
+      console.error('Invalid OpenRouter response structure:', openRouterResponse)
+      return NextResponse.json(
+        { error: 'Failed to process receipt due to invalid AI response structure' },
+        { status: 500 }
+      )
+    }
+
+    const jsonContentString = openRouterResponse.choices[0].message.content
+    let jsonData
+    try {
+      jsonData = JSON.parse(jsonContentString)
+    } catch (parseError) {
+      console.error('Error parsing JSON content from AI:', parseError)
+      console.error('Content that failed to parse:', jsonContentString)
+      return NextResponse.json(
+        { error: 'Failed to process receipt due to invalid JSON from AI' },
+        { status: 500 }
+      )
+    }
+
+    console.log('Receipt data:', jsonData)
+    return NextResponse.json(jsonData)
 
   } catch (error) {
     console.error('Error processing receipt:', error)
