@@ -60,7 +60,8 @@ export default function Form() {
     tip,
     tax,
     table,
-    setTable
+    setTable,
+    deleteItem
   } = context;
   // const [items, setItems] = useState<Item[]>([]);
   // const [people, setPeople] = useState<string[]>([]);
@@ -299,7 +300,20 @@ export default function Form() {
               />
             </div>
           </div>
-          <Button onClick={handleSaveEdit}>Save Changes</Button>
+          <div className="flex justify-end gap-2">
+            <Button
+              variant="destructive"
+              onClick={() => {
+                if (editingItemIndex !== null) {
+                  deleteItem(editingItemIndex);
+                  setEditingItemIndex(null);
+                }
+              }}
+            >
+              Delete
+            </Button>
+            <Button onClick={handleSaveEdit}>Save Changes</Button>
+          </div>
         </DialogContent>
       </Dialog>
       <CardFooter className="flex flex-col w-full">
