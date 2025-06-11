@@ -28,6 +28,7 @@ export interface BillContextType {
   setTip: React.Dispatch<React.SetStateAction<number>>;
   tax: number;
   setTax: React.Dispatch<React.SetStateAction<number>>;
+  deleteItem: (index: number) => void;
 }
 
 // Create the context with a default value
@@ -48,6 +49,10 @@ export const BillProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   ]);
   const [tip, setTip] = useState<number>(0);
   const [tax, setTax] = useState<number>(0);
+
+  const deleteItem = (index: number) => {
+    setItems(prevItems => prevItems.filter((_, i) => i !== index));
+  };
 
   const value: BillContextType = {
     items,
@@ -72,6 +77,7 @@ export const BillProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     setTip,
     tax,
     setTax,
+    deleteItem,
   };
 
   return (
