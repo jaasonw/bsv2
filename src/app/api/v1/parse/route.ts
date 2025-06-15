@@ -24,7 +24,7 @@ export async function POST(request: Request) {
     // Prepare messages with image
     const messages = [{
       role: "system",
-      content: "Read receipt information and return JSON with items, tip, and tax. If tax information is present, you must extract it. If it is truly absent, set tax to 0. Leave buyers blank. If there is a service charge, you may consider it as part of the tip. Here is the response format for the JSON: { items: [{ name: string, price: number, buyers: [string] }], tip: number, tax: number } do not include anything except the json structure, the output should contain zero mixed content, only json"
+      content: "Read receipt information and return JSON with items, tip, and tax. If tax information is present, you must extract it. If it is truly absent, set tax to 0. Leave buyers blank. If there is a service charge, you may consider it as part of the tip. Here is the response format for the JSON: { items: [{ name: string, price: number, buyers: [string] }], tip: number, tax: number } do not include anything except the json structure, the output should contain zero mixed content, only json. If an item is 0 dollars, do not include it. Discounts should be put as a negative item. Sometimes there will be an option to select the tip from a checkbox, if one of these is checked, use that as the tip."
     }, {
       role: "user",
       content: [
@@ -87,7 +87,7 @@ export async function POST(request: Request) {
     ) {
       console.error('Invalid OpenRouter response structure:', openRouterResponse)
       return NextResponse.json(
-        { error: 'Failed to process receipt due to invalid AI response structure' },
+        { error: `Failed to process receipt due to invalid AI response structure: ${openRouterResponse}` },
         { status: 500 }
       )
     }
