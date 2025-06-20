@@ -19,6 +19,7 @@
     "@radix-ui/react-switch": "^1.1.1",
     "@types/dataframe-js": "^1.4.3",
     "ai": "^4.0.34",
+    "babel-plugin-react-compiler": "19.1.0-rc.2",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "dataframe-js": "^1.4.4",
