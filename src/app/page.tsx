@@ -58,7 +58,9 @@ export default function Form() {
     tipAsProportion,
     setTipAsProportion,
     tip,
+    setTip,
     tax,
+    setTax,
     table,
     setTable
   } = context;
@@ -347,7 +349,7 @@ export default function Form() {
             <Label className="w-1/3">Tax paid</Label>
             <Input
               value={taxInput}
-              onChange={(event) => setTaxInput(parseFloat(event.target.value))}
+              onChange={(event) => setTax(parseFloat(event.target.value))}
               type="number"
             ></Input>
           </div>
@@ -355,7 +357,7 @@ export default function Form() {
             <Label className="w-1/3">Tip paid</Label>
             <Input
               value={tipInput}
-              onChange={(event) => setTipInput(parseFloat(event.target.value))}
+              onChange={(event) => setTip(parseFloat(event.target.value))}
               type="number"
             ></Input>
           </div>
@@ -393,6 +395,6 @@ export default function Form() {
           <Footer></Footer>
         </div>
       </CardFooter>
-    </Card>
+    </Card >
   );
 }
