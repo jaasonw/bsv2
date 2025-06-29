@@ -10,4 +10,4 @@ how the hell do you manage all this?
 
 the solution i eventually settled on was a spreadsheet but i eventually decided that i didnt want to manually make that spreadsheet all the time so i made an app to automate a spreadsheet
 
-![image](https://github.com/user-attachments/assets/3f24bafe-c4e1-4603-ac21-3f73413cb187)
+![image](https://github.com/user-attachments/assets/432066e5-eb7d-4e86-a5f2-9874bcda94a7)
