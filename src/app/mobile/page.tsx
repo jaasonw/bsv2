@@ -16,7 +16,7 @@ import {
   CarouselPrevious,
   type CarouselApi,
 } from "@/components/ui/carousel";
-import { Trash2 } from 'lucide-react';
+import { Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -37,7 +37,11 @@ import {
 } from "@/lib/utils";
 import { use, useEffect, useState } from "react";
 import Link from "next/link";
-import { BillContext, BillContextType, BillProvider } from "@/components/BillProvider";
+import {
+  BillContext,
+  BillContextType,
+  BillProvider,
+} from "@/components/BillProvider";
 import PhotoUpload from "@/components/PhotoUpload";
 
 export default function Form() {
@@ -81,9 +85,8 @@ export default function Form() {
     tax,
     setTax,
     setTable,
-    deleteItem
+    deleteItem,
   } = context;
-
 
   // adds or removes a person from the list of buyers of an item
   function toggleBuyer(item: number, person: string) {
@@ -147,9 +150,7 @@ export default function Form() {
       <Table>
         <TableBody>
           {items.map((item, i) => (
-            <TableRow
-              key={i}
-            >
+            <TableRow key={i}>
               <TableCell onClick={() => toggleBuyer(i, people[current - 1])}>
                 <div className="flex">
                   <div
@@ -184,7 +185,10 @@ export default function Form() {
                   </div>
                 </div>
               </TableCell>
-              <TableCell className="text-right" onClick={() => toggleBuyer(i, people[current - 1])}>
+              <TableCell
+                className="text-right"
+                onClick={() => toggleBuyer(i, people[current - 1])}
+              >
                 ${item.price.toFixed(2)}
               </TableCell>
               <TableCell className="text-right">
@@ -251,9 +255,7 @@ export default function Form() {
                           <AlertDialogCancel
                             type="button"
                             onClick={() => setItemFormOpen(false)}
-                          >
-                          </AlertDialogCancel>
-
+                          ></AlertDialogCancel>
                         </div>
                       </form>
                     </AlertDialogDescription>
@@ -265,13 +267,17 @@ export default function Form() {
           {items.length > 0 ? (
             <>
               <TableRow>
-                <TableCell className="font-bold" colSpan={2}>Subtotal</TableCell>
+                <TableCell className="font-bold" colSpan={2}>
+                  Subtotal
+                </TableCell>
                 <TableCell className="text-right font-bold">
                   ${getSubtotal(items).toFixed(2)}
                 </TableCell>
               </TableRow>
               <TableRow>
-                <TableCell className="font-bold" colSpan={2}>Tax</TableCell>
+                <TableCell className="font-bold" colSpan={2}>
+                  Tax
+                </TableCell>
                 <TableCell className="text-right font-bold">
                   <div className="flex flex-col">
                     <span>${tax.toFixed(2)}</span>
@@ -286,13 +292,17 @@ export default function Form() {
                 </TableCell>
               </TableRow>
               <TableRow>
-                <TableCell className="font-bold" colSpan={2}>Tip</TableCell>
+                <TableCell className="font-bold" colSpan={2}>
+                  Tip
+                </TableCell>
                 <TableCell className="text-right font-bold">
                   ${tip.toFixed(2)}
                 </TableCell>
               </TableRow>
               <TableRow>
-                <TableCell className="font-bold" colSpan={2}>Total</TableCell>
+                <TableCell className="font-bold" colSpan={2}>
+                  Total
+                </TableCell>
                 <TableCell className="text-right font-bold">
                   ${getTotal(tip, tax, items)}
                 </TableCell>

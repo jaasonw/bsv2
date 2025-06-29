@@ -25,13 +25,14 @@ export default function Footer() {
           view source on github
         </a>
         <span>
-          ai tokens r not free pls consider {" "}
+          ai tokens r not free pls consider{" "}
           <a
             href="https://jason-wong.me/donate"
             className="text-right underline"
           >
             donating
-          </a></span>
+          </a>
+        </span>
       </span>
     </footer>
   );

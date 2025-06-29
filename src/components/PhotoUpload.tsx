@@ -55,11 +55,9 @@ const PhotoUpload: React.FC = () => {
       });
 
       if (!response.ok) {
-        const errorData = await response
-          .json()
-          .catch(() => ({
-            message: "Failed to upload image and parse error response",
-          }));
+        const errorData = await response.json().catch(() => ({
+          message: "Failed to upload image and parse error response",
+        }));
         throw new Error(
           errorData.error || `Failed to upload image: ${response.statusText}`,
         );
