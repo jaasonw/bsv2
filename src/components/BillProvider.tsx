@@ -59,7 +59,7 @@ export const BillProvider: React.FC<{ children: ReactNode }> = ({
   const [tip, setTip] = useState<number>(0);
   const [tax, setTax] = useState<number>(0);
   const [selectedTipPercentage, setSelectedTipPercentage] =
-    useState<string>("");
+    useState<string>("custom");
 
   const deleteItem = (index: number) => {
     setItems((prevItems) => prevItems.filter((_, i) => i !== index));

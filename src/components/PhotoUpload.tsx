@@ -1,10 +1,9 @@
 "use client";
 import React, { use, useRef, useState } from "react";
 import { BillContext } from "@/components/BillProvider";
-import { Camera, Loader2 } from "lucide-react";
+import { Camera, Loader2, Upload, X, Check } from "lucide-react";
 import { Button } from "./ui/button";
-import { Card, CardContent } from "./ui/card";
-import { Label } from "./ui/label";
+import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { Input } from "./ui/input";
 import {
   AlertDialog,
@@ -14,21 +13,23 @@ import {
   AlertDialogDescription,
   AlertDialogFooter,
   AlertDialogAction,
+  AlertDialogCancel,
 } from "@/components/ui/alert-dialog";
+import { Separator } from "./ui/separator";
 
 const PhotoUpload: React.FC = () => {
   const context = use(BillContext);
   if (!context) {
     throw new Error("useBill must be used within a BillProvider");
   }
-  const { setItems, setTax, setTip } = context; // Added setTip
 
+  const { setItems, setTax, setTip, setTipInput } = context;
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [showTaxAlert, setShowTaxAlert] = useState(false);
+  const [showImageConfirm, setShowImageConfirm] = useState(false);
   const [alertMessage, setAlertMessage] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const videoRef = useRef<HTMLVideoElement>(null);
 
   const handleTakePhoto = () => {
     fileInputRef.current?.click();
@@ -38,13 +39,28 @@ const PhotoUpload: React.FC = () => {
     const file = event.target.files?.[0];
     if (file) {
       setImageFile(file);
+      setShowImageConfirm(true);
+    }
+  };
+
+  const handleConfirmUpload = () => {
+    setShowImageConfirm(false);
+    uploadImage();
+  };
+
+  const handleCancelUpload = () => {
+    setShowImageConfirm(false);
+    setImageFile(null);
+    // Reset the file input
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
     }
   };
 
   const uploadImage = async () => {
     if (!imageFile) return;
-    setIsLoading(true);
 
+    setIsLoading(true);
     try {
       const formData = new FormData();
       formData.append("file", imageFile);
@@ -70,6 +86,13 @@ const PhotoUpload: React.FC = () => {
       setItems(data.items || []);
       setTax(taxAmount);
       setTip(tipAmount);
+      setTipInput(tipAmount);
+
+      // Clear the selected image after successful upload
+      setImageFile(null);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
 
       if (taxAmount === 0 && tipAmount === 0) {
         setAlertMessage(
@@ -89,108 +112,129 @@ const PhotoUpload: React.FC = () => {
       }
     } catch (error) {
       console.error("Error uploading image", error);
-      // TODO: Consider setting an error state to display to the user
+      setAlertMessage(
+        "Failed to process the receipt. Please try again or enter the information manually.",
+      );
+      setShowTaxAlert(true);
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <div className="w-full">
-      <Card>
-        <CardContent className="flex flex-col gap-4 pt-6">
-          <Input
-            ref={fileInputRef}
-            type="file"
-            accept="image/*"
-            capture="environment"
-            onChange={handleImageUpload}
-            className="hidden"
-          />
-          <Input
-            ref={fileInputRef}
-            type="file"
-            accept="image/*"
-            onChange={handleImageUpload}
-          />
-          {/* Camera controls */}
-          <Button
-            onClick={handleTakePhoto}
-            className="w-full"
-            variant="outline"
-          >
-            <Camera className="mr-2 h-4 w-4" />
-            Open Camera
-          </Button>
+    <div className="w-full p-0">
+      <CardTitle className="text-lg flex items-center gap-2">
+        <Camera className="h-5 w-5" />
+        Receipt Scanner
+      </CardTitle>
+      {/* Hidden file input */}
+      <Input
+        ref={fileInputRef}
+        type="file"
+        accept="image/*"
+        capture="environment"
+        onChange={handleImageUpload}
+        className="hidden"
+      />
 
-          {/* Desktop camera preview */}
-          <video
-            ref={videoRef}
-            className="rounded-lg border w-full aspect-video hidden"
-          />
+      {/* Upload buttons */}
+      <div className="grid grid-cols-1 gap-1">
+        <Button
+          onClick={handleTakePhoto}
+          variant="outline"
+          className="h-12 text-sm"
+          disabled={isLoading}
+        >
+          <Camera className="mr-2 h-4 w-4" />
+          Take Photo
+        </Button>
 
-          {/* Preview */}
+        <Button
+          onClick={() => fileInputRef.current?.click()}
+          variant="outline"
+          className="h-12 text-sm"
+          disabled={isLoading}
+        >
+          <Upload className="mr-2 h-4 w-4" />
+          Upload from Gallery
+        </Button>
+      </div>
+
+      {/* Status indicator */}
+      {imageFile && !isLoading && (
+        <div className="flex items-center gap-2 p-3 bg-muted/50 rounded-md">
+          <Check className="h-4 w-4 text-green-600 dark:text-green-400" />
+          <span className="text-sm text-muted-foreground">
+            Image ready to process
+          </span>
+        </div>
+      )}
+
+      {isLoading && (
+        <div className="flex items-center gap-2 p-3 bg-blue-50 dark:bg-blue-950/30 rounded-md">
+          <Loader2 className="h-4 w-4 animate-spin text-blue-600 dark:text-blue-400" />
+          <span className="text-sm text-blue-700 dark:text-blue-300">
+            Processing receipt...
+          </span>
+        </div>
+      )}
+
+      <Separator />
+
+      <p className="text-xs text-muted-foreground text-center">
+        Upload a clear image of your receipt to automatically extract items, tax, and tip information.
+      </p>
+
+      {/* Image confirmation dialog */}
+      <AlertDialog open={showImageConfirm} onOpenChange={setShowImageConfirm}>
+        <AlertDialogContent className="max-w-md">
+          <AlertDialogHeader>
+            <AlertDialogTitle>Confirm Receipt</AlertDialogTitle>
+            <AlertDialogDescription>
+              Is this the receipt you want to process?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+
+          {/* Image preview in dialog */}
           {imageFile && (
-            <div className="flex flex-col items-center gap-2">
-              <Label>Preview</Label>
+            <div className="my-4">
               <img
                 src={URL.createObjectURL(imageFile)}
                 alt="Receipt preview"
-                className="rounded-md object-cover h-48 w-full"
+                className="rounded-md object-cover w-full max-h-64 border"
               />
             </div>
           )}
 
-          {/* Process button */}
-          <Button
-            onClick={uploadImage}
-            disabled={isLoading || !imageFile}
-            className="w-full"
-          >
-            {isLoading ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Processing...
-              </>
-            ) : (
-              "Process Receipt"
-            )}
-          </Button>
-        </CardContent>
-      </Card>
-      {showTaxAlert && (
-        <AlertDialog open={showTaxAlert} onOpenChange={setShowTaxAlert}>
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogTitle>Information</AlertDialogTitle>
-              <AlertDialogDescription>{alertMessage}</AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogAction onClick={() => setShowTaxAlert(false)}>
-                OK
-              </AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
-      )}
-    </div>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={handleCancelUpload}>
+              <X className="mr-2 h-4 w-4" />
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction onClick={handleConfirmUpload}>
+              <Check className="mr-2 h-4 w-4" />
+              Process Receipt
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Tax/Tip alert dialog */}
+      <AlertDialog open={showTaxAlert} onOpenChange={setShowTaxAlert}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Processing Complete</AlertDialogTitle>
+            <AlertDialogDescription>{alertMessage}</AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogAction onClick={() => setShowTaxAlert(false)}>
+              Got it
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </div >
   );
 };
-
-function extractJSONFromResponse(response: string) {
-  const match = response.match(/\{.*\}/s);
-
-  if (match) {
-    try {
-      return JSON.parse(match[0]);
-    } catch (error) {
-      console.error("Invalid JSON:", error);
-    }
-  }
-
-  console.error("No JSON found");
-
-  return { items: [], tax: 0 };
-}
 
 export default PhotoUpload;

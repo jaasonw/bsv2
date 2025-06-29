@@ -5,7 +5,7 @@ import React, { use } from "react";
 
 export default function ListView() {
   const context = use(BillContext) as BillContextType;
-  const { items, people, table, tip, tax, tipAsProportion } = context;
+  const { items, people, table, tip, tax, tipAsProportion, tipTheTax } = context;
 
   // Extract individual totals from the table (last row)
   const getPersonTotal = (personIndex: number) => {
@@ -61,10 +61,13 @@ export default function ListView() {
     return subtotal > 0 ? (tax * personSubtotal) / subtotal : 0;
   };
 
-  // Calculate percentages
+  // Calculate percentages based on tipTheTax setting
   const subtotal = items.reduce((sum, item) => sum + item.price, 0);
+  const total = subtotal + tax;
+  const baseAmount = tipTheTax ? total : subtotal;
+
   const taxPercentage = subtotal > 0 ? ((tax / subtotal) * 100).toFixed(1) : "0.0";
-  const tipPercentage = subtotal > 0 ? ((tip / subtotal) * 100).toFixed(1) : "0.0";
+  const tipPercentage = baseAmount > 0 ? ((tip / baseAmount) * 100).toFixed(1) : "0.0";
 
   if (people.length === 0) {
     return (
@@ -73,7 +76,7 @@ export default function ListView() {
           <CardTitle className="text-lg">Individual Breakdown</CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="text-gray-500 text-center">
+          <p className="text-muted-foreground text-center">
             Add people to see individual breakdowns
           </p>
         </CardContent>
@@ -87,7 +90,7 @@ export default function ListView() {
         <CardTitle className="text-lg">Individual Breakdown</CardTitle>
       </CardHeader>
       <CardContent className="overflow-y-auto">
-        <div className="space-y-4">
+        <div className="space-y-6">
           {people.map((person, index) => {
             const personItems = getPersonItems(person);
             const total = getPersonTotal(index);
@@ -96,69 +99,97 @@ export default function ListView() {
             const personTax = getPersonTax(person);
 
             return (
-              <div key={person} className="space-y-2">
-                <div className="flex justify-between items-center">
-                  <h3 className="font-semibold text-base">{person}</h3>
-                  <span className="font-bold text-green-600">${total}</span>
-                </div>
+              <div key={person} className="space-y-3">
+                {/* Person name */}
+                <h3 className="font-semibold text-base text-foreground">{person}</h3>
 
-                {personItems.length > 0 ? (
-                  <div className="space-y-1 text-sm">
-                    {/* Items breakdown */}
-                    {personItems.map((item, itemIndex) => (
-                      <div key={itemIndex} className="flex justify-between text-gray-600">
-                        <span className="truncate">
-                          {item.name}
+                {/* Items */}
+                <div className="space-y-2 text-sm">
+                  {personItems.length > 0 ? (
+                    personItems.map((item, itemIndex) => (
+                      <div key={itemIndex} className="flex justify-between">
+                        <div className="flex-1">
+                          <span className="text-foreground">{item.name}</span>
                           {item.buyers.length > 1 && (
-                            <span className="text-gray-400">
-                              {" "}(split {item.buyers.length} ways)
+                            <span className="text-muted-foreground/70 text-xs ml-1">
+                              (split {item.buyers.length} ways)
                             </span>
                           )}
+                        </div>
+                        <span className="text-foreground font-mono">
+                          ${getItemCostForPerson(item, person).toFixed(2)}
                         </span>
-                        <span>${getItemCostForPerson(item, person).toFixed(2)}</span>
                       </div>
-                    ))}
+                    ))
+                  ) : (
+                    <div className="text-muted-foreground italic">
+                      No items selected
+                    </div>
+                  )}
+                </div>
+
+                {/* Calculations */}
+                {personItems.length > 0 && (
+                  <div className="space-y-1 text-sm">
+                    <Separator />
 
                     {/* Subtotal */}
-                    <div className="flex justify-between text-gray-700 font-medium pt-1 border-t border-gray-200">
-                      <span>Subtotal</span>
-                      <span>${personSubtotal.toFixed(2)}</span>
+                    <div className="flex justify-between">
+                      <span className="text-foreground">Subtotal:</span>
+                      <span className="text-foreground font-mono">
+                        ${personSubtotal.toFixed(2)}
+                      </span>
                     </div>
 
-                    {/* Tax breakdown */}
+                    {/* Tax */}
                     {personTax > 0 && (
-                      <div className="flex justify-between text-gray-500">
-                        <span>Tax ({taxPercentage}%)</span>
-                        <span>${personTax.toFixed(2)}</span>
-                      </div>
-                    )}
-
-                    {/* Tip breakdown */}
-                    {personTip > 0 && (
-                      <div className="flex justify-between text-gray-500">
-                        <span>
-                          Tip ({tipPercentage}%)
-                          {!tipAsProportion && <span className="text-gray-400"> - split evenly</span>}
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">Tax ({taxPercentage}%):</span>
+                        <span className="text-muted-foreground font-mono">
+                          ${personTax.toFixed(2)}
                         </span>
-                        <span>${personTip.toFixed(2)}</span>
                       </div>
                     )}
-                  </div>
-                ) : (
-                  <div className="space-y-1 text-sm">
-                    <p className="text-gray-400">No items selected</p>
 
-                    {/* Still show tip if split evenly */}
-                    {personTip > 0 && !tipAsProportion && (
-                      <div className="flex justify-between text-gray-500 pt-1 border-t border-gray-200">
-                        <span>Tip ({tipPercentage}%) - split evenly</span>
-                        <span>${personTip.toFixed(2)}</span>
+                    {/* Tip */}
+                    {personTip > 0 && (
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">
+                          Tip ({tipPercentage}%{tipTheTax ? ' incl. tax' : ''})
+                          {!tipAsProportion && <span className="text-xs"> - split evenly</span>}:
+                        </span>
+                        <span className="text-muted-foreground font-mono">
+                          ${personTip.toFixed(2)}
+                        </span>
                       </div>
                     )}
                   </div>
                 )}
 
-                {index < people.length - 1 && <Separator />}
+                {/* Total */}
+                <div className="flex justify-between text-lg font-bold pt-2 border-t-2">
+                  <span className="text-foreground">Total:</span>
+                  <span className="text-green-600 dark:text-green-400 font-mono">
+                    ${total}
+                  </span>
+                </div>
+
+                {/* Show tip for people with no items but split evenly */}
+                {personItems.length === 0 && personTip > 0 && !tipAsProportion && (
+                  <div className="space-y-1 text-sm">
+                    <Separator />
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">
+                        Tip ({tipPercentage}%{tipTheTax ? ' incl. tax' : ''}) - split evenly:
+                      </span>
+                      <span className="text-muted-foreground font-mono">
+                        ${personTip.toFixed(2)}
+                      </span>
+                    </div>
+                  </div>
+                )}
+
+                {index < people.length - 1 && <Separator className="mt-4" />}
               </div>
             );
           })}
@@ -166,4 +197,4 @@ export default function ListView() {
       </CardContent>
     </Card>
   );
-} 
+}

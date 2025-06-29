@@ -21,6 +21,13 @@ export default function TipInput() {
   const subtotal = items.reduce((sum, item) => sum + item.price, 0);
   const total = subtotal + tax;
 
+  // Calculate custom tip percentage
+  const getCustomTipPercentage = () => {
+    const baseAmount = tipTheTax ? total : subtotal;
+    if (baseAmount === 0) return "0.0";
+    return ((tip / baseAmount) * 100).toFixed(1);
+  };
+
   function handleTipPercentageClick(percentage: string) {
     if (percentage === "custom") {
       setTip(0);
@@ -70,7 +77,7 @@ export default function TipInput() {
             className="rounded-none rounded-l-lg text-sm p-4 flex flex-col gap-0"
           >
             <span className="font-bold">10%</span>
-            <span className="text-xs text-gray-600">
+            <span className="text-xs text-muted-foreground">
               $
               {(
                 Math.round((tipTheTax ? total : subtotal) * 0.1 * 100) / 100
@@ -82,7 +89,7 @@ export default function TipInput() {
             className="rounded-none text-sm p-4 flex flex-col gap-0"
           >
             <span className="font-bold">15%</span>
-            <span className="text-xs text-gray-600">
+            <span className="text-xs text-muted-foreground">
               $
               {(
                 Math.round((tipTheTax ? total : subtotal) * 0.15 * 100) / 100
@@ -94,7 +101,7 @@ export default function TipInput() {
             className="rounded-none text-sm p-4 flex flex-col gap-0"
           >
             <span className="font-bold">18%</span>
-            <span className="text-xs text-gray-600">
+            <span className="text-xs text-muted-foreground">
               $
               {(
                 Math.round((tipTheTax ? total : subtotal) * 0.18 * 100) / 100
@@ -106,7 +113,9 @@ export default function TipInput() {
             className="rounded-none rounded-r-lg text-sm p-4 flex flex-col gap-0"
           >
             <span className="font-bold">Custom</span>
-            <span className="text-xs text-gray-600">${tip.toFixed(2)}</span>
+            <span className="text-xs text-muted-foreground">
+              {getCustomTipPercentage()}%
+            </span>
           </ToggleGroupItem>
         </ToggleGroup>
       </div>
