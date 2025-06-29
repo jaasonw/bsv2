@@ -3,7 +3,6 @@ import React, { use, useRef, useState } from "react";
 import { BillContext } from "@/components/BillProvider";
 import { Camera, Loader2, Upload, X, Check } from "lucide-react";
 import { Button } from "./ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { Input } from "./ui/input";
 import {
   AlertDialog,
@@ -29,10 +28,17 @@ const PhotoUpload: React.FC = () => {
   const [showTaxAlert, setShowTaxAlert] = useState(false);
   const [showImageConfirm, setShowImageConfirm] = useState(false);
   const [alertMessage, setAlertMessage] = useState("");
-  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Separate refs for camera and gallery
+  const cameraInputRef = useRef<HTMLInputElement>(null);
+  const galleryInputRef = useRef<HTMLInputElement>(null);
 
   const handleTakePhoto = () => {
-    fileInputRef.current?.click();
+    cameraInputRef.current?.click();
+  };
+
+  const handleUploadFromGallery = () => {
+    galleryInputRef.current?.click();
   };
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -51,9 +57,12 @@ const PhotoUpload: React.FC = () => {
   const handleCancelUpload = () => {
     setShowImageConfirm(false);
     setImageFile(null);
-    // Reset the file input
-    if (fileInputRef.current) {
-      fileInputRef.current.value = '';
+    // Reset both file inputs
+    if (cameraInputRef.current) {
+      cameraInputRef.current.value = '';
+    }
+    if (galleryInputRef.current) {
+      galleryInputRef.current.value = '';
     }
   };
 
@@ -90,8 +99,11 @@ const PhotoUpload: React.FC = () => {
 
       // Clear the selected image after successful upload
       setImageFile(null);
-      if (fileInputRef.current) {
-        fileInputRef.current.value = '';
+      if (cameraInputRef.current) {
+        cameraInputRef.current.value = '';
+      }
+      if (galleryInputRef.current) {
+        galleryInputRef.current.value = '';
       }
 
       if (taxAmount === 0 && tipAmount === 0) {
@@ -123,16 +135,27 @@ const PhotoUpload: React.FC = () => {
 
   return (
     <div className="w-full p-0">
-      <CardTitle className="text-lg flex items-center gap-2">
+      <div className="text-lg flex items-center gap-2 font-semibold mb-4">
         <Camera className="h-5 w-5" />
         Receipt Scanner
-      </CardTitle>
-      {/* Hidden file input */}
+      </div>
+
+      {/* Hidden file inputs */}
+      {/* Camera input with capture attribute */}
       <Input
-        ref={fileInputRef}
+        ref={cameraInputRef}
         type="file"
         accept="image/*"
         capture="environment"
+        onChange={handleImageUpload}
+        className="hidden"
+      />
+
+      {/* Gallery input without capture attribute */}
+      <Input
+        ref={galleryInputRef}
+        type="file"
+        accept="image/*"
         onChange={handleImageUpload}
         className="hidden"
       />
@@ -150,7 +173,7 @@ const PhotoUpload: React.FC = () => {
         </Button>
 
         <Button
-          onClick={() => fileInputRef.current?.click()}
+          onClick={handleUploadFromGallery}
           variant="outline"
           className="h-12 text-sm"
           disabled={isLoading}
@@ -162,7 +185,7 @@ const PhotoUpload: React.FC = () => {
 
       {/* Status indicator */}
       {imageFile && !isLoading && (
-        <div className="flex items-center gap-2 p-3 bg-muted/50 rounded-md">
+        <div className="flex items-center gap-2 p-3 bg-muted/50 rounded-md mt-3">
           <Check className="h-4 w-4 text-green-600 dark:text-green-400" />
           <span className="text-sm text-muted-foreground">
             Image ready to process
@@ -171,7 +194,7 @@ const PhotoUpload: React.FC = () => {
       )}
 
       {isLoading && (
-        <div className="flex items-center gap-2 p-3 bg-blue-50 dark:bg-blue-950/30 rounded-md">
+        <div className="flex items-center gap-2 p-3 bg-blue-50 dark:bg-blue-950/30 rounded-md mt-3">
           <Loader2 className="h-4 w-4 animate-spin text-blue-600 dark:text-blue-400" />
           <span className="text-sm text-blue-700 dark:text-blue-300">
             Processing receipt...
@@ -179,7 +202,7 @@ const PhotoUpload: React.FC = () => {
         </div>
       )}
 
-      <Separator />
+      <Separator className="my-4" />
 
       <p className="text-xs text-muted-foreground text-center">
         Upload a clear image of your receipt to automatically extract items, tax, and tip information.
@@ -233,7 +256,7 @@ const PhotoUpload: React.FC = () => {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-    </div >
+    </div>
   );
 };
 
