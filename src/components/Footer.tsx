@@ -24,7 +24,7 @@ export default function Footer() {
         >
           view source on github
         </a>
-        <span>
+        <span className="text-right">
           ai tokens r not free pls consider{" "}
           <a
             href="https://jason-wong.me/donate"
