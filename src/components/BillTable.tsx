@@ -1,6 +1,13 @@
 import { BillContext, BillContextType } from "@/components/BillProvider";
 import { Button } from "@/components/ui/button";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { getPartialPrice, validateTotals } from "@/lib/utils";
 import React, { use } from "react";
 
@@ -10,7 +17,16 @@ interface BillTableProps {
 
 export default function BillTable({ onEditItem }: BillTableProps) {
   const context = use(BillContext) as BillContextType;
-  const { items, people, tip, tax, tipAsProportion, table, setTable, createTable } = context;
+  const {
+    items,
+    people,
+    tip,
+    tax,
+    tipAsProportion,
+    table,
+    setTable,
+    createTable,
+  } = context;
 
   // Get responsive class based on number of people
   const getTableWidthClass = () => {
@@ -35,7 +51,10 @@ export default function BillTable({ onEditItem }: BillTableProps) {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead className="w-[100px] text-right" key="blank"></TableHead>
+              <TableHead
+                className="w-[100px] text-right"
+                key="blank"
+              ></TableHead>
               {people.map((person) => (
                 <TableHead key={person} className="text-right px-3">
                   {person}
@@ -61,7 +80,8 @@ export default function BillTable({ onEditItem }: BillTableProps) {
                             className="h-full w-full text-right items-end justify-end p-3"
                             onClick={() => toggleBuyer(item.id, item.buyer)}
                           >
-                            {getPartialPrice(items, item.id, item.buyer) !== "0.00"
+                            {getPartialPrice(items, item.id, item.buyer) !==
+                            "0.00"
                               ? `$${getPartialPrice(items, item.id, item.buyer)}`
                               : "-"}
                           </Button>
@@ -89,16 +109,28 @@ export default function BillTable({ onEditItem }: BillTableProps) {
                         items[row[j - 1].id].buyers.length == 0
                       ) {
                         return (
-                          <TableCell key={j} className={`${classnames} text-red-500`}>
+                          <TableCell
+                            key={j}
+                            className={`${classnames} text-red-500`}
+                          >
                             {item}
                           </TableCell>
                         );
                       } else if (
                         i == table.length - 1 &&
-                        !validateTotals(people, tip, tax, tipAsProportion, items)
+                        !validateTotals(
+                          people,
+                          tip,
+                          tax,
+                          tipAsProportion,
+                          items,
+                        )
                       ) {
                         return (
-                          <TableCell key={j} className={`${classnames} text-red-500`}>
+                          <TableCell
+                            key={j}
+                            className={`${classnames} text-red-500`}
+                          >
                             {item}
                           </TableCell>
                         );
@@ -112,7 +144,7 @@ export default function BillTable({ onEditItem }: BillTableProps) {
                     }
                   })}
                 </TableRow>
-              )
+              ),
             )}
           </TableBody>
         </Table>

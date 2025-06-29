@@ -22,7 +22,8 @@ const PhotoUpload: React.FC = () => {
     throw new Error("useBill must be used within a BillProvider");
   }
 
-  const { setItems, setTax, setTip, setTipInput, setSelectedTipPercentage } = context;
+  const { setItems, setTax, setTip, setTipInput, setSelectedTipPercentage } =
+    context;
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [showTaxAlert, setShowTaxAlert] = useState(false);
@@ -59,10 +60,10 @@ const PhotoUpload: React.FC = () => {
     setImageFile(null);
     // Reset both file inputs
     if (cameraInputRef.current) {
-      cameraInputRef.current.value = '';
+      cameraInputRef.current.value = "";
     }
     if (galleryInputRef.current) {
-      galleryInputRef.current.value = '';
+      galleryInputRef.current.value = "";
     }
   };
 
@@ -101,10 +102,10 @@ const PhotoUpload: React.FC = () => {
       // Clear the selected image after successful upload
       setImageFile(null);
       if (cameraInputRef.current) {
-        cameraInputRef.current.value = '';
+        cameraInputRef.current.value = "";
       }
       if (galleryInputRef.current) {
-        galleryInputRef.current.value = '';
+        galleryInputRef.current.value = "";
       }
 
       if (taxAmount === 0 && tipAmount === 0) {
@@ -206,7 +207,8 @@ const PhotoUpload: React.FC = () => {
       <Separator className="my-4" />
 
       <p className="text-xs text-muted-foreground text-center">
-        Upload a clear image of your receipt to automatically extract items, tax, and tip information.
+        Upload a clear image of your receipt to automatically extract items,
+        tax, and tip information.
       </p>
 
       {/* Image confirmation dialog */}

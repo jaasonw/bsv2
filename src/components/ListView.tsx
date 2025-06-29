@@ -5,7 +5,8 @@ import React, { use } from "react";
 
 export default function ListView() {
   const context = use(BillContext) as BillContextType;
-  const { items, people, table, tip, tax, tipAsProportion, tipTheTax } = context;
+  const { items, people, table, tip, tax, tipAsProportion, tipTheTax } =
+    context;
 
   // Extract individual totals from the table (last row)
   const getPersonTotal = (personIndex: number) => {
@@ -13,15 +14,15 @@ export default function ListView() {
     const lastRow = table[table.length - 1];
     // Person totals are in positions 1 to people.length in the last row
     const total = lastRow[personIndex + 1];
-    if (typeof total === 'string') {
-      return total.replace('$', '');
+    if (typeof total === "string") {
+      return total.replace("$", "");
     }
     return "0.00";
   };
 
   // Get items that a person is buying
   const getPersonItems = (personName: string) => {
-    return items.filter(item => item.buyers.includes(personName));
+    return items.filter((item) => item.buyers.includes(personName));
   };
 
   // Calculate item cost per person for a specific item
@@ -33,7 +34,10 @@ export default function ListView() {
   // Calculate subtotal for a person (items only)
   const getPersonSubtotal = (personName: string) => {
     const personItems = getPersonItems(personName);
-    return personItems.reduce((sum, item) => sum + getItemCostForPerson(item, personName), 0);
+    return personItems.reduce(
+      (sum, item) => sum + getItemCostForPerson(item, personName),
+      0,
+    );
   };
 
   // Calculate tip amount for a person
@@ -51,7 +55,7 @@ export default function ListView() {
     }
   };
 
-  // Calculate tax amount for a person 
+  // Calculate tax amount for a person
   const getPersonTax = (personName: string) => {
     if (tax === 0) return 0;
 
@@ -66,8 +70,10 @@ export default function ListView() {
   const total = subtotal + tax;
   const baseAmount = tipTheTax ? total : subtotal;
 
-  const taxPercentage = subtotal > 0 ? ((tax / subtotal) * 100).toFixed(1) : "0.0";
-  const tipPercentage = baseAmount > 0 ? ((tip / baseAmount) * 100).toFixed(1) : "0.0";
+  const taxPercentage =
+    subtotal > 0 ? ((tax / subtotal) * 100).toFixed(1) : "0.0";
+  const tipPercentage =
+    baseAmount > 0 ? ((tip / baseAmount) * 100).toFixed(1) : "0.0";
 
   if (people.length === 0) {
     return (
@@ -101,7 +107,9 @@ export default function ListView() {
             return (
               <div key={person} className="space-y-3">
                 {/* Person name */}
-                <h3 className="font-semibold text-base text-foreground">{person}</h3>
+                <h3 className="font-semibold text-base text-foreground">
+                  {person}
+                </h3>
 
                 {/* Items */}
                 <div className="space-y-2 text-sm">
@@ -144,7 +152,9 @@ export default function ListView() {
                     {/* Tax */}
                     {personTax > 0 && (
                       <div className="flex justify-between">
-                        <span className="text-muted-foreground">Tax ({taxPercentage}%):</span>
+                        <span className="text-muted-foreground">
+                          Tax ({taxPercentage}%):
+                        </span>
                         <span className="text-muted-foreground font-mono">
                           ${personTax.toFixed(2)}
                         </span>
@@ -155,8 +165,11 @@ export default function ListView() {
                     {personTip > 0 && (
                       <div className="flex justify-between">
                         <span className="text-muted-foreground">
-                          Tip ({tipPercentage}%{tipTheTax ? ' incl. tax' : ''})
-                          {!tipAsProportion && <span className="text-xs"> - split evenly</span>}:
+                          Tip ({tipPercentage}%{tipTheTax ? " incl. tax" : ""})
+                          {!tipAsProportion && (
+                            <span className="text-xs"> - split evenly</span>
+                          )}
+                          :
                         </span>
                         <span className="text-muted-foreground font-mono">
                           ${personTip.toFixed(2)}
@@ -175,19 +188,22 @@ export default function ListView() {
                 </div>
 
                 {/* Show tip for people with no items but split evenly */}
-                {personItems.length === 0 && personTip > 0 && !tipAsProportion && (
-                  <div className="space-y-1 text-sm">
-                    <Separator />
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">
-                        Tip ({tipPercentage}%{tipTheTax ? ' incl. tax' : ''}) - split evenly:
-                      </span>
-                      <span className="text-muted-foreground font-mono">
-                        ${personTip.toFixed(2)}
-                      </span>
+                {personItems.length === 0 &&
+                  personTip > 0 &&
+                  !tipAsProportion && (
+                    <div className="space-y-1 text-sm">
+                      <Separator />
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">
+                          Tip ({tipPercentage}%{tipTheTax ? " incl. tax" : ""})
+                          - split evenly:
+                        </span>
+                        <span className="text-muted-foreground font-mono">
+                          ${personTip.toFixed(2)}
+                        </span>
+                      </div>
                     </div>
-                  </div>
-                )}
+                  )}
 
                 {index < people.length - 1 && <Separator className="mt-4" />}
               </div>

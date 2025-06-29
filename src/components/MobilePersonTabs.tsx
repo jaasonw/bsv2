@@ -9,14 +9,17 @@ import React, { use, useState } from "react";
 
 export default function MobilePersonTabs() {
   const context = use(BillContext) as BillContextType;
-  const { items, setItems, people, tip, tax, tipAsProportion, setTable } = context;
+  const { items, setItems, people, tip, tax, tipAsProportion, setTable } =
+    context;
   const [activeTab, setActiveTab] = useState(0);
   const [showListView, setShowListView] = useState(false);
 
   function toggleBuyer(itemIndex: number, person: string) {
     const newItems = [...items];
     if (newItems[itemIndex].buyers.includes(person)) {
-      newItems[itemIndex].buyers = newItems[itemIndex].buyers.filter((p: string) => p !== person);
+      newItems[itemIndex].buyers = newItems[itemIndex].buyers.filter(
+        (p: string) => p !== person,
+      );
     } else {
       newItems[itemIndex].buyers = [...newItems[itemIndex].buyers, person];
     }
@@ -59,30 +62,41 @@ export default function MobilePersonTabs() {
         value={people[activeTab]}
         onValueChange={(value) => setActiveTab(people.indexOf(value))}
       >
-        {people.map(person => (
+        {people.map((person) => (
           <TabsContent key={person} value={person} className="mt-4">
             <div className="space-y-3">
               <div className="text-sm font-medium text-foreground mb-3">
                 Select items for {person}:
               </div>
               {items.map((item, index) => (
-                <div key={index} className="flex items-center justify-between p-4 border rounded-lg bg-card">
+                <div
+                  key={index}
+                  className="flex items-center justify-between p-4 border rounded-lg bg-card"
+                >
                   <div className="flex-1">
-                    <div className="font-medium text-foreground">{item.name}</div>
+                    <div className="font-medium text-foreground">
+                      {item.name}
+                    </div>
                     <div className="text-sm text-muted-foreground">
                       ${item.price.toFixed(2)}
-                      {item.buyers.includes(person) && item.buyers.length > 1 && (
-                        <span className="text-blue-600 dark:text-blue-400 ml-1">
-                          (split {item.buyers.length} ways: ${(item.price / item.buyers.length).toFixed(2)})
-                        </span>
-                      )}
-                      {item.buyers.includes(person) && item.buyers.length === 1 && (
-                        <span className="text-green-600 dark:text-green-400 ml-1">(full amount)</span>
-                      )}
+                      {item.buyers.includes(person) &&
+                        item.buyers.length > 1 && (
+                          <span className="text-blue-600 dark:text-blue-400 ml-1">
+                            (split {item.buyers.length} ways: $
+                            {(item.price / item.buyers.length).toFixed(2)})
+                          </span>
+                        )}
+                      {item.buyers.includes(person) &&
+                        item.buyers.length === 1 && (
+                          <span className="text-green-600 dark:text-green-400 ml-1">
+                            (full amount)
+                          </span>
+                        )}
                     </div>
                     {item.buyers.length > 1 && item.buyers.includes(person) && (
                       <div className="text-xs text-muted-foreground mt-1">
-                        Shared with: {item.buyers.filter(b => b !== person).join(', ')}
+                        Shared with:{" "}
+                        {item.buyers.filter((b) => b !== person).join(", ")}
                       </div>
                     )}
                   </div>
@@ -104,7 +118,7 @@ export default function MobilePersonTabs() {
           className="grid w-full mb-4"
           style={{ gridTemplateColumns: `repeat(${people.length}, 1fr)` }}
         >
-          {people.map(person => (
+          {people.map((person) => (
             <TabsTrigger key={person} value={person} className="text-xs px-2">
               {person}
             </TabsTrigger>
