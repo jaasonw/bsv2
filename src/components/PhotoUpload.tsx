@@ -22,7 +22,7 @@ const PhotoUpload: React.FC = () => {
     throw new Error("useBill must be used within a BillProvider");
   }
 
-  const { setItems, setTax, setTip, setTipInput } = context;
+  const { setItems, setTax, setTip, setTipInput, setSelectedTipPercentage } = context;
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [showTaxAlert, setShowTaxAlert] = useState(false);
@@ -96,6 +96,7 @@ const PhotoUpload: React.FC = () => {
       setTax(taxAmount);
       setTip(tipAmount);
       setTipInput(tipAmount);
+      setSelectedTipPercentage("custom");
 
       // Clear the selected image after successful upload
       setImageFile(null);
