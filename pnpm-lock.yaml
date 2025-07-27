@@ -98,6 +98,9 @@ importers:
       "@types/node":
         specifier: ^22.15.34
         version: 22.15.34
+      "@types/pica":
+        specifier: ^9.0.5
+        version: 9.0.5
       "@types/react":
         specifier: ^19.1.8
         version: 19.1.8
@@ -1427,6 +1430,12 @@ packages:
     resolution:
       {
         integrity: sha512-8Y6E5WUupYy1Dd0II32BsWAx5MWdcnRd8L84Oys3veg1YrYtNtzgO4CFhiBg6MDSjk7Ay36HYOnU7/tuOzIzcw==,
+      }
+
+  "@types/pica@9.0.5":
+    resolution:
+      {
+        integrity: sha512-OSd4905yxFNtRanHuyyQAfC9AkxiYcbhlzP606Gl6rFcYRgq4vdLCZuYKokLQBihgrkNzyPkoeykvJDWcPjaCw==,
       }
 
   "@types/react-dom@19.1.6":
@@ -5225,6 +5234,8 @@ snapshots:
   "@types/node@22.15.34":
     dependencies:
       undici-types: 6.21.0
+
+  "@types/pica@9.0.5": {}
 
   "@types/react-dom@19.1.6(@types/react@19.1.8)":
     dependencies:
