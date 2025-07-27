@@ -21,11 +21,12 @@ const PhotoUpload: React.FC = () => {
   if (!context) {
     throw new Error("useBill must be used within a BillProvider");
   }
-
   const { setItems, setTax, setTip, setTipInput, setSelectedTipPercentage } =
     context;
+
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [isResizing, setIsResizing] = useState(false);
   const [showTaxAlert, setShowTaxAlert] = useState(false);
   const [showImageConfirm, setShowImageConfirm] = useState(false);
   const [alertMessage, setAlertMessage] = useState("");
@@ -33,6 +34,99 @@ const PhotoUpload: React.FC = () => {
   // Separate refs for camera and gallery
   const cameraInputRef = useRef<HTMLInputElement>(null);
   const galleryInputRef = useRef<HTMLInputElement>(null);
+
+  // Function to resize image using Pica on client-side
+  const resizeImageWithPica = async (
+    file: File,
+    maxWidth: number = 1024,
+    maxHeight: number = 1024,
+    quality: number = 0.9,
+  ): Promise<File> => {
+    try {
+      setIsResizing(true);
+
+      // Import pica dynamically
+      const pica = (await import("pica")).default();
+
+      return new Promise((resolve, reject) => {
+        const img = new Image();
+
+        img.onload = () => {
+          // Calculate new dimensions while maintaining aspect ratio
+          let { width, height } = img;
+
+          if (width > height) {
+            if (width > maxWidth) {
+              height = (height * maxWidth) / width;
+              width = maxWidth;
+            }
+          } else {
+            if (height > maxHeight) {
+              width = (width * maxHeight) / height;
+              height = maxHeight;
+            }
+          }
+
+          // Create source canvas
+          const sourceCanvas = document.createElement("canvas");
+          sourceCanvas.width = img.width;
+          sourceCanvas.height = img.height;
+          const sourceCtx = sourceCanvas.getContext("2d");
+
+          if (!sourceCtx) {
+            reject(new Error("Could not get source canvas context"));
+            return;
+          }
+
+          // Draw original image to source canvas
+          sourceCtx.drawImage(img, 0, 0);
+
+          // Create destination canvas
+          const destCanvas = document.createElement("canvas");
+          destCanvas.width = width;
+          destCanvas.height = height;
+
+          // Use pica to resize
+          pica
+            .resize(sourceCanvas, destCanvas, {
+              quality: 3, // 0-3, higher = better quality but slower
+              alpha: false, // disable alpha channel processing for better performance
+              unsharpAmount: 80,
+              unsharpRadius: 0.6,
+              unsharpThreshold: 2,
+            })
+            .then((result) => {
+              // Convert to blob using pica
+              return pica.toBlob(result, "image/jpeg", quality);
+            })
+            .then((blob) => {
+              // Convert blob back to File
+              const resizedFile = new File([blob], file.name, {
+                type: "image/jpeg",
+                lastModified: Date.now(),
+              });
+              resolve(resizedFile);
+            })
+            .catch((error) => {
+              console.error("Pica resize error:", error);
+              reject(error);
+            });
+        };
+
+        img.onerror = () => reject(new Error("Failed to load image"));
+
+        // Create object URL for the image
+        const objectURL = URL.createObjectURL(file);
+        img.src = objectURL;
+      });
+    } catch (error) {
+      console.error("Error importing pica or resizing:", error);
+      // Return original file if resizing fails
+      return file;
+    } finally {
+      setIsResizing(false);
+    }
+  };
 
   const handleTakePhoto = () => {
     cameraInputRef.current?.click();
@@ -42,11 +136,36 @@ const PhotoUpload: React.FC = () => {
     galleryInputRef.current?.click();
   };
 
-  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageUpload = async (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
     const file = event.target.files?.[0];
     if (file) {
-      setImageFile(file);
-      setShowImageConfirm(true);
+      try {
+        // Check if it's an image
+        if (!file.type.startsWith("image/")) {
+          setAlertMessage("Please select an image file.");
+          setShowTaxAlert(true);
+          return;
+        }
+
+        // Resize the image on client-side
+        const resizedFile = await resizeImageWithPica(file);
+
+        // Log size comparison for debugging
+        const originalSizeKB = file.size / 1024;
+        const resizedSizeKB = resizedFile.size / 1024;
+        console.log(
+          `Original: ${originalSizeKB.toFixed(2)}KB → Resized: ${resizedSizeKB.toFixed(2)}KB`,
+        );
+
+        setImageFile(resizedFile);
+        setShowImageConfirm(true);
+      } catch (error) {
+        console.error("Error processing image:", error);
+        setAlertMessage("Error processing image. Please try again.");
+        setShowTaxAlert(true);
+      }
     }
   };
 
@@ -69,8 +188,8 @@ const PhotoUpload: React.FC = () => {
 
   const uploadImage = async () => {
     if (!imageFile) return;
-
     setIsLoading(true);
+
     try {
       const formData = new FormData();
       formData.append("file", imageFile);
@@ -168,25 +287,33 @@ const PhotoUpload: React.FC = () => {
           onClick={handleTakePhoto}
           variant="outline"
           className="h-12 text-sm"
-          disabled={isLoading}
+          disabled={isLoading || isResizing}
         >
           <Camera className="mr-2 h-4 w-4" />
           Take Photo
         </Button>
-
         <Button
           onClick={handleUploadFromGallery}
           variant="outline"
           className="h-12 text-sm"
-          disabled={isLoading}
+          disabled={isLoading || isResizing}
         >
           <Upload className="mr-2 h-4 w-4" />
           Upload from Gallery
         </Button>
       </div>
 
-      {/* Status indicator */}
-      {imageFile && !isLoading && (
+      {/* Status indicators */}
+      {isResizing && (
+        <div className="flex items-center gap-2 p-3 bg-orange-50 dark:bg-orange-950/30 rounded-md mt-3">
+          <Loader2 className="h-4 w-4 animate-spin text-orange-600 dark:text-orange-400" />
+          <span className="text-sm text-orange-700 dark:text-orange-300">
+            Optimizing image...
+          </span>
+        </div>
+      )}
+
+      {imageFile && !isLoading && !isResizing && (
         <div className="flex items-center gap-2 p-3 bg-muted/50 rounded-md mt-3">
           <Check className="h-4 w-4 text-green-600 dark:text-green-400" />
           <span className="text-sm text-muted-foreground">
@@ -205,10 +332,9 @@ const PhotoUpload: React.FC = () => {
       )}
 
       <Separator className="my-4" />
-
       <p className="text-xs text-muted-foreground text-center">
         Upload a clear image of your receipt to automatically extract items,
-        tax, and tip information.
+        tax, and tip information. Images are optimized for faster processing.
       </p>
 
       {/* Image confirmation dialog */}
@@ -217,7 +343,8 @@ const PhotoUpload: React.FC = () => {
           <AlertDialogHeader>
             <AlertDialogTitle>Confirm Receipt</AlertDialogTitle>
             <AlertDialogDescription>
-              Is this the receipt you want to process?
+              Is this the receipt you want to process? (Image has been optimized
+              for processing)
             </AlertDialogDescription>
           </AlertDialogHeader>
 
@@ -229,6 +356,9 @@ const PhotoUpload: React.FC = () => {
                 alt="Receipt preview"
                 className="rounded-md object-cover w-full max-h-64 border"
               />
+              <p className="text-xs text-muted-foreground mt-2 text-center">
+                Optimized size: {(imageFile.size / 1024).toFixed(2)}KB
+              </p>
             </div>
           )}
 

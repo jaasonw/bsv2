@@ -3,30 +3,35 @@ import { NextResponse } from "next/server";
 import sharp from "sharp";
 
 // Function to resize image using Sharp
-async function resizeImage(file: File, maxWidth: number = 1024, maxHeight: number = 1024, quality: number = 90): Promise<string> {
+async function resizeImage(
+  file: File,
+  maxWidth: number = 1024,
+  maxHeight: number = 1024,
+  quality: number = 90,
+): Promise<string> {
   try {
     // Convert file to buffer
     const buffer = await file.arrayBuffer();
     const imageBuffer = Buffer.from(buffer);
-    
+
     // Process image with Sharp
     const resizedBuffer = await sharp(imageBuffer)
       .resize(maxWidth, maxHeight, {
-        fit: 'inside', // Maintain aspect ratio
-        withoutEnlargement: true // Don't upscale smaller images
+        fit: "inside", // Maintain aspect ratio
+        withoutEnlargement: true, // Don't upscale smaller images
       })
-      .jpeg({ 
+      .jpeg({
         quality: quality,
-        progressive: true // Better for web
+        progressive: true, // Better for web
       })
       .toBuffer();
-    
+
     // Convert to base64
-    const base64 = resizedBuffer.toString('base64');
-    
+    const base64 = resizedBuffer.toString("base64");
+
     return base64;
   } catch (error) {
-    console.error('Sharp resize error:', error);
+    console.error("Sharp resize error:", error);
     throw error;
   }
 }
@@ -36,19 +41,22 @@ export async function POST(request: Request) {
     // Get the uploaded file from FormData
     const formData = await request.formData();
     const file = formData.get("file") as File | null;
-    
+
     if (!file) {
       return NextResponse.json({ error: "No file uploaded" }, { status: 400 });
     }
 
     // Check if file is an image
-    if (!file.type.startsWith('image/')) {
-      return NextResponse.json({ error: "File must be an image" }, { status: 400 });
+    if (!file.type.startsWith("image/")) {
+      return NextResponse.json(
+        { error: "File must be an image" },
+        { status: 400 },
+      );
     }
 
     // Resize image using Sharp
     const base64File = await resizeImage(file, 1024, 1024, 90);
-    const mimeType = 'image/jpeg'; // Always convert to JPEG
+    const mimeType = "image/jpeg"; // Always convert to JPEG
 
     // Log the approximate size for debugging
     const sizeKB = (base64File.length * 3) / 4 / 1024;
@@ -111,7 +119,7 @@ export async function POST(request: Request) {
     );
 
     const openRouterResponse = await response.json();
-    
+
     // Ensure the response structure is as expected
     if (
       !openRouterResponse.choices ||
@@ -133,7 +141,7 @@ export async function POST(request: Request) {
 
     const jsonContentString = openRouterResponse.choices[0].message.content;
     let jsonData;
-    
+
     try {
       jsonData = JSON.parse(jsonContentString);
     } catch (parseError) {
