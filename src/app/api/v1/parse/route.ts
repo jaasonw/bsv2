@@ -23,7 +23,7 @@ export async function POST(request: Request) {
       {
         role: "system",
         content:
-          "Read receipt information and return JSON with items, tip, and tax. If tax information is present, you must extract it. If it is truly absent, set tax to 0. Leave buyers blank. If there is a service charge, you may consider it as part of the tip. Here is the response format for the JSON: { items: [{ name: string, price: number, buyers: [string] }], tip: number, tax: number } do not include anything except the json structure, the output should contain zero mixed content, only json. If an item is 0 dollars, do not include it. Discounts should be put as a negative item. Sometimes there will be an option to select the tip from a checkbox, if one of these is checked, use that as the tip.",
+          "Read receipt information and return JSON with items, tip, and tax. If tax information is present, you must extract it. If it is truly absent, set tax to 0. Leave buyers blank. If there is a service charge, you may consider it as part of the tip. The written_total to display the total that is printed on the receipt. Use this written total field to validate that the combined price of all the items is correct. As much as possible try to preserve the original order of the items displayed on the receipt. Here is the response format for the JSON: { items: [{ name: string, price: number, buyers: [string] }], tip: number, tax: number, written_total } do not include anything except the json structure, the output should contain zero mixed content, only json. If an item is 0 dollars, do not include it. Discounts should be put as a negative item. Sometimes there will be an option to select the tip from a checkbox, if one of these is checked, use that as the tip. Take extra care to make sure the price is associated with the correct item as not all rows necessarily have a pricem, some of them are details for a given item like a modification or add on or the item in a different language. If there is one of these, just put it in parenthesis next to the item name",
       },
       {
         role: "user",
@@ -50,7 +50,7 @@ export async function POST(request: Request) {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          model: "google/gemini-2.0-flash-001",
+          model: "google/gemini-2.5-flash-lite",
           messages,
           // "provider": {
           //   "order": ["Together"],
