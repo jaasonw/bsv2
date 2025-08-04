@@ -94,6 +94,7 @@ export default function ListView() {
     <Card className="h-full">
       <CardHeader>
         <CardTitle className="text-lg">Individual Breakdown</CardTitle>
+        <div className="flex"></div>
       </CardHeader>
       <CardContent className="overflow-y-auto">
         <div className="space-y-6">
