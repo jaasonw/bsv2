@@ -90,6 +90,7 @@ const PhotoUpload: React.FC = () => {
           pica
             .resize(sourceCanvas, destCanvas, {
               quality: 3, // 0-3, higher = better quality but slower
+              alpha: false, // disable alpha channel processing for better performance
               unsharpAmount: 80,
               unsharpRadius: 0.6,
               unsharpThreshold: 2,
