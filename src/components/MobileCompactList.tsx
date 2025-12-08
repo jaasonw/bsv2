@@ -34,7 +34,7 @@ export default function MobileCompactList() {
   return (
     <div className="space-y-3">
       {items.map((item, index) => (
-        <div key={index} className="border rounded-lg bg-card shadow-sm">
+        <div key={index} className="border rounded-lg bg-card shadow-xs">
           <div
             className="flex justify-between items-center p-4 cursor-pointer hover:bg-muted/50 transition-colors"
             onClick={() =>
@@ -69,9 +69,8 @@ export default function MobileCompactList() {
                 </div>
               </div>
               <ChevronDown
-                className={`h-5 w-5 text-muted-foreground transition-transform duration-200 ${
-                  expandedItem === index ? "rotate-180" : ""
-                }`}
+                className={`h-5 w-5 text-muted-foreground transition-transform duration-200 ${expandedItem === index ? "rotate-180" : ""
+                  }`}
               />
             </div>
           </div>
@@ -93,11 +92,10 @@ export default function MobileCompactList() {
                     className="justify-start h-10"
                   >
                     <Check
-                      className={`h-4 w-4 mr-2 transition-opacity ${
-                        item.buyers.includes(person)
+                      className={`h-4 w-4 mr-2 transition-opacity ${item.buyers.includes(person)
                           ? "opacity-100"
                           : "opacity-0"
-                      }`}
+                        }`}
                     />
                     <span className="flex-1 text-left">{person}</span>
                     {item.buyers.includes(person) && (

@@ -39,7 +39,7 @@ export default function Form() {
   const placeholderText = "Add some people or items to the tab to begin";
 
   return (
-    <div className="max-w-screen-2xl">
+    <div className="max-w-(--breakpoint-2xl)">
       {/* Mobile Layout */}
       <div className="block lg:hidden">
         <Card className="w-full">
