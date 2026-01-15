@@ -49,6 +49,9 @@ export default function Form() {
   const [current, setCurrent] = useState(0);
   const [personFormOpen, setPersonFormOpen] = useState(false);
   const [itemFormOpen, setItemFormOpen] = useState(false);
+  const [currentItem, setCurrentItem] = useState("");
+  const [currentPrice, setCurrentPrice] = useState(0);
+  const [currentPerson, setCurrentPerson] = useState("");
 
   useEffect(() => {
     if (!api) {
@@ -68,12 +71,6 @@ export default function Form() {
     setItems,
     people,
     setPeople,
-    currentItem,
-    setCurrentItem,
-    currentPrice,
-    setCurrentPrice,
-    currentPerson,
-    setCurrentPerson,
     tipInput,
     setTipInput,
     taxInput,
@@ -86,6 +83,8 @@ export default function Form() {
     setTax,
     setTable,
     deleteItem,
+    addItem: addItemToContext,
+    addPerson: addPersonToContext,
   } = context;
 
   // adds or removes a person from the list of buyers of an item
@@ -100,23 +99,13 @@ export default function Form() {
 
   // adds a person to the group
   function addPerson() {
-    setPeople([
-      ...people,
-      currentPerson === "" ? "person" + (people.length + 1) : currentPerson,
-    ]);
+    addPersonToContext(currentPerson);
     setCurrentPerson("");
   }
 
   // adds the current form item to the list
   function addItem() {
-    setItems([
-      ...items,
-      {
-        name: currentItem === "" ? "item" + (items.length + 1) : currentItem,
-        price: Number(currentPrice),
-        buyers: [],
-      },
-    ]);
+    addItemToContext(currentItem, currentPrice);
     setCurrentItem("");
     setCurrentPrice(0);
   }
