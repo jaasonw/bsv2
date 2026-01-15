@@ -14,9 +14,6 @@ export default function DataInput() {
   const {
     setItems,
     setPeople,
-    setCurrentItem,
-    setCurrentPrice,
-    setCurrentPerson,
     setTipInput,
     setTaxInput,
     setTipAsProportion,
@@ -27,9 +24,6 @@ export default function DataInput() {
   function reset() {
     setItems([]);
     setPeople([]);
-    setCurrentItem("");
-    setCurrentPrice(0);
-    setCurrentPerson("");
     setTipInput(0);
     setTaxInput(0);
     setTipAsProportion(true);

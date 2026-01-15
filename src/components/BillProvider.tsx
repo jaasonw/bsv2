@@ -7,12 +7,6 @@ export interface BillContextType {
   setItems: React.Dispatch<React.SetStateAction<Item[]>>;
   people: string[];
   setPeople: React.Dispatch<React.SetStateAction<string[]>>;
-  currentItem: string;
-  setCurrentItem: React.Dispatch<React.SetStateAction<string>>;
-  currentPrice: number;
-  setCurrentPrice: React.Dispatch<React.SetStateAction<number>>;
-  currentPerson: string;
-  setCurrentPerson: React.Dispatch<React.SetStateAction<string>>;
   tipInput: number;
   setTipInput: React.Dispatch<React.SetStateAction<number>>;
   taxInput: number;
@@ -41,6 +35,8 @@ export interface BillContextType {
       price: number;
     },
   ) => void;
+  addItem: (name: string, price: number) => void;
+  addPerson: (name: string) => void;
   createTable: typeof createTable;
 }
 
@@ -55,9 +51,6 @@ export const BillProvider: React.FC<{ children: ReactNode }> = ({
 }) => {
   const [items, setItems] = useState<Item[]>([]);
   const [people, setPeople] = useState<string[]>([]);
-  const [currentItem, setCurrentItem] = useState<string>("");
-  const [currentPrice, setCurrentPrice] = useState(0);
-  const [currentPerson, setCurrentPerson] = useState<string>("");
   const [tipInput, setTipInput] = useState<number>(0);
   const [taxInput, setTaxInput] = useState<number>(0);
   const [tipAsProportion, setTipAsProportion] = useState<boolean>(true);
@@ -133,17 +126,29 @@ export const BillProvider: React.FC<{ children: ReactNode }> = ({
     setItems(newItems);
   };
 
+  const addItem = (name: string, price: number) => {
+    setItems((prevItems) => [
+      ...prevItems,
+      {
+        name: name !== "" ? name : `item ${prevItems.length + 1}`,
+        price: Number(price),
+        buyers: [],
+      },
+    ]);
+  };
+
+  const addPerson = (name: string) => {
+    setPeople((prevPeople) => [
+      ...prevPeople,
+      name !== "" ? name : `person ${prevPeople.length + 1}`,
+    ]);
+  };
+
   const value: BillContextType = {
     items,
     setItems,
     people,
     setPeople,
-    currentItem,
-    setCurrentItem,
-    currentPrice,
-    setCurrentPrice,
-    currentPerson,
-    setCurrentPerson,
     tipInput,
     setTipInput,
     taxInput,
@@ -164,6 +169,8 @@ export const BillProvider: React.FC<{ children: ReactNode }> = ({
     deletePerson,
     savePerson,
     saveItem,
+    addItem,
+    addPerson,
     createTable,
   };
 
