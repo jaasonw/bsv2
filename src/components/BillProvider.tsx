@@ -1,6 +1,6 @@
 "use client";
 import { Item, createTable } from "@/lib/utils";
-import React, { createContext, ReactNode, useState } from "react";
+import React, { createContext, ReactNode, useState, useEffect } from "react";
 
 export interface BillContextType {
   items: Item[];
@@ -60,6 +60,24 @@ export const BillProvider: React.FC<{ children: ReactNode }> = ({
   const [tax, setTax] = useState<number>(0);
   const [selectedTipPercentage, setSelectedTipPercentage] =
     useState<string>("custom");
+
+  useEffect(() => {
+    const handleBeforeUnload = (event: BeforeUnloadEvent) => {
+      const hasData =
+        items.length > 0 || people.length > 0 || tipInput > 0 || taxInput > 0;
+
+      if (hasData) {
+        event.preventDefault();
+        event.returnValue = "";
+      }
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+    };
+  }, [items, people, tipInput, taxInput]);
 
   const deleteItem = (index: number) => {
     setItems((prevItems) => prevItems.filter((_, i) => i !== index));
