@@ -62,7 +62,7 @@ export function createTable(
 
 // returns the price of a specific item for a person
 export function getPartialPrice(items: Item[], itemId: number, person: string) {
-  if (items[itemId].buyers.includes(person)) {
+  if (items[itemId] && items[itemId].buyers.includes(person)) {
     return (items[itemId].price / items[itemId].buyers.length).toFixed(2);
   }
   return "0.00";
