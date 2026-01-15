@@ -95,7 +95,7 @@ export default function ListView() {
       <CardHeader>
         <CardTitle className="text-lg">Individual Breakdown</CardTitle>
       </CardHeader>
-      <CardContent className="overflow-y-auto">
+      <CardContent className="h-full overflow-y-auto">
         <div className="space-y-6">
           {people.map((person, index) => {
             const personItems = getPersonItems(person);
