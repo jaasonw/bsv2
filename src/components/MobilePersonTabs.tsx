@@ -64,7 +64,11 @@ export default function MobilePersonTabs() {
         onValueChange={(value) => setActiveTab(people.indexOf(value))}
       >
         {people.map((person) => (
-          <TabsContent key={person} value={person} className="mt-4 max-w-[90vw]">
+          <TabsContent
+            key={person}
+            value={person}
+            className="mt-4 max-w-[90vw]"
+          >
             <div className="space-y-3">
               <div className="text-sm font-medium text-foreground mb-3">
                 Select items for {person}:
@@ -115,9 +119,7 @@ export default function MobilePersonTabs() {
             </div>
           </TabsContent>
         ))}
-        <TabsList
-        className="flex justify-start w-full max-w-[90vw] overflow-scroll"
-        >
+        <TabsList className="flex justify-start w-full max-w-[90vw] overflow-scroll">
           {people.map((person) => (
             <TabsTrigger key={person} value={person} className="text-xs px-2">
               {person}
