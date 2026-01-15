@@ -13,9 +13,13 @@ import React, { use } from "react";
 
 interface BillTableProps {
   onEditItem: (index: number) => void;
+  onEditPerson: (index: number) => void;
 }
 
-export default function BillTable({ onEditItem }: BillTableProps) {
+export default function BillTable({
+  onEditItem,
+  onEditPerson,
+}: BillTableProps) {
   const context = use(BillContext) as BillContextType;
   const {
     items,
@@ -55,8 +59,12 @@ export default function BillTable({ onEditItem }: BillTableProps) {
                 className="w-[100px] text-right"
                 key="blank"
               ></TableHead>
-              {people.map((person) => (
-                <TableHead key={person} className="text-right px-3">
+              {people.map((person, index) => (
+                <TableHead
+                  key={person}
+                  className="text-right px-3 cursor-pointer"
+                  onClick={() => onEditPerson(index)}
+                >
                   {person}
                 </TableHead>
               ))}
