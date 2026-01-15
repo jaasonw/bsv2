@@ -106,6 +106,7 @@ export default function BillTable({ onEditItem }: BillTableProps) {
                       if (
                         j == row.length - 1 &&
                         row[j - 1].id &&
+                        items[row[j - 1].id] &&
                         items[row[j - 1].id].buyers.length == 0
                       ) {
                         return (

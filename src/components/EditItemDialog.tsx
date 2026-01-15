@@ -5,6 +5,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogFooter,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -13,11 +14,13 @@ import React, { use, useEffect, useState } from "react";
 interface EditItemDialogProps {
   editingItemIndex: number | null;
   onClose: () => void;
+  onDeleteItem: (index: number) => void;
 }
 
 export default function EditItemDialog({
   editingItemIndex,
   onClose,
+  onDeleteItem,
 }: EditItemDialogProps) {
   const context = use(BillContext) as BillContextType;
   const { items, setItems } = context;
@@ -42,6 +45,12 @@ export default function EditItemDialog({
       price: editingItemPrice,
     };
     setItems(newItems);
+    onClose();
+  }
+
+  function handleDeleteItem() {
+    if (editingItemIndex === null) return;
+    onDeleteItem(editingItemIndex);
     onClose();
   }
 
@@ -79,7 +88,12 @@ export default function EditItemDialog({
             />
           </div>
         </div>
-        <Button onClick={handleSaveEdit}>Save Changes</Button>
+        <DialogFooter className="flex justify-between">
+          <Button variant="destructive" onClick={handleDeleteItem}>
+            Delete Item
+          </Button>
+          <Button onClick={handleSaveEdit}>Save Changes</Button>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   );

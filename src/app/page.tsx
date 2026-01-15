@@ -22,8 +22,16 @@ import MobilePersonTabs from "@/components/MobilePersonTabs";
 
 export default function Form() {
   const context = use(BillContext) as BillContextType;
-  const { items, people, tip, tax, tipAsProportion, tipTheTax, setTable } =
-    context;
+  const {
+    items,
+    people,
+    tip,
+    tax,
+    tipAsProportion,
+    tipTheTax,
+    setTable,
+    setItems,
+  } = context;
 
   const [editingItemIndex, setEditingItemIndex] = React.useState<number | null>(
     null,
@@ -35,6 +43,11 @@ export default function Form() {
   useEffect(() => {
     setTable(createTable(items, people, tip, tax, tipAsProportion));
   }, [items, people, tip, tax, tipAsProportion, tipTheTax]);
+
+  const handleDeleteItem = (index: number) => {
+    const newItems = items.filter((_, i) => i !== index);
+    setItems(newItems);
+  };
 
   const placeholderText = "Add some people or items to the tab to begin";
 
@@ -144,6 +157,7 @@ export default function Form() {
       <EditItemDialog
         editingItemIndex={editingItemIndex}
         onClose={() => setEditingItemIndex(null)}
+        onDeleteItem={handleDeleteItem}
       />
     </div>
   );
