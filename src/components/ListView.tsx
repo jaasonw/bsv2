@@ -116,8 +116,10 @@ export default function ListView() {
                   {personItems.length > 0 ? (
                     personItems.map((item, itemIndex) => (
                       <div key={itemIndex} className="flex justify-between">
-                        <div className="flex-1">
-                          <span className="text-foreground">{item.name}</span>
+                        <div className="flex-1 overflow-hidden">
+                          <span className="text-foreground truncate whitespace-nowrap">
+                            {item.name}
+                          </span>
                           {item.buyers.length > 1 && (
                             <span className="text-muted-foreground/70 text-xs ml-1">
                               (split {item.buyers.length} ways)

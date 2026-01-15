@@ -46,7 +46,7 @@ export default function BillTable({ onEditItem }: BillTableProps) {
   }
 
   return (
-    <div className="w-full flex justify-center">
+    <div className="w-full flex justify-center overflow-x-auto">
       <div className={`w-full ${getTableWidthClass()}`}>
         <Table>
           <TableHeader>
