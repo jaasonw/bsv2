@@ -15,15 +15,17 @@ interface EditPersonDialogProps {
   editingPersonIndex: number | null;
   onClose: () => void;
   onDeletePerson: (index: number) => void;
+  onSavePerson: (index: number, newName: string) => void;
 }
 
 export default function EditPersonDialog({
   editingPersonIndex,
   onClose,
   onDeletePerson,
+  onSavePerson,
 }: EditPersonDialogProps) {
   const context = use(BillContext) as BillContextType;
-  const { people, setPeople } = context;
+  const { people } = context;
 
   const [editingPersonName, setEditingPersonName] = useState("");
 
@@ -36,9 +38,7 @@ export default function EditPersonDialog({
 
   function handleSaveEdit() {
     if (editingPersonIndex === null) return;
-    const newPeople = [...people];
-    newPeople[editingPersonIndex] = editingPersonName;
-    setPeople(newPeople);
+    onSavePerson(editingPersonIndex, editingPersonName);
     onClose();
   }
 

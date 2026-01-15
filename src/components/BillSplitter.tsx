@@ -64,6 +64,20 @@ export default function BillSplitter() {
     setItems(newItems);
   };
 
+  const handleSavePerson = (index: number, newName: string) => {
+    const oldName = people[index];
+    const newPeople = [...people];
+    newPeople[index] = newName;
+
+    const newItems = items.map((item) => ({
+      ...item,
+      buyers: item.buyers.map((buyer) => (buyer === oldName ? newName : buyer)),
+    }));
+
+    setPeople(newPeople);
+    setItems(newItems);
+  };
+
   const placeholderText = "Add some people or items to the tab to begin";
 
   return (
@@ -184,6 +198,7 @@ export default function BillSplitter() {
         editingPersonIndex={editingPersonIndex}
         onClose={() => setEditingPersonIndex(null)}
         onDeletePerson={handleDeletePerson}
+        onSavePerson={handleSavePerson}
       />
     </div>
   );
