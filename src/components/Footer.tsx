@@ -6,7 +6,7 @@ export default function Footer() {
     <footer className="grid grid-cols-3 w-full mt-4 text-muted-foreground text-xs">
       <ModeToggle />
       <span className="flex flex-col items-center justify-center">
-        <span>copyright 2025</span>
+        <span>copyright 2026</span>
         <span className="text-center">
           open source under{" "}
           <a
