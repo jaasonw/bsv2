@@ -95,7 +95,7 @@ export default function ListView() {
       <CardHeader>
         <CardTitle className="text-lg">Individual Breakdown</CardTitle>
       </CardHeader>
-      <CardContent className="overflow-y-auto">
+      <CardContent className="h-full overflow-y-auto">
         <div className="space-y-6">
           {people.map((person, index) => {
             const personItems = getPersonItems(person);
@@ -116,8 +116,10 @@ export default function ListView() {
                   {personItems.length > 0 ? (
                     personItems.map((item, itemIndex) => (
                       <div key={itemIndex} className="flex justify-between">
-                        <div className="flex-1">
-                          <span className="text-foreground">{item.name}</span>
+                        <div className="flex-1 overflow-hidden">
+                          <span className="text-foreground truncate whitespace-nowrap">
+                            {item.name}
+                          </span>
                           {item.buyers.length > 1 && (
                             <span className="text-muted-foreground/70 text-xs ml-1">
                               (split {item.buyers.length} ways)
