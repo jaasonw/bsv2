@@ -29,6 +29,10 @@ const PhotoUpload: React.FC = () => {
   const [showTaxAlert, setShowTaxAlert] = useState(false);
   const [showImageConfirm, setShowImageConfirm] = useState(false);
   const [alertMessage, setAlertMessage] = useState("");
+  const [processedImageUrl, setProcessedImageUrl] = useState<string | null>(
+    null,
+  );
+  const [showReviewDialog, setShowReviewDialog] = useState(false);
 
   // Separate refs for camera and gallery
   const cameraInputRef = useRef<HTMLInputElement>(null);
@@ -67,6 +71,17 @@ const PhotoUpload: React.FC = () => {
     }
   };
 
+  const handleNewUpload = () => {
+    setProcessedImageUrl(null);
+    setImageFile(null);
+    if (cameraInputRef.current) {
+      cameraInputRef.current.value = "";
+    }
+    if (galleryInputRef.current) {
+      galleryInputRef.current.value = "";
+    }
+  };
+
   const uploadImage = async () => {
     if (!imageFile) return;
 
@@ -93,6 +108,10 @@ const PhotoUpload: React.FC = () => {
       const taxAmount = data.tax || 0;
       const tipAmount = data.tip || 0;
 
+      if (imageFile) {
+        setProcessedImageUrl(URL.createObjectURL(imageFile));
+      }
+
       setItems(data.items || []);
       setTax(taxAmount);
       setTip(tipAmount);
@@ -100,7 +119,6 @@ const PhotoUpload: React.FC = () => {
       setSelectedTipPercentage("custom");
 
       // Clear the selected image after successful upload
-      setImageFile(null);
       if (cameraInputRef.current) {
         cameraInputRef.current.value = "";
       }
@@ -163,30 +181,50 @@ const PhotoUpload: React.FC = () => {
       />
 
       {/* Upload buttons */}
-      <div className="grid grid-cols-1 gap-1">
-        <Button
-          onClick={handleTakePhoto}
-          variant="outline"
-          className="h-12 text-sm"
-          disabled={isLoading}
-        >
-          <Camera className="mr-2 h-4 w-4" />
-          Take Photo
-        </Button>
+      {!processedImageUrl ? (
+        <div className="grid grid-cols-1 gap-1">
+          <Button
+            onClick={handleTakePhoto}
+            variant="outline"
+            className="h-12 text-sm"
+            disabled={isLoading}
+          >
+            <Camera className="mr-2 h-4 w-4" />
+            Take Photo
+          </Button>
 
-        <Button
-          onClick={handleUploadFromGallery}
-          variant="outline"
-          className="h-12 text-sm"
-          disabled={isLoading}
-        >
-          <Upload className="mr-2 h-4 w-4" />
-          Upload from Gallery
-        </Button>
-      </div>
+          <Button
+            onClick={handleUploadFromGallery}
+            variant="outline"
+            className="h-12 text-sm"
+            disabled={isLoading}
+          >
+            <Upload className="mr-2 h-4 w-4" />
+            Upload from Gallery
+          </Button>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 gap-1">
+          <Button
+            onClick={handleNewUpload}
+            variant="outline"
+            className="h-12 text-sm"
+          >
+            <Upload className="mr-2 h-4 w-4" />
+            Upload a New Photo
+          </Button>
+          <Button
+            onClick={() => setShowReviewDialog(true)}
+            className="h-12 text-sm"
+          >
+            <Check className="mr-2 h-4 w-4" />
+            Review Receipt
+          </Button>
+        </div>
+      )}
 
       {/* Status indicator */}
-      {imageFile && !isLoading && (
+      {imageFile && !isLoading && !processedImageUrl && (
         <div className="flex items-center gap-2 p-3 bg-muted/50 rounded-md mt-3">
           <Check className="h-4 w-4 text-green-600 dark:text-green-400" />
           <span className="text-sm text-muted-foreground">
@@ -207,27 +245,25 @@ const PhotoUpload: React.FC = () => {
       <Separator className="my-4" />
 
       <p className="text-xs text-muted-foreground text-center">
-        Upload a clear image of your receipt to automatically extract items,
-        tax, and tip information.
+        {!processedImageUrl
+          ? "Upload a clear image of your receipt to automatically extract items, tax, and tip information."
+          : "Your receipt has been processed"}
       </p>
 
       {/* Image confirmation dialog */}
       <AlertDialog open={showImageConfirm} onOpenChange={setShowImageConfirm}>
-        <AlertDialogContent className="max-w-md">
+        <AlertDialogContent className="max-w-3xl w-[90vw] h-[90vh] flex flex-col p-4">
           <AlertDialogHeader>
-            <AlertDialogTitle>Confirm Receipt</AlertDialogTitle>
-            <AlertDialogDescription>
-              Is this the receipt you want to process?
-            </AlertDialogDescription>
+            <AlertDialogTitle>Review Receipt</AlertDialogTitle>
           </AlertDialogHeader>
 
           {/* Image preview in dialog */}
           {imageFile && (
-            <div className="my-4">
+            <div className="my-4 flex-1 flex items-center justify-center overflow-hidden">
               <img
                 src={URL.createObjectURL(imageFile)}
                 alt="Receipt preview"
-                className="rounded-md object-cover w-full max-h-64 border"
+                className="rounded-md object-contain max-h-full max-w-full border"
               />
             </div>
           )}
@@ -255,6 +291,31 @@ const PhotoUpload: React.FC = () => {
           <AlertDialogFooter>
             <AlertDialogAction onClick={() => setShowTaxAlert(false)}>
               Got it
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Review receipt dialog */}
+      <AlertDialog open={showReviewDialog} onOpenChange={setShowReviewDialog}>
+        <AlertDialogContent className="max-w-3xl w-[90vw] h-[90vh] flex flex-col p-4">
+          <AlertDialogHeader>
+            <AlertDialogTitle>Uploaded Receipt</AlertDialogTitle>
+          </AlertDialogHeader>
+
+          {processedImageUrl && (
+            <div className="my-4 flex-1 flex items-center justify-center overflow-hidden">
+              <img
+                src={processedImageUrl}
+                alt="Uploaded receipt"
+                className="rounded-md object-contain max-h-full max-w-full border"
+              />
+            </div>
+          )}
+
+          <AlertDialogFooter>
+            <AlertDialogAction onClick={() => setShowReviewDialog(false)}>
+              Close
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
