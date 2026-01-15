@@ -30,8 +30,10 @@ export default function BillSplitter() {
     tipAsProportion,
     tipTheTax,
     setTable,
-    setItems,
-    setPeople,
+    deleteItem,
+    deletePerson,
+    savePerson,
+    saveItem,
   } = context;
 
   const [editingItemIndex, setEditingItemIndex] = React.useState<number | null>(
@@ -47,36 +49,6 @@ export default function BillSplitter() {
   useEffect(() => {
     setTable(createTable(items, people, tip, tax, tipAsProportion));
   }, [items, people, tip, tax, tipAsProportion, tipTheTax]);
-
-  const handleDeleteItem = (index: number) => {
-    const newItems = items.filter((_, i) => i !== index);
-    setItems(newItems);
-  };
-
-  const handleDeletePerson = (index: number) => {
-    const personToDelete = people[index];
-    const newPeople = people.filter((_, i) => i !== index);
-    const newItems = items.map((item) => ({
-      ...item,
-      buyers: item.buyers.filter((buyer) => buyer !== personToDelete),
-    }));
-    setPeople(newPeople);
-    setItems(newItems);
-  };
-
-  const handleSavePerson = (index: number, newName: string) => {
-    const oldName = people[index];
-    const newPeople = [...people];
-    newPeople[index] = newName;
-
-    const newItems = items.map((item) => ({
-      ...item,
-      buyers: item.buyers.map((buyer) => (buyer === oldName ? newName : buyer)),
-    }));
-
-    setPeople(newPeople);
-    setItems(newItems);
-  };
 
   const placeholderText = "Add some people or items to the tab to begin";
 
@@ -192,13 +164,14 @@ export default function BillSplitter() {
       <EditItemDialog
         editingItemIndex={editingItemIndex}
         onClose={() => setEditingItemIndex(null)}
-        onDeleteItem={handleDeleteItem}
+        onDeleteItem={deleteItem}
+        onSaveItem={saveItem}
       />
       <EditPersonDialog
         editingPersonIndex={editingPersonIndex}
         onClose={() => setEditingPersonIndex(null)}
-        onDeletePerson={handleDeletePerson}
-        onSavePerson={handleSavePerson}
+        onDeletePerson={deletePerson}
+        onSavePerson={savePerson}
       />
     </div>
   );

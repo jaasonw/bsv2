@@ -15,12 +15,20 @@ interface EditItemDialogProps {
   editingItemIndex: number | null;
   onClose: () => void;
   onDeleteItem: (index: number) => void;
+  onSaveItem: (
+    index: number,
+    newItem: {
+      name: string;
+      price: number;
+    },
+  ) => void;
 }
 
 export default function EditItemDialog({
   editingItemIndex,
   onClose,
   onDeleteItem,
+  onSaveItem,
 }: EditItemDialogProps) {
   const context = use(BillContext) as BillContextType;
   const { items, setItems } = context;
@@ -38,13 +46,10 @@ export default function EditItemDialog({
 
   function handleSaveEdit() {
     if (editingItemIndex === null) return;
-    const newItems = [...items];
-    newItems[editingItemIndex] = {
-      ...newItems[editingItemIndex],
+    onSaveItem(editingItemIndex, {
       name: editingItemName,
       price: editingItemPrice,
-    };
-    setItems(newItems);
+    });
     onClose();
   }
 

@@ -32,6 +32,15 @@ export interface BillContextType {
   selectedTipPercentage: string;
   setSelectedTipPercentage: React.Dispatch<React.SetStateAction<string>>;
   deleteItem: (index: number) => void;
+  deletePerson: (index: number) => void;
+  savePerson: (index: number, newName: string) => void;
+  saveItem: (
+    index: number,
+    newItem: {
+      name: string;
+      price: number;
+    },
+  ) => void;
   createTable: typeof createTable;
 }
 
@@ -83,6 +92,47 @@ export const BillProvider: React.FC<{ children: ReactNode }> = ({
     setItems((prevItems) => prevItems.filter((_, i) => i !== index));
   };
 
+  const deletePerson = (index: number) => {
+    const personToDelete = people[index];
+    const newPeople = people.filter((_, i) => i !== index);
+    const newItems = items.map((item) => ({
+      ...item,
+      buyers: item.buyers.filter((buyer) => buyer !== personToDelete),
+    }));
+    setPeople(newPeople);
+    setItems(newItems);
+  };
+
+  const savePerson = (index: number, newName: string) => {
+    const oldName = people[index];
+    const newPeople = [...people];
+    newPeople[index] = newName;
+
+    const newItems = items.map((item) => ({
+      ...item,
+      buyers: item.buyers.map((buyer) => (buyer === oldName ? newName : buyer)),
+    }));
+
+    setPeople(newPeople);
+    setItems(newItems);
+  };
+
+  const saveItem = (
+    index: number,
+    newItem: {
+      name: string;
+      price: number;
+    },
+  ) => {
+    const newItems = [...items];
+    newItems[index] = {
+      ...newItems[index],
+      name: newItem.name,
+      price: newItem.price,
+    };
+    setItems(newItems);
+  };
+
   const value: BillContextType = {
     items,
     setItems,
@@ -111,6 +161,9 @@ export const BillProvider: React.FC<{ children: ReactNode }> = ({
     selectedTipPercentage,
     setSelectedTipPercentage,
     deleteItem,
+    deletePerson,
+    savePerson,
+    saveItem,
     createTable,
   };
 
