@@ -463,7 +463,7 @@ export default function Form() {
                               item.buyers.includes(person)
                                 ? acc + item.price / item.buyers.length
                                 : acc,
-                            0,
+                            0
                           ) +
                           (tipAsProportion
                             ? getPartialAmount(person, tip, items)

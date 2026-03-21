@@ -25,13 +25,13 @@ export default function BillSplitter() {
   } = context;
 
   const [editingItemIndex, setEditingItemIndex] = React.useState<number | null>(
-    null,
+    null
   );
   const [editingPersonIndex, setEditingPersonIndex] = React.useState<
     number | null
   >(null);
   const [mobileView, setMobileView] = useState<"table" | "tabs" | "compact">(
-    "table",
+    "table"
   );
 
   useEffect(() => {

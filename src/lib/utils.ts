@@ -17,7 +17,7 @@ export function createTable(
   people: string[],
   tip: number,
   tax: number,
-  tipAsProportion: boolean,
+  tipAsProportion: boolean
 ): (string | { id: string; buyer: string })[][] {
   let df = new DataFrame([["", ...people, "price"]]);
   Object.entries(items).map((item) => {
@@ -51,9 +51,7 @@ export function createTable(
   df = df.push([
     "total",
     ...people.map((name) =>
-      getPartialTotal(name, tip, tax, tipAsProportion, people, items).toFixed(
-        2,
-      ),
+      getPartialTotal(name, tip, tax, tipAsProportion, people, items).toFixed(2)
     ),
     `$${getTotal(tip, tax, items).toFixed(2)}`,
   ]);
@@ -86,7 +84,7 @@ export function getPartialTotal(
   tax: number,
   tipAsProportion: boolean,
   people: string[],
-  items: Item[],
+  items: Item[]
 ) {
   let partialTip = tipAsProportion
     ? getPartialAmount(person, tip, items)
@@ -122,7 +120,7 @@ export function validateTotals(
   tip: number,
   tax: number,
   tipAsProportion: boolean,
-  items: Item[],
+  items: Item[]
 ) {
   // sum all partial subtotals
   let calculated = people.reduce((acc, person) => {

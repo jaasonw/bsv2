@@ -30,7 +30,7 @@ const PhotoUpload: React.FC = () => {
   const [showImageConfirm, setShowImageConfirm] = useState(false);
   const [alertMessage, setAlertMessage] = useState("");
   const [processedImageUrl, setProcessedImageUrl] = useState<string | null>(
-    null,
+    null
   );
   const [showReviewDialog, setShowReviewDialog] = useState(false);
 
@@ -100,7 +100,7 @@ const PhotoUpload: React.FC = () => {
           message: "Failed to upload image and parse error response",
         }));
         throw new Error(
-          errorData.error || `Failed to upload image: ${response.statusText}`,
+          errorData.error || `Failed to upload image: ${response.statusText}`
         );
       }
 
@@ -128,24 +128,24 @@ const PhotoUpload: React.FC = () => {
 
       if (taxAmount === 0 && tipAmount === 0) {
         setAlertMessage(
-          "Neither tax nor tip information could be extracted or they were zero. Please verify these amounts manually.",
+          "Neither tax nor tip information could be extracted or they were zero. Please verify these amounts manually."
         );
         setShowTaxAlert(true);
       } else if (taxAmount === 0) {
         setAlertMessage(
-          "Tax information could not be extracted or was zero. Please verify the amount manually.",
+          "Tax information could not be extracted or was zero. Please verify the amount manually."
         );
         setShowTaxAlert(true);
       } else if (tipAmount === 0) {
         setAlertMessage(
-          "Tip information could not be extracted or was zero. Please verify the amount manually.",
+          "Tip information could not be extracted or was zero. Please verify the amount manually."
         );
         setShowTaxAlert(true);
       }
     } catch (error) {
       console.error("Error uploading image", error);
       setAlertMessage(
-        "Failed to process the receipt. Please try again or enter the information manually.",
+        "Failed to process the receipt. Please try again or enter the information manually."
       );
       setShowTaxAlert(true);
     } finally {

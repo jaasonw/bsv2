@@ -33,7 +33,7 @@ export interface BillContextType {
     newItem: {
       name: string;
       price: number;
-    },
+    }
   ) => void;
   addItem: (name: string, price: number) => void;
   addPerson: (name: string) => void;
@@ -42,7 +42,7 @@ export interface BillContextType {
 
 // Create the context with a default value
 export const BillContext = createContext<BillContextType | undefined>(
-  undefined,
+  undefined
 );
 
 // Create a provider component
@@ -115,7 +115,7 @@ export const BillProvider: React.FC<{ children: ReactNode }> = ({
     newItem: {
       name: string;
       price: number;
-    },
+    }
   ) => {
     const newItems = [...items];
     newItems[index] = {
