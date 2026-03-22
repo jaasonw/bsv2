@@ -36,7 +36,7 @@ export default function ListView() {
     const personItems = getPersonItems(personName);
     return personItems.reduce(
       (sum, item) => sum + getItemCostForPerson(item, personName),
-      0,
+      0
     );
   };
 

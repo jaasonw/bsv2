@@ -1,12 +1,6 @@
 "use client";
 
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import BillTable from "@/components/BillTable";
 import DataInput from "@/components/DataInput";
 import Footer from "@/components/Footer";
@@ -33,11 +27,7 @@ export default function DesktopLayout({
       {/* Sidebar - 1/5 (20%) */}
       <div className="w-1/5 min-w-[280px] overflow-y-auto">
         <Card className="h-full">
-          <CardHeader>
-            <CardTitle>bill splitter v2</CardTitle>
-            <CardDescription>created by jasonw</CardDescription>
-          </CardHeader>
-          <div className="p-6 pt-0">
+          <div className="mt-5 p-6 pt-0">
             <div className="flex flex-col w-full gap-5">
               <h3 className="w-full font-lg font-bold text-foreground">
                 {placeholderText}

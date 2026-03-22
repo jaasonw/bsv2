@@ -37,11 +37,6 @@ export default function MobileLayout({
   return (
     <div className="block lg:hidden">
       <Card className="w-full">
-        <CardHeader>
-          <CardTitle>bill splitter v2</CardTitle>
-          <CardDescription>created by jasonw</CardDescription>
-        </CardHeader>
-
         {/* Mobile View Toggle */}
         <div className="px-6 pb-4">
           <div className="flex gap-1 bg-muted p-1 rounded-lg">

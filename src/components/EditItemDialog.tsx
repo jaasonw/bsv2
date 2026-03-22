@@ -20,7 +20,7 @@ interface EditItemDialogProps {
     newItem: {
       name: string;
       price: number;
-    },
+    }
   ) => void;
 }
 

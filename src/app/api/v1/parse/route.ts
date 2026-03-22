@@ -75,7 +75,7 @@ export async function POST(request: Request) {
             },
           },
         }),
-      },
+      }
     );
 
     // const data = (await response.json())
@@ -91,13 +91,13 @@ export async function POST(request: Request) {
     ) {
       console.error(
         "Invalid OpenRouter response structure:",
-        openRouterResponse,
+        openRouterResponse
       );
       return NextResponse.json(
         {
           error: `Failed to process receipt due to invalid AI response structure: ${openRouterResponse}`,
         },
-        { status: 500 },
+        { status: 500 }
       );
     }
 
@@ -110,7 +110,7 @@ export async function POST(request: Request) {
       console.error("Content that failed to parse:", jsonContentString);
       return NextResponse.json(
         { error: "Failed to process receipt due to invalid JSON from AI" },
-        { status: 500 },
+        { status: 500 }
       );
     }
 
@@ -120,7 +120,7 @@ export async function POST(request: Request) {
     console.error("Error processing receipt:", error);
     return NextResponse.json(
       { error: "Failed to process receipt" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }

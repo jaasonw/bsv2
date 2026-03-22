@@ -132,7 +132,7 @@ export default function BillTable({
                           tip,
                           tax,
                           tipAsProportion,
-                          items,
+                          items
                         )
                       ) {
                         return (
@@ -153,7 +153,7 @@ export default function BillTable({
                     }
                   })}
                 </TableRow>
-              ),
+              )
             )}
           </TableBody>
         </Table>

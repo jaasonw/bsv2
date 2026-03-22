@@ -18,7 +18,7 @@ export default function MobilePersonTabs() {
     const newItems = [...items];
     if (newItems[itemIndex].buyers.includes(person)) {
       newItems[itemIndex].buyers = newItems[itemIndex].buyers.filter(
-        (p: string) => p !== person,
+        (p: string) => p !== person
       );
     } else {
       newItems[itemIndex].buyers = [...newItems[itemIndex].buyers, person];
