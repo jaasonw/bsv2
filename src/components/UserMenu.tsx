@@ -14,7 +14,11 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { User, LogOut, Receipt } from "lucide-react";
 
-export function UserMenu() {
+interface UserMenuProps {
+  onOpenSavedReceipts?: () => void;
+}
+
+export function UserMenu({ onOpenSavedReceipts }: UserMenuProps) {
   const { user, isAuthenticated, logout } = useAuth();
 
   if (!isAuthenticated || !user) {
@@ -50,7 +54,7 @@ export function UserMenu() {
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
-        <DropdownMenuItem disabled>
+        <DropdownMenuItem onClick={onOpenSavedReceipts}>
           <Receipt className="mr-2 h-4 w-4" />
           <span>Saved Receipts</span>
         </DropdownMenuItem>

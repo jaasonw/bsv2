@@ -40,10 +40,18 @@ import { toast } from "sonner";
 
 interface ReceiptHistoryProps {
   onLoadReceipt: (receipt: ReceiptType) => void;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }
 
-export function ReceiptHistory({ onLoadReceipt }: ReceiptHistoryProps) {
-  const [open, setOpen] = useState(false);
+export function ReceiptHistory({
+  onLoadReceipt,
+  open: controlledOpen,
+  onOpenChange,
+}: ReceiptHistoryProps) {
+  const [internalOpen, setInternalOpen] = useState(false);
+  const open = controlledOpen ?? internalOpen;
+  const setOpen = onOpenChange ?? setInternalOpen;
   const [receipts, setReceipts] = useState<ReceiptType[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [deleteId, setDeleteId] = useState<string | null>(null);
@@ -105,8 +113,7 @@ export function ReceiptHistory({ onLoadReceipt }: ReceiptHistoryProps) {
       <Sheet open={open} onOpenChange={setOpen}>
         <SheetTrigger asChild>
           <Button variant="outline" size="sm">
-            <History className="h-4 w-4 mr-2" />
-            History
+            <History className="h-4 w-4" />
           </Button>
         </SheetTrigger>
         <SheetContent className="w-full sm:max-w-md">

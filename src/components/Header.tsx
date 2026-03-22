@@ -12,6 +12,7 @@ import { Separator } from "@/components/ui/separator";
 export function Header() {
   const { isAuthenticated } = useAuth();
   const { loadReceipt } = useBill();
+  const [receiptHistoryOpen, setReceiptHistoryOpen] = React.useState(false);
 
   return (
     <header className="w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -28,14 +29,18 @@ export function Header() {
         <div className="flex items-center gap-2">
           {isAuthenticated && (
             <>
-              <ReceiptHistory onLoadReceipt={loadReceipt} />
+              <ReceiptHistory
+                onLoadReceipt={loadReceipt}
+                open={receiptHistoryOpen}
+                onOpenChange={setReceiptHistoryOpen}
+              />
               <Separator orientation="vertical" className="h-6" />
               <SaveReceiptDialog />
               <Separator orientation="vertical" className="h-6" />
             </>
           )}
           <AuthDialog />
-          <UserMenu />
+          <UserMenu onOpenSavedReceipts={() => setReceiptHistoryOpen(true)} />
         </div>
       </div>
     </header>

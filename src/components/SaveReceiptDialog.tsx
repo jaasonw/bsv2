@@ -91,8 +91,7 @@ export function SaveReceiptDialog() {
     >
       <DialogTrigger asChild>
         <Button variant="outline" size="sm" disabled={!hasData}>
-          <Cloud className="h-4 w-4 mr-2" />
-          Save
+          <Cloud className="h-4 w-4" />
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
