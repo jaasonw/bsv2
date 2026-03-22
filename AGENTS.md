@@ -389,6 +389,24 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 - Click row to load receipt
 - Delete button with confirmation dialog
 
+### Automated Cleanup (Cron Jobs)
+
+PocketBase supports JavaScript-based cron jobs via the `pb_hooks` directory:
+
+**File:** `pb_hooks/cleanup_cron_receipts.pb.js`
+
+Automatically deletes receipt records older than 7 days to manage storage:
+
+- **Schedule**: Daily at midnight (`0 0 * * *`)
+- **Batch size**: 1000 receipts per run
+- **Logs**: Console output for deleted receipts and errors
+
+**To deploy:**
+
+1. Copy `pb_hooks/` directory to your PocketBase instance
+2. Restart PocketBase server
+3. Verify in logs: "[CRON] Cleanup cron job registered"
+
 ### Protected File Access
 
 For accessing protected receipt images stored in PocketBase:

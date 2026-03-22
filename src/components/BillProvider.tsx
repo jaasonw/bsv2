@@ -163,7 +163,9 @@ export const BillProvider: React.FC<{ children: ReactNode }> = ({
     setItems(receipt.items);
     setPeople(receipt.people);
     setTaxInput(receipt.tax);
+    setTax(receipt.tax);
     setTipInput(receipt.tip);
+    setTip(receipt.tip);
     setTipAsProportion(receipt.tip_as_proportion);
     setTipTheTax(receipt.tip_the_tax);
 

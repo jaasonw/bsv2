@@ -6,19 +6,26 @@ import React, { use } from "react";
 
 export default function TaxInput() {
   const context = use(BillContext) as BillContextType;
-  const { items, tax, setTax, taxInput } = context;
+  const { items, tax, setTax, taxInput, setTaxInput } = context;
 
   const subtotal = items.reduce((sum, item) => sum + item.price, 0);
   const taxPercentage =
     subtotal > 0 ? ((tax / subtotal) * 100).toFixed(1) : "0.0";
 
+  const handleTaxChange = (value: number) => {
+    const numValue = isNaN(value) ? 0 : value;
+    setTax(numValue);
+    setTaxInput(numValue);
+  };
+
   return (
     <div className="flex flex-col gap-1 w-full">
       <Label className="w-1/3">Tax paid ({taxPercentage}%)</Label>
       <Input
-        value={tax}
-        onChange={(event) => setTax(parseFloat(event.target.value))}
+        value={taxInput}
+        onChange={(event) => handleTaxChange(parseFloat(event.target.value))}
         type="number"
+        step="0.01"
       />
     </div>
   );
