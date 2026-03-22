@@ -7,13 +7,20 @@
  * Schedule: Daily at midnight (0 0 * * *)
  */
 
+// Create a logger with common attributes for this cron job
+const jobLogger = $app
+  .logger()
+  .with("job", "cleanupOldReceipts", "type", "cron");
+
 cronAdd("cleanupOldReceipts", "0 0 * * *", () => {
   const sevenDaysAgo = new Date();
   sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
   sevenDaysAgo.setHours(0, 0, 0, 0);
 
-  console.log(
-    `[CRON] Starting cleanup of receipts older than ${sevenDaysAgo.toISOString()}`
+  jobLogger.info(
+    "Starting cleanup of old receipts",
+    "cutoff_date",
+    sevenDaysAgo.toISOString()
   );
 
   try {
@@ -27,42 +34,60 @@ cronAdd("cleanupOldReceipts", "0 0 * * *", () => {
     );
 
     if (oldReceipts.length === 0) {
-      console.log("[CRON] No old receipts found for cleanup");
+      jobLogger.info("No old receipts found for cleanup");
       return;
     }
 
-    console.log(`[CRON] Found ${oldReceipts.length} receipts to delete`);
+    jobLogger.info("Found receipts to delete", "count", oldReceipts.length);
 
     let deletedCount = 0;
     let errorCount = 0;
 
     for (const receipt of oldReceipts) {
+      const receiptId = receipt.id;
+      const receiptTitle = receipt.getString("title");
+
       try {
         $app.delete(receipt);
         deletedCount++;
-        console.log(
-          `[CRON] Deleted receipt: ${receipt.id} (${receipt.getString("title")})`
+        jobLogger.info(
+          "Deleted receipt",
+          "receipt_id",
+          receiptId,
+          "title",
+          receiptTitle
         );
       } catch (err) {
         errorCount++;
-        console.error(
-          `[CRON] Failed to delete receipt ${receipt.id}:`,
+        jobLogger.error(
+          "Failed to delete receipt",
+          "receipt_id",
+          receiptId,
+          "error",
           err.message
         );
       }
     }
 
-    console.log(
-      `[CRON] Cleanup complete. Deleted: ${deletedCount}, Errors: ${errorCount}`
+    jobLogger.info(
+      "Cleanup complete",
+      "deleted_count",
+      deletedCount,
+      "error_count",
+      errorCount
     );
 
-    // Optional: Send notification to admin if there were errors
+    // Warn if there were errors
     if (errorCount > 0) {
-      console.error(`[CRON] Warning: ${errorCount} receipts failed to delete`);
+      jobLogger.warn(
+        "Some receipts failed to delete",
+        "error_count",
+        errorCount
+      );
     }
   } catch (err) {
-    console.error("[CRON] Fatal error during cleanup:", err.message);
+    jobLogger.error("Fatal error during cleanup", "error", err.message);
   }
 });
 
-console.log("[CRON] Cleanup cron job registered - runs daily at midnight");
+$app.logger().info("Cleanup cron job registered", "schedule", "0 0 * * *");
