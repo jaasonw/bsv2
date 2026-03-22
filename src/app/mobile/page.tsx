@@ -1,5 +1,4 @@
 "use client";
-import Footer from "@/components/Footer";
 import {
   AlertDialog,
   AlertDialogCancel,
@@ -132,10 +131,6 @@ export default function Form() {
 
   return (
     <Card className="w-6xl p-6">
-      <CardHeader>
-        <CardTitle>bill splitter v2</CardTitle>
-        <CardDescription>created by jasonw</CardDescription>
-      </CardHeader>
       <Table>
         <TableBody>
           {items.map((item, i) => (
@@ -491,7 +486,6 @@ export default function Form() {
       <a className="block mt-4 underline">
         <Link href="/">Return to the classic UI</Link>
       </a>
-      <Footer></Footer>
     </Card>
   );
 }

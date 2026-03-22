@@ -1,7 +1,8 @@
 "use client";
 import React, { use, useRef, useState } from "react";
 import { BillContext } from "@/components/BillProvider";
-import { Camera, Loader2, Upload, X, Check } from "lucide-react";
+import { processImageFile, formatFileSize } from "@/lib/image-processing";
+import { Camera, Loader2, Upload, X, Check, ImageIcon } from "lucide-react";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import {
@@ -22,8 +23,16 @@ const PhotoUpload: React.FC = () => {
     throw new Error("useBill must be used within a BillProvider");
   }
 
-  const { setItems, setTax, setTip, setTipInput, setSelectedTipPercentage } =
-    context;
+  const {
+    setItems,
+    setTax,
+    setTip,
+    setTipInput,
+    setSelectedTipPercentage,
+    receiptImageUrl,
+    setReceiptImage,
+    setReceiptImageUrl,
+  } = context;
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [showTaxAlert, setShowTaxAlert] = useState(false);
@@ -46,9 +55,31 @@ const PhotoUpload: React.FC = () => {
     galleryInputRef.current?.click();
   };
 
-  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageUpload = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
     const file = event.target.files?.[0];
-    if (file) {
+    if (!file) return;
+
+    // Process image: resize and convert to JPEG
+    try {
+      console.log(
+        `Processing image: ${file.name} (${formatFileSize(file.size)})`
+      );
+      const processedFile = await processImageFile(file, {
+        maxWidth: 1200,
+        maxHeight: 2000,
+        quality: 0.85,
+        format: "image/jpeg",
+      });
+      console.log(
+        `Image processed: ${processedFile.name} (${formatFileSize(processedFile.size)})`
+      );
+      setImageFile(processedFile);
+      setShowImageConfirm(true);
+    } catch (error) {
+      console.error("Error processing image:", error);
+      // Fallback to original file if processing fails
       setImageFile(file);
       setShowImageConfirm(true);
     }
@@ -109,7 +140,10 @@ const PhotoUpload: React.FC = () => {
       const tipAmount = data.tip || 0;
 
       if (imageFile) {
-        setProcessedImageUrl(URL.createObjectURL(imageFile));
+        const imageUrl = URL.createObjectURL(imageFile);
+        setProcessedImageUrl(imageUrl);
+        setReceiptImage(imageFile);
+        setReceiptImageUrl(imageUrl);
       }
 
       setItems(data.items || []);
@@ -181,7 +215,7 @@ const PhotoUpload: React.FC = () => {
       />
 
       {/* Upload buttons */}
-      {!processedImageUrl ? (
+      {!processedImageUrl && !receiptImageUrl ? (
         <div className="grid grid-cols-1 gap-1">
           <Button
             onClick={handleTakePhoto}
@@ -245,7 +279,7 @@ const PhotoUpload: React.FC = () => {
       <Separator className="my-4" />
 
       <p className="text-xs text-muted-foreground text-center">
-        {!processedImageUrl
+        {!processedImageUrl && !receiptImageUrl
           ? "Upload a clear image of your receipt to automatically extract items, tax, and tip information."
           : "Your receipt has been processed"}
       </p>
@@ -303,10 +337,10 @@ const PhotoUpload: React.FC = () => {
             <AlertDialogTitle>Uploaded Receipt</AlertDialogTitle>
           </AlertDialogHeader>
 
-          {processedImageUrl && (
+          {(processedImageUrl || receiptImageUrl) && (
             <div className="my-4 flex-1 flex items-center justify-center overflow-hidden">
               <img
-                src={processedImageUrl}
+                src={processedImageUrl || receiptImageUrl || ""}
                 alt="Uploaded receipt"
                 className="rounded-md object-contain max-h-full max-w-full border"
               />

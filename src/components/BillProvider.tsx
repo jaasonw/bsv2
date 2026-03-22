@@ -1,6 +1,14 @@
 "use client";
 import { Item, createTable } from "@/lib/utils";
-import React, { createContext, ReactNode, useState, useEffect } from "react";
+import { Receipt } from "@/lib/receipts";
+import { getPocketBase } from "@/lib/pocketbase";
+import React, {
+  createContext,
+  ReactNode,
+  useState,
+  useEffect,
+  useContext,
+} from "react";
 
 export interface BillContextType {
   items: Item[];
@@ -25,6 +33,10 @@ export interface BillContextType {
   setTax: React.Dispatch<React.SetStateAction<number>>;
   selectedTipPercentage: string;
   setSelectedTipPercentage: React.Dispatch<React.SetStateAction<string>>;
+  receiptImage: File | null;
+  setReceiptImage: React.Dispatch<React.SetStateAction<File | null>>;
+  receiptImageUrl: string | null;
+  setReceiptImageUrl: React.Dispatch<React.SetStateAction<string | null>>;
   deleteItem: (index: number) => void;
   deletePerson: (index: number) => void;
   savePerson: (index: number, newName: string) => void;
@@ -38,6 +50,7 @@ export interface BillContextType {
   addItem: (name: string, price: number) => void;
   addPerson: (name: string) => void;
   createTable: typeof createTable;
+  loadReceipt: (receipt: Receipt) => void;
 }
 
 // Create the context with a default value
@@ -62,6 +75,8 @@ export const BillProvider: React.FC<{ children: ReactNode }> = ({
   const [tax, setTax] = useState<number>(0);
   const [selectedTipPercentage, setSelectedTipPercentage] =
     useState<string>("custom");
+  const [receiptImage, setReceiptImage] = useState<File | null>(null);
+  const [receiptImageUrl, setReceiptImageUrl] = useState<string | null>(null);
 
   useEffect(() => {
     const handleBeforeUnload = (event: BeforeUnloadEvent) => {
@@ -144,6 +159,39 @@ export const BillProvider: React.FC<{ children: ReactNode }> = ({
     ]);
   };
 
+  const loadReceipt = (receipt: Receipt) => {
+    setItems(receipt.items);
+    setPeople(receipt.people);
+    setTaxInput(receipt.tax);
+    setTipInput(receipt.tip);
+    setTipAsProportion(receipt.tip_as_proportion);
+    setTipTheTax(receipt.tip_the_tax);
+
+    // Set receipt image if available
+    if (receipt.receipt_image) {
+      const pb = getPocketBase();
+
+      // Request a short-lived file token for protected file access
+      pb.files
+        .getToken()
+        .then((fileToken) => {
+          const imageUrl = pb.files.getURL(
+            receipt as any,
+            receipt.receipt_image!,
+            { token: fileToken }
+          );
+          setReceiptImageUrl(imageUrl);
+        })
+        .catch((err) => {
+          console.error("Error loading receipt image:", err);
+          setReceiptImageUrl(null);
+        });
+    } else {
+      setReceiptImageUrl(null);
+    }
+    setReceiptImage(null); // Can't set File from cloud storage
+  };
+
   const value: BillContextType = {
     items,
     setItems,
@@ -165,6 +213,10 @@ export const BillProvider: React.FC<{ children: ReactNode }> = ({
     setTax,
     selectedTipPercentage,
     setSelectedTipPercentage,
+    receiptImage,
+    setReceiptImage,
+    receiptImageUrl,
+    setReceiptImageUrl,
     deleteItem,
     deletePerson,
     savePerson,
@@ -172,7 +224,16 @@ export const BillProvider: React.FC<{ children: ReactNode }> = ({
     addItem,
     addPerson,
     createTable,
+    loadReceipt,
   };
 
   return <BillContext.Provider value={value}>{children}</BillContext.Provider>;
 };
+
+export function useBill() {
+  const context = useContext(BillContext);
+  if (context === undefined) {
+    throw new Error("useBill must be used within a BillProvider");
+  }
+  return context;
+}

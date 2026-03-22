@@ -17,7 +17,8 @@ A Next.js 16 web application for splitting restaurant bills with AI-powered rece
 - **Language**: TypeScript 5.9.3 (strict mode)
 - **Styling**: Tailwind CSS 4.1.17 (CSS-based configuration in globals.css)
 - **UI Components**: shadcn/ui (53 components) with Radix UI primitives
-- **State Management**: React Context API (BillProvider)
+- **State Management**: React Context API (BillProvider, AuthContext)
+- **Backend**: PocketBase (client-side only architecture)
 - **Package Manager**: pnpm 10.24.0 (REQUIRED - do not use npm/yarn)
 - **Icons**: Lucide React
 
@@ -51,10 +52,22 @@ src/
 │   ├── BillSplitter.tsx  # Main application component
 │   ├── BillTable.tsx     # Table view component
 │   ├── PhotoUpload.tsx   # Receipt upload with AI parsing
-│   └── [other components]
+│   ├── AuthDialog.tsx    # Authentication modal
+│   ├── UserMenu.tsx      # User avatar dropdown
+│   ├── SaveReceiptDialog.tsx  # Save receipt with image toggle
+│   ├── ReceiptHistory.tsx # Receipt history with thumbnails
+│   ├── AuthenticatedImage.tsx # Protected image component
+│   ├── Header.tsx        # App header with auth controls
+│   ├── MobileLayout.tsx  # Mobile-optimized layout
+│   └── DesktopLayout.tsx # Desktop-optimized layout
+├── contexts/
+│   └── AuthContext.tsx   # Authentication state management
 ├── hooks/
 │   └── use-mobile.ts     # Mobile breakpoint detection
 └── lib/
+    ├── pocketbase.ts     # PocketBase client singleton
+    ├── receipts.ts       # Receipt CRUD operations
+    ├── image-processing.ts  # Image optimization utilities
     └── utils.ts          # CN utility, table calculations, data types
 ```
 
@@ -189,7 +202,7 @@ export { Component, componentVariants };
 
 ### State Management Pattern
 
-Global state via React Context (see BillProvider.tsx):
+Global state via React Context (see BillProvider.tsx and AuthContext.tsx):
 
 ```typescript
 // 1. Create context
@@ -241,6 +254,8 @@ export interface Item {
 - People management (add, delete, save with rename propagation)
 - Tip/tax settings and calculations
 - Table generation and persistence
+- Receipt image state management
+- `loadReceipt()` method for loading saved receipts from PocketBase
 - beforeunload handler for unsaved changes warning
 
 ### Component Examples
@@ -296,6 +311,145 @@ The AI returns structured JSON:
 
 :-----------------------------------------------------------
 
+## PocketBase Integration
+
+:-----------------------------------------------------------
+
+### Architecture
+
+**Client-side only** architecture for PocketBase (as recommended by PocketBase maintainer):
+
+- No server-side PocketBase calls (avoiding SSR complications)
+- Auth token persistence via cookieStorage
+- All database operations happen in browser
+- CORS configured on PocketBase instance (e.g., Caddy proxy)
+
+### Key Files
+
+- `/src/lib/pocketbase.ts` - Client singleton with auth persistence
+- `/src/lib/receipts.ts` - Receipt CRUD operations
+- `/src/contexts/AuthContext.tsx` - Authentication state management
+
+### Receipts Collection Schema
+
+Required fields in PocketBase `receipts` collection:
+
+```typescript
+{
+  user: string,              // relation to users collection
+  title: string,              // receipt name
+  items: JSON,                // Item[] array
+  people: JSON,               // string[] array
+  tax: number,                // tax amount
+  tip: number,                // tip amount
+  tip_as_proportion: boolean, // tip calculation mode
+  tip_the_tax: boolean,       // apply tip to tax
+  receipt_image?: string,     // optional image file
+  created: string,            // auto timestamp
+  updated: string             // auto timestamp
+}
+```
+
+### Receipt API (`/src/lib/receipts.ts`)
+
+- `saveReceipt(data, image?)` - Save receipt with optional image
+- `loadReceipt(id)` - Load receipt by ID
+- `listReceipts()` - List user's receipts (sorted by newest)
+- `deleteReceipt(id)` - Delete receipt
+
+### AuthContext Pattern
+
+```typescript
+// Authentication with auto-refresh
+export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+  const [user, setUser] = useState<User | null>(null);
+
+  useEffect(() => {
+    // Load auth from cookieStorage
+    // Set up auto-refresh interval (4 minutes)
+    return () => clearInterval(refreshInterval);
+  }, []);
+
+  const login = async (email, password) => { /* ... */ };
+  const register = async (email, password, name) => { /* ... */ };
+  const logout = async () => { /* ... */ };
+
+  return (
+    <AuthContext.Provider value={{ user, login, register, logout, isAuthenticated }}>
+      {children}
+    </AuthContext.Provider>
+  );
+};
+```
+
+### Receipt History UI Pattern
+
+- Image on right side of row (thumbnail)
+- Metadata stacked vertically: date, people count, total amount
+- Click row to load receipt
+- Delete button with confirmation dialog
+
+### Protected File Access
+
+For accessing protected receipt images stored in PocketBase:
+
+```typescript
+// Request a short-lived file token (~2 min validity)
+const fileToken = await pb.files.getToken();
+
+// Build URL with the file token as query param
+const url = pb.files.getURL(record, filename, { token: fileToken });
+
+// Use the URL directly in <img src={url}>
+```
+
+**Important**: The `?token=` query parameter requires a **file token** (from `pb.files.getToken()`), NOT the user auth token (`pb.authStore.token`). The file endpoint does not accept user tokens via Authorization header or query param.
+
+**Key Components:**
+
+- `AuthenticatedImage.tsx` - Handles file token fetching and protected image display
+- `ReceiptHistory.tsx` - Uses AuthenticatedImage for receipt thumbnails
+- `BillProvider.tsx` - Fetches file tokens when loading saved receipts
+
+:-----------------------------------------------------------
+
+## Image Processing
+
+:-----------------------------------------------------------
+
+### Image Optimization
+
+Receipt images are automatically optimized before upload to reduce storage and improve AI parsing performance:
+
+**Settings:**
+
+- **Max Width**: 1200px
+- **Max Height**: 2000px
+- **Quality**: 85%
+- **Format**: JPEG (converts PNGs automatically)
+- **Expected Result**: 4-5MB → 200-400KB
+
+**Processing Flow:**
+
+1. User selects/captures image in `PhotoUpload.tsx`
+2. Image is processed client-side using `processImageFile()` from `image-processing.ts`
+3. Optimized image replaces original before AI parsing
+4. Optimized image is used for cloud saves (if user includes image)
+
+**API:**
+
+```typescript
+// Process image to JPEG at 85% quality, max 1200px wide
+const processedFile = await processImageFile(originalFile, {
+  maxWidth: 1200,
+  maxHeight: 2000,
+  quality: 0.85,
+  format: "image/jpeg",
+});
+```
+
+:-----------------------------------------------------------
+
 ## UI/UX Patterns
 
 :-----------------------------------------------------------
@@ -337,7 +491,7 @@ The AI returns structured JSON:
 
 - **React Compiler**: Enabled for automatic memoization
 - **Dark Mode**: Supported via next-themes (CSS variables)
-- **Data Persistence**: In-memory only (localStorage patterns exist)
+- **Data Persistence**: PocketBase cloud sync with optional receipt images
 - **Animation**: tw-animate-css for Tailwind animations
 
 ### shadcn/ui Components Available
@@ -360,6 +514,7 @@ The AI returns structured JSON:
 5. Run `pnpm lint` before committing
 6. Run `pnpm format` for code formatting
 7. Ensure mobile and desktop layouts both work
+8. For PocketBase changes: verify client-side only architecture, no server-side PocketBase calls
 
 :-----------------------------------------------------------
 
@@ -370,6 +525,10 @@ The AI returns structured JSON:
 Required for AI features:
 
 - `OPENROUTER_API_KEY`: API key for receipt parsing
+
+Required for PocketBase:
+
+- `NEXT_PUBLIC_POCKETBASE_URL`: URL to your PocketBase instance (e.g., `https://physicsbirds.com/bs/`)
 
 Store in `.env.local` (already in .gitignore)
 
@@ -391,6 +550,7 @@ Store in `.env.local` (already in .gitignore)
 | `sonner`                   | Toast notifications                        |
 | `embla-carousel-react`     | Carousel for mobile                        |
 | `next-themes`              | Dark/light mode                            |
+| `pocketbase`               | Backend-as-a-Service for auth and storage  |
 
 :-----------------------------------------------------------
 
