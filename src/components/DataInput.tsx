@@ -15,7 +15,9 @@ export default function DataInput() {
     setItems,
     setPeople,
     setTipInput,
+    setTip,
     setTaxInput,
+    setTax,
     setTipAsProportion,
     setTipTheTax,
     setSelectedTipPercentage,
@@ -25,7 +27,9 @@ export default function DataInput() {
     setItems([]);
     setPeople([]);
     setTipInput(0);
+    setTip(0);
     setTaxInput(0);
+    setTax(0);
     setTipAsProportion(true);
     setTipTheTax(false);
     setSelectedTipPercentage("");

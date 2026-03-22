@@ -26,6 +26,7 @@ const PhotoUpload: React.FC = () => {
   const {
     setItems,
     setTax,
+    setTaxInput,
     setTip,
     setTipInput,
     setSelectedTipPercentage,
@@ -148,6 +149,7 @@ const PhotoUpload: React.FC = () => {
 
       setItems(data.items || []);
       setTax(taxAmount);
+      setTaxInput(taxAmount);
       setTip(tipAmount);
       setTipInput(tipAmount);
       setSelectedTipPercentage("custom");
