@@ -7,12 +7,12 @@
  * Schedule: Daily at midnight (0 0 * * *)
  */
 
-// Create a logger with common attributes for this cron job
-const jobLogger = $app
-  .logger()
-  .with("job", "cleanupOldReceipts", "type", "cron");
-
 cronAdd("cleanupOldReceipts", "0 0 * * *", () => {
+  // Create logger inside the cron callback (not in outer scope)
+  const jobLogger = $app
+    .logger()
+    .with("job", "cleanupOldReceipts", "type", "cron");
+
   const sevenDaysAgo = new Date();
   sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
   sevenDaysAgo.setHours(0, 0, 0, 0);
