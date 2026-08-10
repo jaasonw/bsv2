@@ -2,7 +2,15 @@
 import React, { use, useRef, useState } from "react";
 import { BillContext } from "@/components/BillProvider";
 import { processImageFile, formatFileSize } from "@/lib/image-processing";
-import { Camera, Loader2, Upload, X, Check, ImageIcon } from "lucide-react";
+import {
+  Camera,
+  Loader2,
+  Upload,
+  X,
+  Check,
+  ImageIcon,
+  AlertTriangle,
+} from "lucide-react";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import {
@@ -39,6 +47,8 @@ const PhotoUpload: React.FC = () => {
   const [showTaxAlert, setShowTaxAlert] = useState(false);
   const [showImageConfirm, setShowImageConfirm] = useState(false);
   const [alertMessage, setAlertMessage] = useState("");
+  const [alertIsError, setAlertIsError] = useState(false);
+  const [errorDetails, setErrorDetails] = useState<string | null>(null);
   const [processedImageUrl, setProcessedImageUrl] = useState<string | null>(
     null
   );
@@ -128,13 +138,16 @@ const PhotoUpload: React.FC = () => {
       });
 
       if (!response.ok) {
-        const errorData = await response.json().catch(() => ({
-          message: "Failed to upload image and parse error response",
-        }));
-        throw new Error(
-          errorData.error || `Failed to upload image: ${response.statusText}`
-        );
+        const errorData = await response.json().catch(() => null);
+        const message =
+          errorData?.error ||
+          `Receipt scanning failed (HTTP ${response.status} ${response.statusText}).`;
+        // `details` carries the raw upstream text; keep it out of the headline
+        // but show it so nobody has to open devtools to see what broke.
+        setErrorDetails(errorData?.details || null);
+        throw new Error(message);
       }
+      setErrorDetails(null);
 
       const data = await response.json();
       const taxAmount = data.tax || 0;
@@ -162,6 +175,7 @@ const PhotoUpload: React.FC = () => {
         galleryInputRef.current.value = "";
       }
 
+      setAlertIsError(false);
       if (taxAmount === 0 && tipAmount === 0) {
         setAlertMessage(
           "Neither tax nor tip information could be extracted or they were zero. Please verify these amounts manually."
@@ -180,8 +194,11 @@ const PhotoUpload: React.FC = () => {
       }
     } catch (error) {
       console.error("Error uploading image", error);
+      setAlertIsError(true);
       setAlertMessage(
-        "Failed to process the receipt. Please try again or enter the information manually."
+        error instanceof Error
+          ? error.message
+          : "Failed to process the receipt. Please try again or enter the information manually."
       );
       setShowTaxAlert(true);
     } finally {
@@ -317,13 +334,30 @@ const PhotoUpload: React.FC = () => {
         </AlertDialogContent>
       </AlertDialog>
 
-      {/* Tax/Tip alert dialog */}
+      {/* Tax/Tip + failure alert dialog */}
       <AlertDialog open={showTaxAlert} onOpenChange={setShowTaxAlert}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Processing Complete</AlertDialogTitle>
+            <AlertDialogTitle className="flex items-center gap-2">
+              {alertIsError && (
+                <AlertTriangle className="h-5 w-5 text-destructive" />
+              )}
+              {alertIsError ? "Receipt Scan Failed" : "Processing Complete"}
+            </AlertDialogTitle>
             <AlertDialogDescription>{alertMessage}</AlertDialogDescription>
           </AlertDialogHeader>
+
+          {alertIsError && errorDetails && (
+            <details className="text-xs text-muted-foreground">
+              <summary className="cursor-pointer select-none">
+                Technical details
+              </summary>
+              <pre className="mt-2 max-h-40 overflow-auto whitespace-pre-wrap break-all rounded-md bg-muted p-2">
+                {errorDetails}
+              </pre>
+            </details>
+          )}
+
           <AlertDialogFooter>
             <AlertDialogAction onClick={() => setShowTaxAlert(false)}>
               Got it
