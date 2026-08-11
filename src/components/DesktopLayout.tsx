@@ -43,8 +43,6 @@ export default function DesktopLayout({
 
             <TaxTipPanel dense />
 
-            <SavedBillsPanel />
-
             <Button variant="secondary" onClick={reset}>
               <RotateCcw className="h-4 w-4" /> Reset bill
             </Button>
@@ -79,11 +77,12 @@ export default function DesktopLayout({
           </div>
 
           {/* Right rail */}
-          <div className="sticky top-6 min-w-0">
+          <div className="sticky top-6 flex min-w-0 flex-col gap-4">
             <PersonBreakdown
               onAddPerson={onAddPerson}
               onEditPerson={setEditingPersonIndex}
             />
+            <SavedBillsPanel />
           </div>
         </div>
 
