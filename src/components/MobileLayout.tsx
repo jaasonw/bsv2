@@ -61,11 +61,14 @@ export default function MobileLayout({
 
       {/* Overlapping total card */}
       <div className="-mt-28 px-4">
-        <BillTotalCard />
+        <BillTotalCard className="animate-in fade-in slide-in-from-bottom-4 duration-500" />
       </div>
 
-      {/* Tab content */}
-      <div className="flex flex-1 flex-col gap-3.5 px-4 pb-32 pt-4">
+      {/* Tab content. Keyed on the tab so switching replays the entrance. */}
+      <div
+        key={tab}
+        className="flex flex-1 animate-in flex-col gap-3.5 px-4 pb-32 pt-4 duration-300 fade-in slide-in-from-bottom-3"
+      >
         {tab === "scan" && (
           <>
             <div className="rounded-lg bg-card p-5 shadow-sm">
@@ -105,21 +108,21 @@ export default function MobileLayout({
             type="button"
             onClick={() => setTab(id)}
             aria-current={tab === id ? "page" : undefined}
-            className="flex flex-1 cursor-pointer flex-col items-center gap-1.5 py-1.5"
+            className="flex flex-1 cursor-pointer flex-col items-center gap-1.5 py-1.5 transition-transform active:scale-95"
           >
             <span
               className={cn(
-                "flex h-9 w-9 items-center justify-center rounded-full transition-colors",
+                "flex h-9 w-9 items-center justify-center rounded-full transition-all duration-200",
                 tab === id
-                  ? "bg-primary/15 text-primary"
-                  : "text-muted-foreground"
+                  ? "scale-110 bg-primary/15 text-primary"
+                  : "scale-100 text-muted-foreground"
               )}
             >
               <Icon className="h-4 w-4" />
             </span>
             <span
               className={cn(
-                "text-[10.5px]",
+                "text-[10.5px] transition-colors duration-200",
                 tab === id
                   ? "font-bold text-primary"
                   : "font-medium text-muted-foreground"

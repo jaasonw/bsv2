@@ -36,12 +36,19 @@ export default function PersonBreakdown({
         <button
           type="button"
           onClick={onAddPerson}
-          className="flex cursor-pointer items-center justify-center gap-1.5 rounded-lg border border-dashed py-3 text-[13px] font-semibold text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+          className="flex cursor-pointer items-center justify-center gap-1.5 rounded-lg border border-dashed py-3 text-[13px] font-semibold text-muted-foreground transition-all duration-200 hover:bg-accent hover:text-foreground active:scale-[0.98]"
         >
           <Plus className="h-4 w-4" /> Add person
         </button>
-        {people.map((person) => (
-          <div key={person.name} className="rounded-lg bg-card p-4 shadow-sm">
+        {people.map((person, index) => (
+          <div
+            key={person.name}
+            className="animate-in rounded-lg bg-card p-4 shadow-sm duration-300 fade-in slide-in-from-bottom-2"
+            style={{
+              animationDelay: `${Math.min(index, 8) * 40}ms`,
+              animationFillMode: "both",
+            }}
+          >
             <PersonRow
               person={person}
               onEditPerson={onEditPerson}
@@ -127,7 +134,7 @@ function PersonRow({
           onClick={() => toggleSettled(person.name)}
           aria-pressed={person.settled}
           className={cn(
-            "ml-auto flex cursor-pointer items-center gap-1 rounded-md border px-2.5 py-1 text-[10.5px] font-bold transition-colors",
+            "ml-auto flex cursor-pointer items-center gap-1 rounded-md border px-2.5 py-1 text-[10.5px] font-bold transition-all duration-200 active:scale-95",
             person.settled
               ? "border-positive bg-positive/15 text-positive"
               : "border-border hover:bg-accent"

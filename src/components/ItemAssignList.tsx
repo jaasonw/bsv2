@@ -53,7 +53,11 @@ export default function ItemAssignList({
       {items.map((item, index) => (
         <div
           key={`${item.name}-${index}`}
-          className="rounded-lg bg-card p-4 shadow-sm"
+          className="animate-in rounded-lg bg-card p-4 shadow-sm duration-300 fade-in slide-in-from-bottom-2"
+          style={{
+            animationDelay: `${Math.min(index, 8) * 40}ms`,
+            animationFillMode: "both",
+          }}
         >
           <div className="mb-2.5 flex items-start justify-between gap-3">
             <button
@@ -89,7 +93,7 @@ export default function ItemAssignList({
                   aria-pressed={active}
                   onClick={() => toggleBuyer(index, person.name)}
                   className={cn(
-                    "flex cursor-pointer items-center gap-1.5 rounded-md border py-1 pl-1 pr-3 text-[12.5px] font-semibold transition-colors",
+                    "flex cursor-pointer items-center gap-1.5 rounded-md border py-1 pl-1 pr-3 text-[12.5px] font-semibold transition-all duration-200 active:scale-95",
                     active
                       ? "text-foreground"
                       : "border-border bg-card text-muted-foreground"
@@ -144,7 +148,7 @@ function DashedButton({
     <button
       type="button"
       onClick={onClick}
-      className="flex cursor-pointer items-center justify-center gap-1.5 rounded-lg border border-dashed py-3.5 text-[13.5px] font-semibold text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+      className="flex cursor-pointer items-center justify-center gap-1.5 rounded-lg border border-dashed py-3.5 text-[13.5px] font-semibold text-muted-foreground transition-all duration-200 hover:bg-accent hover:text-foreground active:scale-[0.98]"
     >
       {children}
     </button>
