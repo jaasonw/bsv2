@@ -119,8 +119,15 @@ const PhotoUpload: React.FC<PhotoUploadProps> = ({ dense = false }) => {
   };
 
   const handleNewUpload = () => {
+    // The "has a photo" check reads both the local preview and the one held in
+    // context, so clearing only the local copy leaves the button inert.
+    if (processedImageUrl?.startsWith("blob:")) {
+      URL.revokeObjectURL(processedImageUrl);
+    }
     setProcessedImageUrl(null);
     setImageFile(null);
+    setReceiptImage(null);
+    setReceiptImageUrl(null);
     if (cameraInputRef.current) {
       cameraInputRef.current.value = "";
     }
