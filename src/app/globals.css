@@ -126,36 +126,42 @@
     --chart-5: 27 87% 67%;
   }
 
+  /*
+    Dark theme is Catppuccin Macchiato.
+    mantle #1e2030 · base #24273a · crust #181926 · surface0 #363a4f
+    surface1 #494d64 · text #cad3f5 · subtext0 #a5adcb
+    mauve #c6a0f6 · red #ed8796 · green #a6da95 · blue #8aadf4 · peach #f5a97f
+  */
   .dark {
-    --background: 265 25% 8%;
-    --foreground: 270 20% 96%;
-    --card: 265 22% 12%;
-    --card-foreground: 270 20% 96%;
-    --popover: 265 22% 12%;
-    --popover-foreground: 270 20% 96%;
-    --primary: 262 70% 72%;
-    --primary-foreground: 265 45% 12%;
-    --secondary: 265 18% 18%;
-    --secondary-foreground: 270 20% 96%;
-    --muted: 265 18% 18%;
-    --muted-foreground: 265 12% 65%;
-    --accent: 265 18% 20%;
-    --accent-foreground: 270 20% 96%;
-    --destructive: 0 62.8% 45%;
-    --destructive-foreground: 0 0% 100%;
-    --border: 265 16% 22%;
-    --input: 265 16% 22%;
-    --ring: 262 70% 72%;
-    --brand: 262 70% 72%;
-    --brand-foreground: 265 45% 12%;
-    --brand-from: 258 45% 22%;
-    --brand-to: 258 50% 12%;
-    --positive: 155 50% 55%;
-    --chart-1: 220 70% 50%;
-    --chart-2: 160 60% 45%;
-    --chart-3: 30 80% 55%;
-    --chart-4: 280 65% 60%;
-    --chart-5: 340 75% 55%;
+    --background: 233 23% 15%; /* mantle */
+    --foreground: 227 68% 88%; /* text */
+    --card: 232 23% 18%; /* base */
+    --card-foreground: 227 68% 88%;
+    --popover: 232 23% 18%;
+    --popover-foreground: 227 68% 88%;
+    --primary: 267 83% 80%; /* mauve */
+    --primary-foreground: 236 23% 12%; /* crust */
+    --secondary: 230 19% 26%; /* surface0 */
+    --secondary-foreground: 227 68% 88%;
+    --muted: 230 19% 26%;
+    --muted-foreground: 227 27% 72%; /* subtext0 */
+    --accent: 231 16% 34%; /* surface1 */
+    --accent-foreground: 227 68% 88%;
+    --destructive: 351 74% 73%; /* red */
+    --destructive-foreground: 236 23% 12%;
+    --border: 230 19% 26%;
+    --input: 230 19% 26%;
+    --ring: 267 83% 80%;
+    --brand: 267 83% 80%;
+    --brand-foreground: 236 23% 12%;
+    --brand-from: 267 28% 31%;
+    --brand-to: 236 23% 12%;
+    --positive: 105 48% 72%; /* green */
+    --chart-1: 220 83% 75%; /* blue */
+    --chart-2: 105 48% 72%; /* green */
+    --chart-3: 21 86% 73%; /* peach */
+    --chart-4: 267 83% 80%; /* mauve */
+    --chart-5: 351 74% 73%; /* red */
   }
 }
 
@@ -188,14 +194,14 @@
 */
 
 .dark {
-  --sidebar: hsl(240 5.9% 10%);
-  --sidebar-foreground: hsl(240 4.8% 95.9%);
-  --sidebar-primary: hsl(224.3 76.3% 48%);
-  --sidebar-primary-foreground: hsl(0 0% 100%);
-  --sidebar-accent: hsl(240 3.7% 15.9%);
-  --sidebar-accent-foreground: hsl(240 4.8% 95.9%);
-  --sidebar-border: hsl(240 3.7% 15.9%);
-  --sidebar-ring: hsl(217.2 91.2% 59.8%);
+  --sidebar: hsl(232 23% 18%); /* base */
+  --sidebar-foreground: hsl(227 68% 88%); /* text */
+  --sidebar-primary: hsl(267 83% 80%); /* mauve */
+  --sidebar-primary-foreground: hsl(236 23% 12%); /* crust */
+  --sidebar-accent: hsl(230 19% 26%); /* surface0 */
+  --sidebar-accent-foreground: hsl(227 68% 88%);
+  --sidebar-border: hsl(230 19% 26%);
+  --sidebar-ring: hsl(267 83% 80%);
 }
 
 /*
