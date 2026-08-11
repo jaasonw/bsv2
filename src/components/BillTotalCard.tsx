@@ -37,7 +37,7 @@ export default function BillTotalCard({
     return (
       <div
         className={cn(
-          "rounded-xl bg-linear-150 from-brand-from to-brand-to p-5 text-white",
+          "rounded-lg bg-linear-150 from-brand-from to-brand-to p-5 text-white",
           className
         )}
       >
@@ -47,7 +47,7 @@ export default function BillTotalCard({
         <div className="mt-0.5 text-[26px] font-extrabold tabular-nums">
           ${money(total)}
         </div>
-        <dl className="mt-3 space-y-1 rounded-lg bg-white/10 p-2.5 text-[11px]">
+        <dl className="mt-3 space-y-1 rounded-md bg-white/10 p-2.5 text-[11px]">
           <Row label="Subtotal" value={subtotal} />
           <Row label="Tax" value={tax} />
           <Row label="Tip" value={tip} />
@@ -61,7 +61,7 @@ export default function BillTotalCard({
   return (
     <div
       className={cn(
-        "rounded-xl bg-card p-5 shadow-[0_10px_24px_hsl(var(--brand)/0.14)]",
+        "rounded-lg bg-card p-5 shadow-[0_10px_24px_hsl(var(--brand)/0.14)]",
         className
       )}
     >

@@ -37,7 +37,7 @@ export default function SavedBillsPanel() {
   }, [refresh]);
 
   return (
-    <section className="rounded-xl bg-card p-4 shadow-sm">
+    <section className="rounded-lg bg-card p-4 shadow-sm">
       <h2 className="mb-2.5 text-sm font-bold">Your bills</h2>
 
       {!isAuthenticated ? (
@@ -72,7 +72,7 @@ export default function SavedBillsPanel() {
                   loadReceipt(receipt);
                 }}
                 className={cn(
-                  "cursor-pointer rounded-lg border px-3 py-2.5 text-left transition-colors",
+                  "cursor-pointer rounded-md border px-3 py-2.5 text-left transition-colors",
                   active
                     ? "border-primary bg-primary/10"
                     : "border-border hover:bg-accent"

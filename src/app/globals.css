@@ -48,7 +48,7 @@
   --color-brand-to: hsl(var(--brand-to));
   --color-positive: hsl(var(--positive));
 
-  --radius-xl: calc(var(--radius) + 4px);
+  --radius-xl: calc(var(--radius) + 2px);
   --radius-lg: var(--radius);
   --radius-md: calc(var(--radius) - 2px);
   --radius-sm: calc(var(--radius) - 4px);
@@ -113,7 +113,7 @@
     --border: 270 18% 88%;
     --input: 270 18% 88%;
     --ring: 258 48% 32%;
-    --radius: 0.75rem;
+    --radius: 0.5rem;
     --brand: 258 48% 32%;
     --brand-foreground: 0 0% 100%;
     --brand-from: 258 50% 27%;

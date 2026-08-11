@@ -19,7 +19,7 @@ export function Header() {
     <header className="w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="mx-auto flex h-14 max-w-[1360px] items-center justify-between px-4 lg:px-7">
         <div className="flex items-center gap-2.5">
-          <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary text-primary-foreground">
+          <span className="flex h-9 w-9 items-center justify-center rounded-md bg-primary text-primary-foreground">
             <ReceiptText className="h-4.5 w-4.5" />
           </span>
           <div className="flex flex-col leading-tight">

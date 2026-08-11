@@ -247,7 +247,7 @@ const PhotoUpload: React.FC<PhotoUploadProps> = ({ dense = false }) => {
           onClick={
             previewUrl ? () => setShowReviewDialog(true) : handleTakePhoto
           }
-          className="mb-3 flex aspect-4/3 w-full cursor-pointer items-center justify-center overflow-hidden rounded-lg border border-dashed bg-muted/50 text-xs text-muted-foreground"
+          className="mb-3 flex aspect-4/3 w-full cursor-pointer items-center justify-center overflow-hidden rounded-md border border-dashed bg-muted/50 text-xs text-muted-foreground"
         >
           {previewUrl ? (
             <img
@@ -308,7 +308,7 @@ const PhotoUpload: React.FC<PhotoUploadProps> = ({ dense = false }) => {
 
       {/* Status indicator */}
       {imageFile && !isLoading && !processedImageUrl && (
-        <div className="mt-3 flex items-center gap-2 rounded-lg bg-muted/60 p-3">
+        <div className="mt-3 flex items-center gap-2 rounded-md bg-muted/60 p-3">
           <Check className="h-4 w-4 text-positive" />
           <span className="text-xs text-muted-foreground">
             Image ready to process
@@ -317,7 +317,7 @@ const PhotoUpload: React.FC<PhotoUploadProps> = ({ dense = false }) => {
       )}
 
       {isLoading && (
-        <div className="mt-3 flex items-center gap-2 rounded-lg bg-primary/10 p-3">
+        <div className="mt-3 flex items-center gap-2 rounded-md bg-primary/10 p-3">
           <Loader2 className="h-4 w-4 animate-spin text-primary" />
           <span className="text-xs font-semibold text-primary">
             Processing receipt…

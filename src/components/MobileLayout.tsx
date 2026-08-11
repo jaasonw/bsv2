@@ -97,7 +97,7 @@ export default function MobileLayout({
       <div className="flex flex-1 flex-col gap-3.5 px-4 pb-32 pt-4">
         {tab === "scan" && (
           <>
-            <div className="rounded-xl bg-card p-5 shadow-sm">
+            <div className="rounded-lg bg-card p-5 shadow-sm">
               <PhotoUpload />
             </div>
             <TaxTipPanel />
@@ -127,7 +127,7 @@ export default function MobileLayout({
       </div>
 
       {/* Bottom tab bar */}
-      <nav className="fixed inset-x-0 bottom-0 z-40 mx-auto flex max-w-[480px] rounded-t-2xl bg-card px-2 pb-3.5 pt-2.5 shadow-[0_-4px_20px_hsl(var(--brand)/0.12)]">
+      <nav className="fixed inset-x-0 bottom-0 z-40 mx-auto flex max-w-[480px] rounded-t-lg bg-card px-2 pb-3.5 pt-2.5 shadow-[0_-4px_20px_hsl(var(--brand)/0.12)]">
         {TABS.map(({ id, label, icon: Icon }) => (
           <button
             key={id}

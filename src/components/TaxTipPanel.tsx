@@ -60,7 +60,7 @@ export default function TaxTipPanel({ dense = false }: { dense?: boolean }) {
   return (
     <section
       className={cn(
-        "flex flex-col gap-3 rounded-xl bg-card shadow-sm",
+        "flex flex-col gap-3 rounded-lg bg-card shadow-sm",
         dense ? "p-4" : "p-5"
       )}
     >
@@ -197,7 +197,7 @@ function SegmentButton({
       aria-pressed={active}
       onClick={onClick}
       className={cn(
-        "flex flex-1 cursor-pointer items-center justify-center rounded-lg border px-2 py-2 text-xs font-bold transition-colors",
+        "flex flex-1 cursor-pointer items-center justify-center rounded-md border px-2 py-2 text-xs font-bold transition-colors",
         active
           ? "border-primary bg-primary text-primary-foreground"
           : "border-border bg-card text-foreground hover:bg-accent",

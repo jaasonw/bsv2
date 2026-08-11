@@ -45,7 +45,7 @@ export default function ItemMatrix({
 
   if (items.length === 0 && people.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center gap-3 rounded-lg border border-dashed py-16 text-center">
+      <div className="flex flex-col items-center justify-center gap-3 rounded-md border border-dashed py-16 text-center">
         <p className="text-sm text-muted-foreground">
           Scan a receipt, or add people and items by hand.
         </p>
@@ -113,7 +113,7 @@ export default function ItemMatrix({
                 onClick={() => onEditItem(index)}
                 title={`Edit ${item.name}`}
                 className={cn(
-                  "flex min-w-0 cursor-pointer items-center rounded-l-md py-2.5 pl-2.5 text-left text-[13px] font-semibold",
+                  "flex min-w-0 cursor-pointer items-center rounded-l-sm py-2.5 pl-2.5 text-left text-[13px] font-semibold",
                   rowBg
                 )}
               >
@@ -133,7 +133,7 @@ export default function ItemMatrix({
                       aria-pressed={active}
                       onClick={() => toggleBuyer(index, person.name)}
                       className={cn(
-                        "cursor-pointer rounded-lg py-2.5 text-center text-xs font-bold tabular-nums transition-colors",
+                        "cursor-pointer rounded-md py-2.5 text-center text-xs font-bold tabular-nums transition-colors",
                         active
                           ? "text-foreground"
                           : cn(
@@ -155,7 +155,7 @@ export default function ItemMatrix({
 
               <div
                 className={cn(
-                  "flex items-center justify-end rounded-r-md py-2.5 pr-2.5 text-[13px] font-bold tabular-nums",
+                  "flex items-center justify-end rounded-r-sm py-2.5 pr-2.5 text-[13px] font-bold tabular-nums",
                   rowBg,
                   unassigned && "text-destructive"
                 )}

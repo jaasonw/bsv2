@@ -30,12 +30,12 @@ export default function PersonBreakdown({
         <button
           type="button"
           onClick={onAddPerson}
-          className="flex cursor-pointer items-center justify-center gap-1.5 rounded-xl border border-dashed py-3 text-[13px] font-semibold text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+          className="flex cursor-pointer items-center justify-center gap-1.5 rounded-lg border border-dashed py-3 text-[13px] font-semibold text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
         >
           <Plus className="h-4 w-4" /> Add person
         </button>
         {people.map((person) => (
-          <div key={person.name} className="rounded-xl bg-card p-4 shadow-sm">
+          <div key={person.name} className="rounded-lg bg-card p-4 shadow-sm">
             <PersonRow person={person} onEditPerson={onEditPerson} />
           </div>
         ))}
@@ -49,13 +49,13 @@ export default function PersonBreakdown({
   }
 
   return (
-    <section className="rounded-xl bg-card p-5 shadow-sm">
+    <section className="rounded-lg bg-card p-5 shadow-sm">
       <div className="mb-3.5 flex items-center justify-between">
         <h2 className="text-sm font-bold">Individual breakdown</h2>
         <button
           type="button"
           onClick={onAddPerson}
-          className="flex cursor-pointer items-center gap-1 rounded-lg border px-2.5 py-1.5 text-[11.5px] font-semibold transition-colors hover:bg-accent"
+          className="flex cursor-pointer items-center gap-1 rounded-md border px-2.5 py-1.5 text-[11.5px] font-semibold transition-colors hover:bg-accent"
         >
           <Plus className="h-3.5 w-3.5" /> Person
         </button>
@@ -110,7 +110,7 @@ function PersonRow({
           onClick={() => toggleSettled(person.name)}
           aria-pressed={person.settled}
           className={cn(
-            "ml-auto flex cursor-pointer items-center gap-1 rounded-lg border px-2.5 py-1 text-[10.5px] font-bold transition-colors",
+            "ml-auto flex cursor-pointer items-center gap-1 rounded-md border px-2.5 py-1 text-[10.5px] font-bold transition-colors",
             person.settled
               ? "border-positive bg-positive/15 text-positive"
               : "border-border hover:bg-accent"

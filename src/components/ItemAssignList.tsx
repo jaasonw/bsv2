@@ -53,7 +53,7 @@ export default function ItemAssignList({
       {items.map((item, index) => (
         <div
           key={`${item.name}-${index}`}
-          className="rounded-xl bg-card p-4 shadow-sm"
+          className="rounded-lg bg-card p-4 shadow-sm"
         >
           <div className="mb-2.5 flex items-baseline justify-between gap-3">
             <button
@@ -82,7 +82,7 @@ export default function ItemAssignList({
                   aria-pressed={active}
                   onClick={() => toggleBuyer(index, person.name)}
                   className={cn(
-                    "flex cursor-pointer items-center gap-1.5 rounded-lg border py-1 pl-1 pr-3 text-[12.5px] font-semibold transition-colors",
+                    "flex cursor-pointer items-center gap-1.5 rounded-md border py-1 pl-1 pr-3 text-[12.5px] font-semibold transition-colors",
                     active
                       ? "text-foreground"
                       : "border-border bg-card text-muted-foreground"
@@ -133,7 +133,7 @@ function DashedButton({
     <button
       type="button"
       onClick={onClick}
-      className="flex cursor-pointer items-center justify-center gap-1.5 rounded-xl border border-dashed py-3.5 text-[13.5px] font-semibold text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+      className="flex cursor-pointer items-center justify-center gap-1.5 rounded-lg border border-dashed py-3.5 text-[13.5px] font-semibold text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
     >
       {children}
     </button>

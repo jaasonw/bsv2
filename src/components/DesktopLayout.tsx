@@ -37,7 +37,7 @@ export default function DesktopLayout({
           <div className="sticky top-6 flex flex-col gap-4">
             <BillTotalCard variant="gradient" />
 
-            <div className="rounded-xl bg-card p-4 shadow-sm">
+            <div className="rounded-lg bg-card p-4 shadow-sm">
               <PhotoUpload dense />
             </div>
 
@@ -51,7 +51,7 @@ export default function DesktopLayout({
           </div>
 
           {/* Matrix */}
-          <div className="min-w-0 overflow-hidden rounded-xl bg-card p-6 shadow-sm">
+          <div className="min-w-0 overflow-hidden rounded-lg bg-card p-6 shadow-sm">
             <div className="mb-4 flex items-baseline justify-between gap-4">
               <div>
                 <h1 className="text-[19px] font-bold">current bill</h1>
