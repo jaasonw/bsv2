@@ -9,7 +9,12 @@ import {
   getTotal,
   validateTotals,
 } from "@/lib/utils";
-import { personColor, personInitial, personSoft } from "@/lib/person-colors";
+import {
+  personColor,
+  personInitial,
+  personInk,
+  personSoft,
+} from "@/lib/person-colors";
 
 export interface PersonLine {
   name: string;
@@ -23,6 +28,7 @@ export interface PersonSummary {
   initial: string;
   color: string;
   soft: string;
+  ink: string;
   subtotal: number;
   tax: number;
   tip: number;
@@ -77,6 +83,7 @@ export function useBillSummary(): BillSummary {
         initial: personInitial(name),
         color: personColor(index),
         soft: personSoft(index),
+        ink: personInk(),
         subtotal: personSubtotal,
         tax: personTax,
         tip: personTip,

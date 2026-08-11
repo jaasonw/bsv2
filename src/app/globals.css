@@ -119,6 +119,19 @@
     --brand-from: 258 50% 27%;
     --brand-to: 258 55% 17%;
     --positive: 155 55% 33%;
+    /*
+      Per-person accents, Catppuccin Latte. Peach and yellow are taken a few
+      points darker than stock Latte so the white initial stays legible.
+    */
+    --person-ink: 0 0% 100%;
+    --person-0: 266 85% 58%; /* mauve */
+    --person-1: 316 73% 69%; /* pink */
+    --person-2: 197 97% 46%; /* sky */
+    --person-3: 109 58% 40%; /* green */
+    --person-4: 22 99% 45%; /* peach */
+    --person-5: 35 77% 40%; /* yellow */
+    --person-6: 220 91% 54%; /* blue */
+    --person-7: 355 76% 59%; /* maroon */
     --chart-1: 12 76% 61%;
     --chart-2: 173 58% 39%;
     --chart-3: 197 37% 24%;
@@ -157,6 +170,16 @@
     --brand-from: 267 28% 31%;
     --brand-to: 236 23% 12%;
     --positive: 105 48% 72%; /* green */
+    /* Per-person accents, Catppuccin Macchiato. */
+    --person-ink: 236 23% 12%; /* crust */
+    --person-0: 267 83% 80%; /* mauve */
+    --person-1: 316 74% 85%; /* pink */
+    --person-2: 189 59% 73%; /* sky */
+    --person-3: 105 48% 72%; /* green */
+    --person-4: 21 86% 73%; /* peach */
+    --person-5: 40 70% 78%; /* yellow */
+    --person-6: 220 83% 75%; /* blue */
+    --person-7: 355 71% 77%; /* maroon */
     --chart-1: 220 83% 75%; /* blue */
     --chart-2: 105 48% 72%; /* green */
     --chart-3: 21 86% 73%; /* peach */

@@ -97,12 +97,16 @@ export default function ItemAssignList({
                   }
                 >
                   <span
-                    className="flex h-5 w-5 items-center justify-center rounded-full text-[10.5px] font-bold text-white"
-                    style={{
-                      backgroundColor: active
-                        ? person.color
-                        : "hsl(var(--muted-foreground) / 0.45)",
-                    }}
+                    className="flex h-5 w-5 items-center justify-center rounded-full text-[10.5px] font-bold"
+                    style={
+                      active
+                        ? { backgroundColor: person.color, color: person.ink }
+                        : {
+                            backgroundColor:
+                              "hsl(var(--muted-foreground) / 0.25)",
+                            color: "hsl(var(--muted-foreground))",
+                          }
+                    }
                   >
                     {person.initial}
                   </span>

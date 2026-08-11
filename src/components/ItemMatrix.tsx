@@ -88,8 +88,8 @@ export default function ItemMatrix({
               className="flex cursor-pointer flex-col items-center gap-1 pb-2"
             >
               <span
-                className="flex h-6 w-6 items-center justify-center rounded-full text-[10.5px] font-bold text-white"
-                style={{ backgroundColor: person.color }}
+                className="flex h-6 w-6 items-center justify-center rounded-full text-[10.5px] font-bold"
+                style={{ backgroundColor: person.color, color: person.ink }}
               >
                 {person.initial}
               </span>

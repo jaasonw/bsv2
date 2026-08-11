@@ -98,8 +98,8 @@ function PersonRow({
           className="flex cursor-pointer items-center gap-2"
         >
           <span
-            className="flex h-[22px] w-[22px] items-center justify-center rounded-full text-[10px] font-bold text-white"
-            style={{ backgroundColor: person.color }}
+            className="flex h-[22px] w-[22px] items-center justify-center rounded-full text-[10px] font-bold"
+            style={{ backgroundColor: person.color, color: person.ink }}
           >
             {person.initial}
           </span>
