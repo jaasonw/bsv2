@@ -1,13 +1,11 @@
 "use client";
-import { ModeToggle } from "./ModeToggle";
 
 export default function Footer() {
   return (
-    <footer className="mt-4 grid w-full grid-cols-1 items-center gap-3 text-xs text-muted-foreground sm:grid-cols-3">
-      <ModeToggle />
-      <span className="flex flex-col items-center justify-center">
+    <footer className="mt-4 grid w-full grid-cols-1 items-center gap-3 text-xs text-muted-foreground sm:grid-cols-2">
+      <span className="flex flex-col items-center justify-center sm:items-start">
         <span>copyright 2026</span>
-        <span className="text-center">
+        <span className="text-center sm:text-left">
           open source under{" "}
           <a
             className="underline"

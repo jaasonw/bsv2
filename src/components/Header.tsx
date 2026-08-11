@@ -8,6 +8,7 @@ import { AuthDialog } from "./AuthDialog";
 import { UserMenu } from "./UserMenu";
 import { SaveReceiptDialog } from "./SaveReceiptDialog";
 import { ReceiptHistory } from "./ReceiptHistory";
+import { ModeToggle } from "./ModeToggle";
 import { Separator } from "@/components/ui/separator";
 
 export function Header() {
@@ -43,6 +44,7 @@ export function Header() {
               <Separator orientation="vertical" className="h-6" />
             </>
           )}
+          <ModeToggle />
           <AuthDialog />
           <UserMenu onOpenSavedReceipts={() => setReceiptHistoryOpen(true)} />
         </div>
