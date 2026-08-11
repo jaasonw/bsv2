@@ -55,22 +55,29 @@ export default function ItemAssignList({
           key={`${item.name}-${index}`}
           className="rounded-lg bg-card p-4 shadow-sm"
         >
-          <div className="mb-2.5 flex items-baseline justify-between gap-3">
+          <div className="mb-2.5 flex items-start justify-between gap-3">
             <button
               type="button"
               onClick={() => onEditItem(index)}
-              className="cursor-pointer truncate text-left text-[14.5px] font-bold"
+              className="cursor-pointer truncate pt-px text-left text-[14.5px] font-bold"
             >
               {item.name}
             </button>
-            <span
-              className={cn(
-                "shrink-0 text-[14.5px] font-bold tabular-nums",
-                item.buyers.length === 0 && "text-destructive"
+            <div className="shrink-0 text-right">
+              <div
+                className={cn(
+                  "text-[14.5px] font-bold tabular-nums",
+                  item.buyers.length === 0 && "text-destructive"
+                )}
+              >
+                ${money(item.price)}
+              </div>
+              {item.buyers.length > 1 && (
+                <div className="text-[11.5px] tabular-nums text-muted-foreground">
+                  ${money(item.price / item.buyers.length)} each
+                </div>
               )}
-            >
-              ${money(item.price)}
-            </span>
+            </div>
           </div>
           <div className="flex flex-wrap gap-1.5">
             {people.map((person) => {
