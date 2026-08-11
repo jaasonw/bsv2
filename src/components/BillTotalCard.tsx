@@ -72,7 +72,23 @@ export default function BillTotalCard({
         ${money(total)}
       </div>
       <Status hasProblem={hasProblem} text={statusText} />
+      <dl className="mt-3 grid grid-cols-3 gap-2 border-t pt-3 text-[11px]">
+        <Stat label="Subtotal" value={subtotal} />
+        <Stat label="Tax" value={tax} />
+        <Stat label="Tip" value={tip} />
+      </dl>
       {children}
+    </div>
+  );
+}
+
+function Stat({ label, value }: { label: string; value: number }) {
+  return (
+    <div>
+      <dt className="font-semibold text-muted-foreground">{label}</dt>
+      <dd className="mt-0.5 text-[15px] font-bold tabular-nums">
+        ${money(value)}
+      </dd>
     </div>
   );
 }

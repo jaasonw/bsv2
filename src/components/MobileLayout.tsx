@@ -59,38 +59,9 @@ export default function MobileLayout({
         </div>
       </div>
 
-      {/* Overlapping total card + quick actions */}
+      {/* Overlapping total card */}
       <div className="-mt-28 px-4">
-        <BillTotalCard>
-          <div className="mt-4 flex gap-2">
-            {TABS.map(({ id, label, icon: Icon }) => (
-              <button
-                key={id}
-                type="button"
-                onClick={() => setTab(id)}
-                className="flex flex-1 cursor-pointer flex-col items-center gap-1.5"
-              >
-                <span
-                  className={cn(
-                    "flex h-10 w-10 items-center justify-center rounded-full transition-colors",
-                    tab === id
-                      ? "bg-primary text-primary-foreground"
-                      : "bg-muted text-muted-foreground"
-                  )}
-                >
-                  <Icon className="h-4 w-4" />
-                </span>
-                <span className="text-[11px] font-semibold">{label}</span>
-              </button>
-            ))}
-            <div className="flex flex-1 flex-col items-center gap-1.5">
-              <span className="flex h-10 w-10 items-center justify-center rounded-full bg-muted text-sm font-bold tabular-nums">
-                {itemCount}
-              </span>
-              <span className="text-[11px] font-semibold">On tab</span>
-            </div>
-          </div>
-        </BillTotalCard>
+        <BillTotalCard />
       </div>
 
       {/* Tab content */}
