@@ -22,7 +22,13 @@ export default function PersonBreakdown({
   onEditPerson,
   variant = "list",
 }: PersonBreakdownProps) {
-  const { people } = useBillSummary();
+  const { people, taxPercent, tipPercent } = useBillSummary();
+  const { tipAsProportion, tipTheTax } = useBill();
+
+  const taxLabel = `Tax (${taxPercent}%)`;
+  const tipLabel = `Tip (${tipPercent}%${tipTheTax ? " incl. tax" : ""}${
+    tipAsProportion ? "" : ", split evenly"
+  })`;
 
   if (variant === "cards") {
     return (
@@ -36,7 +42,12 @@ export default function PersonBreakdown({
         </button>
         {people.map((person) => (
           <div key={person.name} className="rounded-lg bg-card p-4 shadow-sm">
-            <PersonRow person={person} onEditPerson={onEditPerson} />
+            <PersonRow
+              person={person}
+              onEditPerson={onEditPerson}
+              taxLabel={taxLabel}
+              tipLabel={tipLabel}
+            />
           </div>
         ))}
         {people.length === 0 && (
@@ -71,6 +82,8 @@ export default function PersonBreakdown({
               key={person.name}
               person={person}
               onEditPerson={onEditPerson}
+              taxLabel={taxLabel}
+              tipLabel={tipLabel}
             />
           ))}
         </div>
@@ -82,9 +95,13 @@ export default function PersonBreakdown({
 function PersonRow({
   person,
   onEditPerson,
+  taxLabel,
+  tipLabel,
 }: {
   person: PersonSummary;
   onEditPerson: (index: number) => void;
+  taxLabel: string;
+  tipLabel: string;
 }) {
   const { toggleSettled } = useBill();
 
@@ -143,8 +160,12 @@ function PersonRow({
       )}
 
       <div className="flex justify-between gap-2 py-0.5 pl-[30px] text-[11.5px] text-muted-foreground">
-        <span>Tax + tip</span>
-        <span className="tabular-nums">${money(person.taxTip)}</span>
+        <span className="min-w-0 truncate">{taxLabel}</span>
+        <span className="shrink-0 tabular-nums">${money(person.tax)}</span>
+      </div>
+      <div className="flex justify-between gap-2 py-0.5 pl-[30px] text-[11.5px] text-muted-foreground">
+        <span className="min-w-0 truncate">{tipLabel}</span>
+        <span className="shrink-0 tabular-nums">${money(person.tip)}</span>
       </div>
 
       <div className="flex justify-between pl-[30px] pt-1.5 text-[13px] font-bold">
