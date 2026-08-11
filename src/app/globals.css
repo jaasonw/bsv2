@@ -285,6 +285,57 @@
   }
 }
 
+/*
+  Touch behaviour. Without these the app reads as a web page in a shell: a grey
+  flash on every tap, a 300ms delay before buttons respond, the page rubber-
+  banding past its own scroll, and long presses selecting button labels.
+*/
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+    overscroll-behavior-y: none;
+  }
+
+  body {
+    -webkit-tap-highlight-color: transparent;
+    overscroll-behavior-y: contain;
+  }
+
+  button,
+  a,
+  [role="button"],
+  label,
+  summary {
+    touch-action: manipulation;
+  }
+
+  /* Labels on controls are chrome, not content — a long press shouldn't
+     select them. Inputs and copy stay selectable. */
+  button,
+  nav,
+  [role="button"],
+  [aria-pressed] {
+    -webkit-user-select: none;
+    user-select: none;
+  }
+
+  input,
+  textarea,
+  [contenteditable] {
+    -webkit-user-select: text;
+    user-select: text;
+  }
+
+  :root {
+    caret-color: hsl(var(--primary));
+  }
+
+  ::selection {
+    background: hsl(var(--primary) / 0.25);
+  }
+}
+
 /* The mobile layout leans on entrance animations; opt out when asked to. */
 @media (prefers-reduced-motion: reduce) {
   *,

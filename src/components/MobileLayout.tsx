@@ -1,8 +1,9 @@
 "use client";
 
-import React from "react";
+import React, { useCallback, useLayoutEffect, useRef } from "react";
 import { Camera, HandCoins, ReceiptText, RotateCcw } from "lucide-react";
 import { useBill } from "@/components/BillProvider";
+import { tapFeedback } from "@/lib/haptics";
 import BillTotalCard from "@/components/BillTotalCard";
 import Footer from "@/components/Footer";
 import ItemAssignList from "@/components/ItemAssignList";
@@ -41,8 +42,43 @@ export default function MobileLayout({
   const { reset } = useBill();
   const { itemCount, people } = useBillSummary();
 
+  // Native tab bars return you to where you left a tab. Panels stay mounted so
+  // their state survives, and the window offset is stashed per tab on the way
+  // out and restored on the way in.
+  const scrollOffsets = useRef<Record<MobileTab, number>>({
+    scan: 0,
+    items: 0,
+    split: 0,
+  });
+  const previousTab = useRef<MobileTab>(tab);
+
+  useLayoutEffect(() => {
+    if (previousTab.current === tab) return;
+    previousTab.current = tab;
+    window.scrollTo({ top: scrollOffsets.current[tab], behavior: "instant" });
+  }, [tab]);
+
+  const selectTab = useCallback(
+    (next: MobileTab) => {
+      scrollOffsets.current[tab] = window.scrollY;
+      tapFeedback();
+      if (next === tab) {
+        // Re-tapping the active tab scrolls it to top, as on iOS. Some engines
+        // ignore `smooth` entirely, so fall back to a jump if nothing moved.
+        scrollOffsets.current[tab] = 0;
+        window.scrollTo({ top: 0, behavior: "smooth" });
+        setTimeout(() => {
+          if (window.scrollY > 0) window.scrollTo(0, 0);
+        }, 400);
+        return;
+      }
+      setTab(next);
+    },
+    [tab, setTab]
+  );
+
   return (
-    <div className="mx-auto flex w-full max-w-[480px] flex-col lg:hidden">
+    <div className="mx-auto flex w-full max-w-[480px] flex-col">
       {/* Gradient hero */}
       <div className="bg-linear-135 from-brand-from to-brand-to px-5 pb-32 pt-5 text-white">
         <div className="flex items-center gap-2.5">
@@ -64,38 +100,38 @@ export default function MobileLayout({
         <BillTotalCard className="animate-in fade-in slide-in-from-bottom-4 duration-500" />
       </div>
 
-      {/* Tab content. Keyed on the tab so switching replays the entrance. */}
-      <div
-        key={tab}
-        className="flex flex-1 animate-in flex-col gap-3.5 px-4 pb-32 pt-4 duration-300 fade-in slide-in-from-bottom-3"
-      >
-        {tab === "scan" && (
-          <>
-            <div className="rounded-lg bg-card p-5 shadow-sm">
-              <PhotoUpload />
-            </div>
-            <TaxTipPanel />
-            <Button variant="secondary" className="w-full" onClick={reset}>
-              <RotateCcw className="h-4 w-4" /> Reset bill
-            </Button>
-          </>
-        )}
+      {/*
+        All three panels stay mounted and are toggled with `hidden`, so state
+        (a half-typed tip, the scanner's preview) survives a tab switch. The
+        entrance animation is re-triggered by keying on the tab, which is cheap
+        now that it only wraps the visible panel's own children.
+      */}
+      <div className="flex flex-1 flex-col px-4 pb-[calc(8rem+env(safe-area-inset-bottom))] pt-4">
+        <TabPanel active={tab === "scan"}>
+          <div className="rounded-lg bg-card p-5 shadow-sm">
+            <PhotoUpload />
+          </div>
+          <TaxTipPanel />
+          <Button variant="secondary" className="w-full" onClick={reset}>
+            <RotateCcw className="h-4 w-4" /> Reset bill
+          </Button>
+        </TabPanel>
 
-        {tab === "items" && (
+        <TabPanel active={tab === "items"}>
           <ItemAssignList
             onEditItem={setEditingItemIndex}
             onAddItem={onAddItem}
             onAddPerson={onAddPerson}
           />
-        )}
+        </TabPanel>
 
-        {tab === "split" && (
+        <TabPanel active={tab === "split"}>
           <PersonBreakdown
             variant="cards"
             onAddPerson={onAddPerson}
             onEditPerson={setEditingPersonIndex}
           />
-        )}
+        </TabPanel>
 
         <Footer />
       </div>
@@ -106,7 +142,7 @@ export default function MobileLayout({
           <button
             key={id}
             type="button"
-            onClick={() => setTab(id)}
+            onClick={() => selectTab(id)}
             aria-current={tab === id ? "page" : undefined}
             className="flex flex-1 cursor-pointer flex-col items-center gap-1.5 py-1.5 transition-transform active:scale-95"
           >
@@ -133,6 +169,41 @@ export default function MobileLayout({
           </button>
         ))}
       </nav>
+    </div>
+  );
+}
+
+/**
+ * Stays mounted when inactive, so a half-typed tip or the scanner's preview
+ * survives a tab switch.
+ *
+ * The entrance animation plays only the first time a panel is revealed.
+ * Replaying it on every switch added 300ms of perceived latency to a movement
+ * that is instant on a native tab bar.
+ */
+function TabPanel({
+  active,
+  children,
+}: {
+  active: boolean;
+  children: React.ReactNode;
+}) {
+  const [seen, setSeen] = React.useState(false);
+
+  useLayoutEffect(() => {
+    if (active && !seen) setSeen(true);
+  }, [active, seen]);
+
+  return (
+    <div
+      className={cn(
+        active ? "flex flex-col gap-3.5" : "hidden",
+        active &&
+          !seen &&
+          "animate-in duration-300 fade-in slide-in-from-bottom-3"
+      )}
+    >
+      {children}
     </div>
   );
 }

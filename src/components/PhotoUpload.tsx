@@ -2,6 +2,7 @@
 import React, { use, useRef, useState } from "react";
 import { BillContext } from "@/components/BillProvider";
 import { processImageFile, formatFileSize } from "@/lib/image-processing";
+import { withItemIds } from "@/lib/utils";
 import {
   Camera,
   Loader2,
@@ -49,6 +50,7 @@ const PhotoUpload: React.FC<PhotoUploadProps> = ({ dense = false }) => {
   } = context;
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [isPreparing, setIsPreparing] = useState(false);
   const [showTaxAlert, setShowTaxAlert] = useState(false);
   const [showImageConfirm, setShowImageConfirm] = useState(false);
   const [alertMessage, setAlertMessage] = useState("");
@@ -77,6 +79,11 @@ const PhotoUpload: React.FC<PhotoUploadProps> = ({ dense = false }) => {
     const file = event.target.files?.[0];
     if (!file) return;
 
+    // The canvas resize runs on the main thread and takes a visible beat on a
+    // full-resolution phone photo, so acknowledge the tap before starting it.
+    setIsPreparing(true);
+    await new Promise((resolve) => requestAnimationFrame(resolve));
+
     // Process image: resize and convert to JPEG
     try {
       console.log(
@@ -98,6 +105,8 @@ const PhotoUpload: React.FC<PhotoUploadProps> = ({ dense = false }) => {
       // Fallback to original file if processing fails
       setImageFile(file);
       setShowImageConfirm(true);
+    } finally {
+      setIsPreparing(false);
     }
   };
 
@@ -172,7 +181,7 @@ const PhotoUpload: React.FC<PhotoUploadProps> = ({ dense = false }) => {
         setReceiptImageUrl(imageUrl);
       }
 
-      setItems(data.items || []);
+      setItems(withItemIds(data.items || []));
       setTax(taxAmount);
       setTaxInput(taxAmount);
       setTip(tipAmount);
@@ -277,7 +286,7 @@ const PhotoUpload: React.FC<PhotoUploadProps> = ({ dense = false }) => {
           <Button
             onClick={handleTakePhoto}
             className={dense ? "h-10 text-[13px]" : "h-12 text-sm"}
-            disabled={isLoading}
+            disabled={isLoading || isPreparing}
           >
             <Camera className="mr-2 h-4 w-4" />
             Take photo of receipt
@@ -287,7 +296,7 @@ const PhotoUpload: React.FC<PhotoUploadProps> = ({ dense = false }) => {
             onClick={handleUploadFromGallery}
             variant="outline"
             className={dense ? "h-9 text-xs" : "h-11 text-[13px]"}
-            disabled={isLoading}
+            disabled={isLoading || isPreparing}
           >
             <Upload className="mr-2 h-4 w-4" />
             Upload from gallery
@@ -314,7 +323,7 @@ const PhotoUpload: React.FC<PhotoUploadProps> = ({ dense = false }) => {
       )}
 
       {/* Status indicator */}
-      {imageFile && !isLoading && !processedImageUrl && (
+      {imageFile && !isLoading && !isPreparing && !processedImageUrl && (
         <div className="mt-3 flex items-center gap-2 rounded-md bg-muted/60 p-3">
           <Check className="h-4 w-4 text-positive" />
           <span className="text-xs text-muted-foreground">
@@ -323,11 +332,11 @@ const PhotoUpload: React.FC<PhotoUploadProps> = ({ dense = false }) => {
         </div>
       )}
 
-      {isLoading && (
+      {(isLoading || isPreparing) && (
         <div className="mt-3 flex items-center gap-2 rounded-md bg-primary/10 p-3">
           <Loader2 className="h-4 w-4 animate-spin text-primary" />
           <span className="text-xs font-semibold text-primary">
-            Processing receipt…
+            {isPreparing ? "Preparing photo…" : "Processing receipt…"}
           </span>
         </div>
       )}

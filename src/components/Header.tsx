@@ -1,15 +1,28 @@
 "use client";
 
 import React from "react";
+import dynamic from "next/dynamic";
 import { ReceiptText } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useBill } from "@/components/BillProvider";
-import { AuthDialog } from "./AuthDialog";
 import { UserMenu } from "./UserMenu";
-import { SaveReceiptDialog } from "./SaveReceiptDialog";
-import { ReceiptHistory } from "./ReceiptHistory";
 import { ModeToggle } from "./ModeToggle";
 import { Separator } from "@/components/ui/separator";
+
+// Signed-out visitors never render these, and signed-in ones only open them on
+// demand — keeping them out of the first load.
+const AuthDialog = dynamic(
+  () => import("./AuthDialog").then((m) => m.AuthDialog),
+  { ssr: false }
+);
+const SaveReceiptDialog = dynamic(
+  () => import("./SaveReceiptDialog").then((m) => m.SaveReceiptDialog),
+  { ssr: false }
+);
+const ReceiptHistory = dynamic(
+  () => import("./ReceiptHistory").then((m) => m.ReceiptHistory),
+  { ssr: false }
+);
 
 export function Header() {
   const { isAuthenticated } = useAuth();

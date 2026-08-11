@@ -3,6 +3,7 @@
 import React from "react";
 import { Plus } from "lucide-react";
 import { useBill } from "@/components/BillProvider";
+import { tapFeedback } from "@/lib/haptics";
 import { cn } from "@/lib/utils";
 import { useBillSummary, money } from "@/hooks/use-bill-summary";
 
@@ -22,6 +23,7 @@ export default function ItemAssignList({
   const { people } = useBillSummary();
 
   function toggleBuyer(itemIndex: number, person: string) {
+    tapFeedback();
     setItems((prev) =>
       prev.map((item, index) =>
         index !== itemIndex
@@ -52,7 +54,7 @@ export default function ItemAssignList({
 
       {items.map((item, index) => (
         <div
-          key={`${item.name}-${index}`}
+          key={item.id}
           className="animate-in rounded-lg bg-card p-4 shadow-sm duration-300 fade-in slide-in-from-bottom-2"
           style={{
             animationDelay: `${Math.min(index, 8) * 40}ms`,

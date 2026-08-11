@@ -84,6 +84,7 @@ export default function EditItemDialog({
             id="edit-item-name"
             value={editingItemName}
             onChange={(event) => setEditingItemName(event.target.value)}
+            enterKeyHint="next"
           />
         </ModalField>
         <ModalField label="Price" htmlFor="edit-item-price">
@@ -94,6 +95,7 @@ export default function EditItemDialog({
             inputMode="decimal"
             value={editingItemPrice}
             onChange={(event) => setEditingItemPrice(event.target.value)}
+            enterKeyHint="done"
             className="tabular-nums"
           />
         </ModalField>

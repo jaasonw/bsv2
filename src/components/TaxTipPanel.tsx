@@ -1,10 +1,11 @@
 "use client";
 
-import React, { use } from "react";
+import React, { use, useCallback } from "react";
 import { BillContext, BillContextType } from "@/components/BillProvider";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { useBillSummary, money } from "@/hooks/use-bill-summary";
+import { useDeferredAmount } from "@/hooks/use-deferred-amount";
 
 const TIP_PRESETS = ["10", "15", "18", "20"];
 
@@ -36,18 +37,25 @@ export default function TaxTipPanel({ dense = false }: { dense?: boolean }) {
 
   const tipBase = tipTheTax ? subtotal + tax : subtotal;
 
-  function handleTaxChange(value: number) {
-    const amount = isNaN(value) ? 0 : value;
-    setTax(amount);
-    setTaxInput(amount);
-  }
+  const commitTax = useCallback(
+    (amount: number) => {
+      setTax(amount);
+      setTaxInput(amount);
+    },
+    [setTax, setTaxInput]
+  );
 
-  function handleTipChange(value: number) {
-    const amount = isNaN(value) ? 0 : Math.round(value * 100) / 100;
-    setTip(amount);
-    setTipInput(amount);
-    setSelectedTipPercentage("custom");
-  }
+  const commitTip = useCallback(
+    (amount: number) => {
+      setTip(amount);
+      setTipInput(amount);
+      setSelectedTipPercentage("custom");
+    },
+    [setTip, setTipInput, setSelectedTipPercentage]
+  );
+
+  const taxField = useDeferredAmount(taxInput, commitTax);
+  const tipField = useDeferredAmount(tipInput, commitTip);
 
   function applyPreset(percentage: string) {
     const amount =
@@ -70,24 +78,24 @@ export default function TaxTipPanel({ dense = false }: { dense?: boolean }) {
         <Field label={`Tax paid (${taxPercent}%)`}>
           <Input
             aria-label="Tax paid"
-            value={taxInput}
-            onChange={(event) =>
-              handleTaxChange(parseFloat(event.target.value))
-            }
-            type="number"
-            step="0.01"
+            value={taxField.draft}
+            onChange={(event) => taxField.onChange(event.target.value)}
+            onBlur={taxField.onBlur}
+            type="text"
+            inputMode="decimal"
+            enterKeyHint="done"
             className="tabular-nums"
           />
         </Field>
         <Field label={`Tip paid (${tipPercent}%)`}>
           <Input
             aria-label="Tip paid"
-            value={tipInput}
-            onChange={(event) =>
-              handleTipChange(parseFloat(event.target.value))
-            }
-            type="number"
-            step="0.01"
+            value={tipField.draft}
+            onChange={(event) => tipField.onChange(event.target.value)}
+            onBlur={tipField.onBlur}
+            type="text"
+            inputMode="decimal"
+            enterKeyHint="done"
             className="tabular-nums"
           />
         </Field>

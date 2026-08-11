@@ -107,7 +107,7 @@ export default function ItemMatrix({
           const unassigned = item.buyers.length === 0;
 
           return (
-            <React.Fragment key={`${item.name}-${index}`}>
+            <React.Fragment key={item.id}>
               <button
                 type="button"
                 onClick={() => onEditItem(index)}

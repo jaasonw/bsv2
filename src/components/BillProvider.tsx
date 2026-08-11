@@ -1,13 +1,16 @@
 "use client";
-import { Item, createTable } from "@/lib/utils";
+import { Item, createItemId, withItemIds } from "@/lib/utils";
 import { Receipt } from "@/lib/receipts";
 import { getPocketBase } from "@/lib/pocketbase";
 import React, {
   createContext,
   ReactNode,
+  useCallback,
   useState,
   useEffect,
   useContext,
+  useMemo,
+  useRef,
 } from "react";
 
 export interface BillContextType {
@@ -23,10 +26,6 @@ export interface BillContextType {
   setTipAsProportion: React.Dispatch<React.SetStateAction<boolean>>;
   tipTheTax: boolean;
   setTipTheTax: React.Dispatch<React.SetStateAction<boolean>>;
-  table: (string | { id: string; buyer: string })[][];
-  setTable: React.Dispatch<
-    React.SetStateAction<(string | { id: string; buyer: string })[][]>
-  >;
   tip: number;
   setTip: React.Dispatch<React.SetStateAction<number>>;
   tax: number;
@@ -53,7 +52,6 @@ export interface BillContextType {
   ) => void;
   addItem: (name: string, price: number) => void;
   addPerson: (name: string) => void;
-  createTable: typeof createTable;
   loadReceipt: (receipt: Receipt) => void;
 }
 
@@ -72,9 +70,6 @@ export const BillProvider: React.FC<{ children: ReactNode }> = ({
   const [taxInput, setTaxInput] = useState<number>(0);
   const [tipAsProportion, setTipAsProportion] = useState<boolean>(true);
   const [tipTheTax, setTipTheTax] = useState<boolean>(false);
-  const [table, setTable] = useState<
-    (string | { id: string; buyer: string })[][]
-  >([[]]);
   const [tip, setTip] = useState<number>(0);
   const [tax, setTax] = useState<number>(0);
   const [selectedTipPercentage, setSelectedTipPercentage] =
@@ -83,29 +78,29 @@ export const BillProvider: React.FC<{ children: ReactNode }> = ({
   const [receiptImageUrl, setReceiptImageUrl] = useState<string | null>(null);
   const [settled, setSettled] = useState<Record<string, boolean>>({});
 
+  // Read through a ref so the listener is registered once instead of being
+  // torn down and re-added on every edit.
+  const hasDataRef = useRef(false);
+  hasDataRef.current =
+    items.length > 0 || people.length > 0 || tipInput > 0 || taxInput > 0;
+
   useEffect(() => {
     const handleBeforeUnload = (event: BeforeUnloadEvent) => {
-      const hasData =
-        items.length > 0 || people.length > 0 || tipInput > 0 || taxInput > 0;
-
-      if (hasData) {
+      if (hasDataRef.current) {
         event.preventDefault();
         event.returnValue = "";
       }
     };
 
     window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+  }, []);
 
-    return () => {
-      window.removeEventListener("beforeunload", handleBeforeUnload);
-    };
-  }, [items, people, tipInput, taxInput]);
-
-  const toggleSettled = (person: string) => {
+  const toggleSettled = useCallback((person: string) => {
     setSettled((prev) => ({ ...prev, [person]: !prev[person] }));
-  };
+  }, []);
 
-  const reset = () => {
+  const reset = useCallback(() => {
     setItems([]);
     setPeople([]);
     setTipInput(0);
@@ -118,82 +113,95 @@ export const BillProvider: React.FC<{ children: ReactNode }> = ({
     setSettled({});
     setReceiptImage(null);
     setReceiptImageUrl(null);
-  };
+  }, []);
 
-  const deleteItem = (index: number) => {
+  const deleteItem = useCallback((index: number) => {
     setItems((prevItems) => prevItems.filter((_, i) => i !== index));
-  };
+  }, []);
 
-  const deletePerson = (index: number) => {
-    const personToDelete = people[index];
-    const newPeople = people.filter((_, i) => i !== index);
-    const newItems = items.map((item) => ({
-      ...item,
-      buyers: item.buyers.filter((buyer) => buyer !== personToDelete),
-    }));
-    setPeople(newPeople);
-    setItems(newItems);
-    setSettled((prev) => {
-      const { [personToDelete]: _removed, ...rest } = prev;
-      return rest;
-    });
-  };
+  const deletePerson = useCallback(
+    (index: number) => {
+      const personToDelete = people[index];
+      const newPeople = people.filter((_, i) => i !== index);
+      const newItems = items.map((item) => ({
+        ...item,
+        buyers: item.buyers.filter((buyer) => buyer !== personToDelete),
+      }));
+      setPeople(newPeople);
+      setItems(newItems);
+      setSettled((prev) => {
+        const { [personToDelete]: _removed, ...rest } = prev;
+        return rest;
+      });
+    },
+    [items, people]
+  );
 
-  const savePerson = (index: number, newName: string) => {
-    const oldName = people[index];
-    const newPeople = [...people];
-    newPeople[index] = newName;
+  const savePerson = useCallback(
+    (index: number, newName: string) => {
+      const oldName = people[index];
+      const newPeople = [...people];
+      newPeople[index] = newName;
 
-    const newItems = items.map((item) => ({
-      ...item,
-      buyers: item.buyers.map((buyer) => (buyer === oldName ? newName : buyer)),
-    }));
+      const newItems = items.map((item) => ({
+        ...item,
+        buyers: item.buyers.map((buyer) =>
+          buyer === oldName ? newName : buyer
+        ),
+      }));
 
-    setPeople(newPeople);
-    setItems(newItems);
-    setSettled((prev) => {
-      if (!(oldName in prev)) return prev;
-      const { [oldName]: wasSettled, ...rest } = prev;
-      return { ...rest, [newName]: wasSettled };
-    });
-  };
+      setPeople(newPeople);
+      setItems(newItems);
+      setSettled((prev) => {
+        if (!(oldName in prev)) return prev;
+        const { [oldName]: wasSettled, ...rest } = prev;
+        return { ...rest, [newName]: wasSettled };
+      });
+    },
+    [items, people]
+  );
 
-  const saveItem = (
-    index: number,
-    newItem: {
-      name: string;
-      price: number;
-    }
-  ) => {
-    const newItems = [...items];
-    newItems[index] = {
-      ...newItems[index],
-      name: newItem.name,
-      price: newItem.price,
-    };
-    setItems(newItems);
-  };
+  const saveItem = useCallback(
+    (
+      index: number,
+      newItem: {
+        name: string;
+        price: number;
+      }
+    ) => {
+      const newItems = [...items];
+      newItems[index] = {
+        ...newItems[index],
+        name: newItem.name,
+        price: newItem.price,
+      };
+      setItems(newItems);
+    },
+    [items]
+  );
 
-  const addItem = (name: string, price: number) => {
+  const addItem = useCallback((name: string, price: number) => {
     setItems((prevItems) => [
       ...prevItems,
       {
+        id: createItemId(),
         name: name !== "" ? name : `item ${prevItems.length + 1}`,
         price: Number(price),
         buyers: [],
       },
     ]);
-  };
+  }, []);
 
-  const addPerson = (name: string) => {
+  const addPerson = useCallback((name: string) => {
     setPeople((prevPeople) => [
       ...prevPeople,
       name !== "" ? name : `person ${prevPeople.length + 1}`,
     ]);
-  };
+  }, []);
 
-  const loadReceipt = (receipt: Receipt) => {
-    setItems(receipt.items);
+  const loadReceipt = useCallback((receipt: Receipt) => {
+    // Receipts saved before items carried ids need them back-filled.
+    setItems(withItemIds(receipt.items));
     setPeople(receipt.people);
     setTaxInput(receipt.tax);
     setTax(receipt.tax);
@@ -226,45 +234,67 @@ export const BillProvider: React.FC<{ children: ReactNode }> = ({
       setReceiptImageUrl(null);
     }
     setReceiptImage(null); // Can't set File from cloud storage
-  };
+  }, []);
 
-  const value: BillContextType = {
-    items,
-    setItems,
-    people,
-    setPeople,
-    tipInput,
-    setTipInput,
-    taxInput,
-    setTaxInput,
-    tipAsProportion,
-    setTipAsProportion,
-    tipTheTax,
-    setTipTheTax,
-    table,
-    setTable,
-    tip,
-    setTip,
-    tax,
-    setTax,
-    selectedTipPercentage,
-    setSelectedTipPercentage,
-    receiptImage,
-    setReceiptImage,
-    receiptImageUrl,
-    setReceiptImageUrl,
-    settled,
-    toggleSettled,
-    reset,
-    deleteItem,
-    deletePerson,
-    savePerson,
-    saveItem,
-    addItem,
-    addPerson,
-    createTable,
-    loadReceipt,
-  };
+  const value: BillContextType = useMemo(
+    () => ({
+      items,
+      setItems,
+      people,
+      setPeople,
+      tipInput,
+      setTipInput,
+      taxInput,
+      setTaxInput,
+      tipAsProportion,
+      setTipAsProportion,
+      tipTheTax,
+      setTipTheTax,
+      tip,
+      setTip,
+      tax,
+      setTax,
+      selectedTipPercentage,
+      setSelectedTipPercentage,
+      receiptImage,
+      setReceiptImage,
+      receiptImageUrl,
+      setReceiptImageUrl,
+      settled,
+      toggleSettled,
+      reset,
+      deleteItem,
+      deletePerson,
+      savePerson,
+      saveItem,
+      addItem,
+      addPerson,
+      loadReceipt,
+    }),
+    [
+      items,
+      people,
+      tipInput,
+      taxInput,
+      tipAsProportion,
+      tipTheTax,
+      tip,
+      tax,
+      selectedTipPercentage,
+      receiptImage,
+      receiptImageUrl,
+      settled,
+      toggleSettled,
+      reset,
+      deleteItem,
+      deletePerson,
+      savePerson,
+      saveItem,
+      addItem,
+      addPerson,
+      loadReceipt,
+    ]
+  );
 
   return <BillContext.Provider value={value}>{children}</BillContext.Provider>;
 };

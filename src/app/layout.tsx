@@ -3,6 +3,7 @@ import { Manrope } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { BillProvider } from "@/components/BillProvider";
+import { BillSummaryProvider } from "@/hooks/use-bill-summary";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { Header } from "@/components/Header";
 import ServiceWorkerRegistrar from "@/components/ServiceWorkerRegistrar";
@@ -31,8 +32,10 @@ export const viewport: Viewport = {
     { media: "(prefers-color-scheme: light)", color: "#2e1f52" },
     { media: "(prefers-color-scheme: dark)", color: "#1e2030" },
   ],
-  // Keeps the installed app from bouncing when the on-screen keyboard opens.
   viewportFit: "cover",
+  // Resize the viewport instead of overlaying, so the fixed bottom tab bar
+  // isn't hidden behind the on-screen keyboard.
+  interactiveWidget: "resizes-content",
 };
 
 export default function RootLayout({
@@ -51,10 +54,12 @@ export default function RootLayout({
         >
           <AuthProvider>
             <BillProvider>
-              <Header />
-              <main className="flex-1 w-full">{children}</main>
-              <Toaster />
-              <ServiceWorkerRegistrar />
+              <BillSummaryProvider>
+                <Header />
+                <main className="flex-1 w-full">{children}</main>
+                <Toaster />
+                <ServiceWorkerRegistrar />
+              </BillSummaryProvider>
             </BillProvider>
           </AuthProvider>
         </ThemeProvider>

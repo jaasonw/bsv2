@@ -30,7 +30,7 @@ export default function DesktopLayout({
   const { itemCount, people } = useBillSummary();
 
   return (
-    <div className="hidden p-7 lg:block">
+    <div className="p-7">
       <div className="mx-auto max-w-[1360px]">
         <div className="grid grid-cols-[240px_minmax(480px,1fr)_300px] items-start gap-5">
           {/* Left rail */}

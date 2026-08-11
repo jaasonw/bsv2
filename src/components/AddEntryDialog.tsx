@@ -63,6 +63,7 @@ export default function AddEntryDialog({ kind, onClose }: AddEntryDialogProps) {
             autoFocus
             value={name}
             onChange={(event) => setName(event.target.value)}
+            enterKeyHint={isItem ? "next" : "done"}
             placeholder={isItem ? "e.g. Truffle pasta" : "e.g. Alex"}
           />
         </ModalField>
@@ -75,6 +76,7 @@ export default function AddEntryDialog({ kind, onClose }: AddEntryDialogProps) {
               inputMode="decimal"
               value={price}
               onChange={(event) => setPrice(event.target.value)}
+              enterKeyHint="done"
               placeholder="0.00"
               className="tabular-nums"
             />

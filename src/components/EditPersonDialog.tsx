@@ -73,6 +73,7 @@ export default function EditPersonDialog({
           id="edit-person-name"
           value={editingPersonName}
           onChange={(event) => setEditingPersonName(event.target.value)}
+          enterKeyHint="done"
         />
       </ModalField>
     </ResponsiveModal>
