@@ -101,7 +101,7 @@ export default function MobileLayout({
       </div>
 
       {/* Bottom tab bar */}
-      <nav className="fixed inset-x-0 bottom-0 z-40 mx-auto flex max-w-[480px] rounded-t-lg bg-card px-2 pb-3.5 pt-2.5 shadow-[0_-4px_20px_hsl(var(--brand)/0.12)]">
+      <nav className="fixed inset-x-0 bottom-0 z-40 mx-auto flex max-w-[480px] rounded-t-lg bg-card px-2 pb-[calc(0.875rem+env(safe-area-inset-bottom))] pt-2.5 shadow-[0_-4px_20px_hsl(var(--brand)/0.12)]">
         {TABS.map(({ id, label, icon: Icon }) => (
           <button
             key={id}

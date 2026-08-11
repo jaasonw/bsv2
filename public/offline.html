@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>bill splitter — offline</title>
+    <style>
+      :root {
+        color-scheme: light dark;
+        --bg: #e6e9ef;
+        --card: #eff1f5;
+        --fg: #4c4f69;
+        --muted: #6c6f85;
+        --brand: #8839ef;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --bg: #1e2030;
+          --card: #24273a;
+          --fg: #cad3f5;
+          --muted: #a5adcb;
+          --brand: #c6a0f6;
+        }
+      }
+      body {
+        margin: 0;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 24px;
+        background: var(--bg);
+        color: var(--fg);
+        font-family:
+          Manrope,
+          system-ui,
+          -apple-system,
+          sans-serif;
+      }
+      .card {
+        background: var(--card);
+        border-radius: 8px;
+        padding: 28px;
+        max-width: 360px;
+        text-align: center;
+      }
+      h1 {
+        margin: 0 0 8px;
+        font-size: 19px;
+      }
+      p {
+        margin: 0 0 20px;
+        font-size: 14px;
+        line-height: 1.5;
+        color: var(--muted);
+      }
+      button {
+        border: none;
+        border-radius: 6px;
+        background: var(--brand);
+        color: #fff;
+        font: inherit;
+        font-weight: 700;
+        font-size: 14px;
+        padding: 11px 20px;
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="card">
+      <h1>you're offline</h1>
+      <p>
+        bill splitter needs a connection to load. any bill you had open is still
+        on this device once you reconnect.
+      </p>
+      <button onclick="location.reload()">try again</button>
+    </div>
+  </body>
+</html>
