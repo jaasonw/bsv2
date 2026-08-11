@@ -37,6 +37,10 @@ export interface BillContextType {
   setReceiptImage: React.Dispatch<React.SetStateAction<File | null>>;
   receiptImageUrl: string | null;
   setReceiptImageUrl: React.Dispatch<React.SetStateAction<string | null>>;
+  /** Who has already paid you back. UI-only, not persisted to PocketBase. */
+  settled: Record<string, boolean>;
+  toggleSettled: (person: string) => void;
+  reset: () => void;
   deleteItem: (index: number) => void;
   deletePerson: (index: number) => void;
   savePerson: (index: number, newName: string) => void;
@@ -77,6 +81,7 @@ export const BillProvider: React.FC<{ children: ReactNode }> = ({
     useState<string>("custom");
   const [receiptImage, setReceiptImage] = useState<File | null>(null);
   const [receiptImageUrl, setReceiptImageUrl] = useState<string | null>(null);
+  const [settled, setSettled] = useState<Record<string, boolean>>({});
 
   useEffect(() => {
     const handleBeforeUnload = (event: BeforeUnloadEvent) => {
@@ -96,6 +101,25 @@ export const BillProvider: React.FC<{ children: ReactNode }> = ({
     };
   }, [items, people, tipInput, taxInput]);
 
+  const toggleSettled = (person: string) => {
+    setSettled((prev) => ({ ...prev, [person]: !prev[person] }));
+  };
+
+  const reset = () => {
+    setItems([]);
+    setPeople([]);
+    setTipInput(0);
+    setTip(0);
+    setTaxInput(0);
+    setTax(0);
+    setTipAsProportion(true);
+    setTipTheTax(false);
+    setSelectedTipPercentage("custom");
+    setSettled({});
+    setReceiptImage(null);
+    setReceiptImageUrl(null);
+  };
+
   const deleteItem = (index: number) => {
     setItems((prevItems) => prevItems.filter((_, i) => i !== index));
   };
@@ -109,6 +133,10 @@ export const BillProvider: React.FC<{ children: ReactNode }> = ({
     }));
     setPeople(newPeople);
     setItems(newItems);
+    setSettled((prev) => {
+      const { [personToDelete]: _removed, ...rest } = prev;
+      return rest;
+    });
   };
 
   const savePerson = (index: number, newName: string) => {
@@ -123,6 +151,11 @@ export const BillProvider: React.FC<{ children: ReactNode }> = ({
 
     setPeople(newPeople);
     setItems(newItems);
+    setSettled((prev) => {
+      if (!(oldName in prev)) return prev;
+      const { [oldName]: wasSettled, ...rest } = prev;
+      return { ...rest, [newName]: wasSettled };
+    });
   };
 
   const saveItem = (
@@ -168,6 +201,7 @@ export const BillProvider: React.FC<{ children: ReactNode }> = ({
     setTip(receipt.tip);
     setTipAsProportion(receipt.tip_as_proportion);
     setTipTheTax(receipt.tip_the_tax);
+    setSettled({});
 
     // Set receipt image if available
     if (receipt.receipt_image) {
@@ -219,6 +253,9 @@ export const BillProvider: React.FC<{ children: ReactNode }> = ({
     setReceiptImage,
     receiptImageUrl,
     setReceiptImageUrl,
+    settled,
+    toggleSettled,
+    reset,
     deleteItem,
     deletePerson,
     savePerson,

@@ -1,12 +1,13 @@
 "use client";
 
-import { BillContext, BillContextType } from "@/components/BillProvider";
-import EditPersonDialog from "@/components/EditPersonDialog";
-import { createTable } from "@/lib/utils";
 import React, { use, useEffect, useState } from "react";
+import { BillContext, BillContextType } from "@/components/BillProvider";
+import AddEntryDialog, { type AddEntryKind } from "@/components/AddEntryDialog";
+import DesktopLayout from "@/components/DesktopLayout";
 import EditItemDialog from "@/components/EditItemDialog";
-import MobileLayout from "./MobileLayout";
-import DesktopLayout from "./DesktopLayout";
+import EditPersonDialog from "@/components/EditPersonDialog";
+import MobileLayout, { type MobileTab } from "@/components/MobileLayout";
+import { createTable } from "@/lib/utils";
 
 export default function BillSplitter() {
   const context = use(BillContext) as BillContextType;
@@ -24,41 +25,38 @@ export default function BillSplitter() {
     saveItem,
   } = context;
 
-  const [editingItemIndex, setEditingItemIndex] = React.useState<number | null>(
+  const [editingItemIndex, setEditingItemIndex] = useState<number | null>(null);
+  const [editingPersonIndex, setEditingPersonIndex] = useState<number | null>(
     null
   );
-  const [editingPersonIndex, setEditingPersonIndex] = React.useState<
-    number | null
-  >(null);
-  const [mobileView, setMobileView] = useState<"table" | "tabs" | "compact">(
-    "table"
-  );
+  const [addEntryKind, setAddEntryKind] = useState<AddEntryKind | null>(null);
+  const [mobileTab, setMobileTab] = useState<MobileTab>("scan");
 
   useEffect(() => {
     setTable(createTable(items, people, tip, tax, tipAsProportion));
   }, [items, people, tip, tax, tipAsProportion, tipTheTax]);
 
-  const placeholderText = "Add some people or items to the tab to begin";
-
   return (
-    <div className="max-w-(--breakpoint-2xl)">
+    <div className="w-full">
       <MobileLayout
-        mobileView={mobileView}
-        setMobileView={setMobileView}
-        items={items}
-        people={people}
+        tab={mobileTab}
+        setTab={setMobileTab}
         setEditingItemIndex={setEditingItemIndex}
         setEditingPersonIndex={setEditingPersonIndex}
-        placeholderText={placeholderText}
+        onAddItem={() => setAddEntryKind("item")}
+        onAddPerson={() => setAddEntryKind("person")}
       />
       <DesktopLayout
-        items={items}
-        people={people}
         setEditingItemIndex={setEditingItemIndex}
         setEditingPersonIndex={setEditingPersonIndex}
-        placeholderText={placeholderText}
+        onAddItem={() => setAddEntryKind("item")}
+        onAddPerson={() => setAddEntryKind("person")}
       />
 
+      <AddEntryDialog
+        kind={addEntryKind}
+        onClose={() => setAddEntryKind(null)}
+      />
       <EditItemDialog
         editingItemIndex={editingItemIndex}
         onClose={() => setEditingItemIndex(null)}

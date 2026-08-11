@@ -3,7 +3,7 @@ import { ModeToggle } from "./ModeToggle";
 
 export default function Footer() {
   return (
-    <footer className="grid grid-cols-3 w-full mt-4 text-muted-foreground text-xs">
+    <footer className="mt-4 grid w-full grid-cols-1 items-center gap-3 text-xs text-muted-foreground sm:grid-cols-3">
       <ModeToggle />
       <span className="flex flex-col items-center justify-center">
         <span>copyright 2026</span>
@@ -17,7 +17,7 @@ export default function Footer() {
           </a>
         </span>
       </span>{" "}
-      <span className="flex flex-col items-end">
+      <span className="flex flex-col items-center sm:items-end">
         <a
           href={`https://github.com/jaasonw/bsv2`}
           className="text-right hover:underline"
