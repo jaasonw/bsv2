@@ -1,70 +1,94 @@
 "use client";
 
-import { Card, CardContent } from "@/components/ui/card";
-import BillTable from "@/components/BillTable";
-import DataInput from "@/components/DataInput";
+import React from "react";
+import { Plus, RotateCcw } from "lucide-react";
+import { useBill } from "@/components/BillProvider";
+import BillTotalCard from "@/components/BillTotalCard";
 import Footer from "@/components/Footer";
-import ListView from "@/components/ListView";
-import { Item } from "@/lib/utils";
+import ItemMatrix from "@/components/ItemMatrix";
+import PersonBreakdown from "@/components/PersonBreakdown";
+import PhotoUpload from "@/components/PhotoUpload";
+import SavedBillsPanel from "@/components/SavedBillsPanel";
+import TaxTipPanel from "@/components/TaxTipPanel";
+import { Button } from "@/components/ui/button";
+import { useBillSummary } from "@/hooks/use-bill-summary";
 
 interface DesktopLayoutProps {
-  items: Item[];
-  people: string[];
   setEditingItemIndex: (index: number | null) => void;
   setEditingPersonIndex: (index: number | null) => void;
-  placeholderText: string;
+  onAddItem: () => void;
+  onAddPerson: () => void;
 }
 
 export default function DesktopLayout({
-  items,
-  people,
   setEditingItemIndex,
   setEditingPersonIndex,
-  placeholderText,
+  onAddItem,
+  onAddPerson,
 }: DesktopLayoutProps) {
+  const { reset } = useBill();
+  const { itemCount, people } = useBillSummary();
+
   return (
-    <div className="hidden lg:flex w-full h-screen gap-4">
-      {/* Sidebar - 1/5 (20%) */}
-      <div className="w-1/5 min-w-[280px] overflow-y-auto">
-        <Card className="h-full">
-          <div className="mt-5 p-6 pt-0">
-            <div className="flex flex-col w-full gap-5">
-              <h3 className="w-full font-lg font-bold text-foreground">
-                {placeholderText}
-              </h3>
-              <DataInput />
+    <div className="p-7">
+      <div className="mx-auto max-w-[1360px]">
+        <div className="grid grid-cols-[240px_minmax(480px,1fr)_300px] items-start gap-5">
+          {/* Left rail */}
+          <div className="sticky top-6 flex flex-col gap-4">
+            <BillTotalCard variant="gradient" />
+
+            <div className="rounded-lg bg-card p-4 shadow-sm">
+              <PhotoUpload dense />
             </div>
-          </div>
-        </Card>
-      </div>
 
-      {/* Main Content/Table - 3/5 (60%) */}
-      <div className="w-3/5 overflow-hidden">
-        <Card className="h-full flex flex-col">
-          <CardContent className="flex-1 p-6 overflow-hidden">
-            {items.length !== 0 || people.length !== 0 ? (
-              <div className="h-full overflow-auto">
-                <BillTable
-                  onEditItem={setEditingItemIndex}
-                  onEditPerson={setEditingPersonIndex}
-                />
-              </div>
-            ) : (
-              <div className="h-full flex items-center justify-center text-muted-foreground">
-                <p>Add people and items to see the bill breakdown</p>
-              </div>
-            )}
-          </CardContent>
-          {/* Footer at bottom of table section - desktop only */}
-          <div className="border-t p-4">
-            <Footer />
-          </div>
-        </Card>
-      </div>
+            <TaxTipPanel dense />
 
-      {/* ListView - 1/5 (20%) */}
-      <div className="w-1/5 min-w-[280px] overflow-hidden">
-        <ListView />
+            <Button variant="secondary" onClick={reset}>
+              <RotateCcw className="h-4 w-4" /> Reset bill
+            </Button>
+          </div>
+
+          {/* Matrix */}
+          <div className="min-w-0 overflow-hidden rounded-lg bg-card p-6 shadow-sm">
+            <div className="mb-4 flex items-baseline justify-between gap-4">
+              <div>
+                <h1 className="text-[19px] font-bold">current bill</h1>
+                <p className="text-xs text-muted-foreground">
+                  {itemCount} item{itemCount === 1 ? "" : "s"} · {people.length}{" "}
+                  {people.length === 1 ? "person" : "people"}
+                </p>
+              </div>
+              <div className="flex gap-2">
+                <Button variant="outline" size="sm" onClick={onAddPerson}>
+                  <Plus className="h-4 w-4" /> Add person
+                </Button>
+                <Button size="sm" onClick={onAddItem}>
+                  <Plus className="h-4 w-4" /> Add item
+                </Button>
+              </div>
+            </div>
+
+            <ItemMatrix
+              onEditItem={setEditingItemIndex}
+              onEditPerson={setEditingPersonIndex}
+              onAddItem={onAddItem}
+              onAddPerson={onAddPerson}
+            />
+          </div>
+
+          {/* Right rail */}
+          <div className="sticky top-6 flex min-w-0 flex-col gap-4">
+            <PersonBreakdown
+              onAddPerson={onAddPerson}
+              onEditPerson={setEditingPersonIndex}
+            />
+            <SavedBillsPanel />
+          </div>
+        </div>
+
+        <div className="mx-auto mt-6 max-w-[1360px]">
+          <Footer />
+        </div>
       </div>
     </div>
   );

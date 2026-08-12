@@ -1,64 +1,55 @@
 "use client";
 
+import React, { use, useState } from "react";
 import { BillContext, BillContextType } from "@/components/BillProvider";
-import EditPersonDialog from "@/components/EditPersonDialog";
-import { createTable } from "@/lib/utils";
-import React, { use, useEffect, useState } from "react";
+import AddEntryDialog, { type AddEntryKind } from "@/components/AddEntryDialog";
+import DesktopLayout from "@/components/DesktopLayout";
 import EditItemDialog from "@/components/EditItemDialog";
-import MobileLayout from "./MobileLayout";
-import DesktopLayout from "./DesktopLayout";
+import EditPersonDialog from "@/components/EditPersonDialog";
+import MobileLayout, { type MobileTab } from "@/components/MobileLayout";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 export default function BillSplitter() {
   const context = use(BillContext) as BillContextType;
-  const {
-    items,
-    people,
-    tip,
-    tax,
-    tipAsProportion,
-    tipTheTax,
-    setTable,
-    deleteItem,
-    deletePerson,
-    savePerson,
-    saveItem,
-  } = context;
+  const { deleteItem, deletePerson, savePerson, saveItem } = context;
+  const isMobile = useIsMobile();
 
-  const [editingItemIndex, setEditingItemIndex] = React.useState<number | null>(
+  const [editingItemIndex, setEditingItemIndex] = useState<number | null>(null);
+  const [editingPersonIndex, setEditingPersonIndex] = useState<number | null>(
     null
   );
-  const [editingPersonIndex, setEditingPersonIndex] = React.useState<
-    number | null
-  >(null);
-  const [mobileView, setMobileView] = useState<"table" | "tabs" | "compact">(
-    "table"
-  );
+  const [addEntryKind, setAddEntryKind] = useState<AddEntryKind | null>(null);
+  const [mobileTab, setMobileTab] = useState<MobileTab>("scan");
 
-  useEffect(() => {
-    setTable(createTable(items, people, tip, tax, tipAsProportion));
-  }, [items, people, tip, tax, tipAsProportion, tipTheTax]);
+  const openAddItem = () => setAddEntryKind("item");
+  const openAddPerson = () => setAddEntryKind("person");
 
-  const placeholderText = "Add some people or items to the tab to begin";
-
+  // Only one tree is mounted. Rendering both and hiding one with CSS meant
+  // phones still built the desktop matrix and fired the saved-bills request.
   return (
-    <div className="max-w-(--breakpoint-2xl)">
-      <MobileLayout
-        mobileView={mobileView}
-        setMobileView={setMobileView}
-        items={items}
-        people={people}
-        setEditingItemIndex={setEditingItemIndex}
-        setEditingPersonIndex={setEditingPersonIndex}
-        placeholderText={placeholderText}
-      />
-      <DesktopLayout
-        items={items}
-        people={people}
-        setEditingItemIndex={setEditingItemIndex}
-        setEditingPersonIndex={setEditingPersonIndex}
-        placeholderText={placeholderText}
-      />
+    <div className="w-full">
+      {isMobile ? (
+        <MobileLayout
+          tab={mobileTab}
+          setTab={setMobileTab}
+          setEditingItemIndex={setEditingItemIndex}
+          setEditingPersonIndex={setEditingPersonIndex}
+          onAddItem={openAddItem}
+          onAddPerson={openAddPerson}
+        />
+      ) : (
+        <DesktopLayout
+          setEditingItemIndex={setEditingItemIndex}
+          setEditingPersonIndex={setEditingPersonIndex}
+          onAddItem={openAddItem}
+          onAddPerson={openAddPerson}
+        />
+      )}
 
+      <AddEntryDialog
+        kind={addEntryKind}
+        onClose={() => setAddEntryKind(null)}
+      />
       <EditItemDialog
         editingItemIndex={editingItemIndex}
         onClose={() => setEditingItemIndex(null)}

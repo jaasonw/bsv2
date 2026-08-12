@@ -2,6 +2,7 @@
 import React, { use, useRef, useState } from "react";
 import { BillContext } from "@/components/BillProvider";
 import { processImageFile, formatFileSize } from "@/lib/image-processing";
+import { withItemIds } from "@/lib/utils";
 import {
   Camera,
   Loader2,
@@ -25,7 +26,12 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Separator } from "./ui/separator";
 
-const PhotoUpload: React.FC = () => {
+interface PhotoUploadProps {
+  /** Drops the preview thumbnail and tightens spacing for the desktop rail. */
+  dense?: boolean;
+}
+
+const PhotoUpload: React.FC<PhotoUploadProps> = ({ dense = false }) => {
   const context = use(BillContext);
   if (!context) {
     throw new Error("useBill must be used within a BillProvider");
@@ -44,6 +50,7 @@ const PhotoUpload: React.FC = () => {
   } = context;
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [isPreparing, setIsPreparing] = useState(false);
   const [showTaxAlert, setShowTaxAlert] = useState(false);
   const [showImageConfirm, setShowImageConfirm] = useState(false);
   const [alertMessage, setAlertMessage] = useState("");
@@ -72,6 +79,11 @@ const PhotoUpload: React.FC = () => {
     const file = event.target.files?.[0];
     if (!file) return;
 
+    // The canvas resize runs on the main thread and takes a visible beat on a
+    // full-resolution phone photo, so acknowledge the tap before starting it.
+    setIsPreparing(true);
+    await new Promise((resolve) => requestAnimationFrame(resolve));
+
     // Process image: resize and convert to JPEG
     try {
       console.log(
@@ -93,6 +105,8 @@ const PhotoUpload: React.FC = () => {
       // Fallback to original file if processing fails
       setImageFile(file);
       setShowImageConfirm(true);
+    } finally {
+      setIsPreparing(false);
     }
   };
 
@@ -114,8 +128,15 @@ const PhotoUpload: React.FC = () => {
   };
 
   const handleNewUpload = () => {
+    // The "has a photo" check reads both the local preview and the one held in
+    // context, so clearing only the local copy leaves the button inert.
+    if (processedImageUrl?.startsWith("blob:")) {
+      URL.revokeObjectURL(processedImageUrl);
+    }
     setProcessedImageUrl(null);
     setImageFile(null);
+    setReceiptImage(null);
+    setReceiptImageUrl(null);
     if (cameraInputRef.current) {
       cameraInputRef.current.value = "";
     }
@@ -160,7 +181,7 @@ const PhotoUpload: React.FC = () => {
         setReceiptImageUrl(imageUrl);
       }
 
-      setItems(data.items || []);
+      setItems(withItemIds(data.items || []));
       setTax(taxAmount);
       setTaxInput(taxAmount);
       setTip(tipAmount);
@@ -206,11 +227,13 @@ const PhotoUpload: React.FC = () => {
     }
   };
 
+  const previewUrl = processedImageUrl || receiptImageUrl;
+
   return (
-    <div className="w-full p-0">
-      <div className="text-lg flex items-center gap-2 font-semibold mb-4">
-        <Camera className="h-5 w-5" />
-        Receipt Scanner
+    <div className="w-full">
+      <div className="mb-3 flex items-center gap-2 text-sm font-bold">
+        <Camera className="h-4 w-4" />
+        Scan a receipt
       </div>
 
       {/* Hidden file inputs */}
@@ -233,75 +256,101 @@ const PhotoUpload: React.FC = () => {
         className="hidden"
       />
 
+      {/* Preview */}
+      {!dense && (
+        <button
+          type="button"
+          onClick={
+            previewUrl ? () => setShowReviewDialog(true) : handleTakePhoto
+          }
+          className="mb-3 flex aspect-4/3 w-full cursor-pointer items-center justify-center overflow-hidden rounded-md border border-dashed bg-muted/50 text-xs text-muted-foreground"
+        >
+          {previewUrl ? (
+            <img
+              src={previewUrl}
+              alt="Scanned receipt"
+              className="h-full w-full object-contain"
+            />
+          ) : (
+            <span className="flex flex-col items-center gap-1.5">
+              <ImageIcon className="h-5 w-5" />
+              receipt photo
+            </span>
+          )}
+        </button>
+      )}
+
       {/* Upload buttons */}
-      {!processedImageUrl && !receiptImageUrl ? (
-        <div className="grid grid-cols-1 gap-1">
+      {!previewUrl ? (
+        <div className="grid grid-cols-1 gap-2">
           <Button
             onClick={handleTakePhoto}
-            variant="outline"
-            className="h-12 text-sm"
-            disabled={isLoading}
+            className={dense ? "h-10 text-[13px]" : "h-12 text-sm"}
+            disabled={isLoading || isPreparing}
           >
             <Camera className="mr-2 h-4 w-4" />
-            Take Photo
+            Take photo of receipt
           </Button>
 
           <Button
             onClick={handleUploadFromGallery}
             variant="outline"
-            className="h-12 text-sm"
-            disabled={isLoading}
+            className={dense ? "h-9 text-xs" : "h-11 text-[13px]"}
+            disabled={isLoading || isPreparing}
           >
             <Upload className="mr-2 h-4 w-4" />
-            Upload from Gallery
+            Upload from gallery
           </Button>
         </div>
       ) : (
-        <div className="grid grid-cols-1 gap-1">
+        <div className="grid grid-cols-1 gap-2">
+          <Button
+            onClick={() => setShowReviewDialog(true)}
+            className={dense ? "h-10 text-[13px]" : "h-12 text-sm"}
+          >
+            <Check className="mr-2 h-4 w-4" />
+            Review receipt
+          </Button>
           <Button
             onClick={handleNewUpload}
             variant="outline"
-            className="h-12 text-sm"
+            className={dense ? "h-9 text-xs" : "h-11 text-[13px]"}
           >
             <Upload className="mr-2 h-4 w-4" />
-            Upload a New Photo
-          </Button>
-          <Button
-            onClick={() => setShowReviewDialog(true)}
-            className="h-12 text-sm"
-          >
-            <Check className="mr-2 h-4 w-4" />
-            Review Receipt
+            Scan a new photo
           </Button>
         </div>
       )}
 
       {/* Status indicator */}
-      {imageFile && !isLoading && !processedImageUrl && (
-        <div className="flex items-center gap-2 p-3 bg-muted/50 rounded-md mt-3">
-          <Check className="h-4 w-4 text-green-600 dark:text-green-400" />
-          <span className="text-sm text-muted-foreground">
+      {imageFile && !isLoading && !isPreparing && !processedImageUrl && (
+        <div className="mt-3 flex items-center gap-2 rounded-md bg-muted/60 p-3">
+          <Check className="h-4 w-4 text-positive" />
+          <span className="text-xs text-muted-foreground">
             Image ready to process
           </span>
         </div>
       )}
 
-      {isLoading && (
-        <div className="flex items-center gap-2 p-3 bg-blue-50 dark:bg-blue-950/30 rounded-md mt-3">
-          <Loader2 className="h-4 w-4 animate-spin text-blue-600 dark:text-blue-400" />
-          <span className="text-sm text-blue-700 dark:text-blue-300">
-            Processing receipt...
+      {(isLoading || isPreparing) && (
+        <div className="mt-3 flex items-center gap-2 rounded-md bg-primary/10 p-3">
+          <Loader2 className="h-4 w-4 animate-spin text-primary" />
+          <span className="text-xs font-semibold text-primary">
+            {isPreparing ? "Preparing photo…" : "Processing receipt…"}
           </span>
         </div>
       )}
 
-      <Separator className="my-4" />
-
-      <p className="text-xs text-muted-foreground text-center">
-        {!processedImageUrl && !receiptImageUrl
-          ? "Upload a clear image of your receipt to automatically extract items, tax, and tip information."
-          : "Your receipt has been processed"}
-      </p>
+      {!dense && (
+        <>
+          <Separator className="my-3" />
+          <p className="text-center text-xs leading-relaxed text-muted-foreground">
+            {!previewUrl
+              ? "We'll read items, tax, and tip straight off the photo."
+              : "Your receipt has been processed."}
+          </p>
+        </>
+      )}
 
       {/* Image confirmation dialog */}
       <AlertDialog open={showImageConfirm} onOpenChange={setShowImageConfirm}>

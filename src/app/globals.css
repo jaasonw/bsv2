@@ -42,6 +42,13 @@
   --color-card: hsl(var(--card));
   --color-card-foreground: hsl(var(--card-foreground));
 
+  --color-brand: hsl(var(--brand));
+  --color-brand-foreground: hsl(var(--brand-foreground));
+  --color-brand-from: hsl(var(--brand-from));
+  --color-brand-to: hsl(var(--brand-to));
+  --color-positive: hsl(var(--positive));
+
+  --radius-xl: calc(var(--radius) + 2px);
   --radius-lg: var(--radius);
   --radius-md: calc(var(--radius) - 2px);
   --radius-sm: calc(var(--radius) - 4px);
@@ -86,59 +93,104 @@
 }
 
 @layer base {
+  /*
+    Light theme is Catppuccin Latte.
+    mantle #e6e9ef · base #eff1f5 · crust #dce0e8 · surface0 #ccd0da
+    text #4c4f69 · subtext0 #6c6f85
+    mauve #8839ef · red #d20f39 · green #40a02b · blue #1e66f5 · peach #fe640b
+  */
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --background: 220 22% 92%; /* mantle */
+    --foreground: 234 16% 35%; /* text */
+    --card: 220 23% 96%; /* base */
+    --card-foreground: 234 16% 35%;
+    --popover: 220 23% 96%;
+    --popover-foreground: 234 16% 35%;
+    --primary: 266 85% 58%; /* mauve */
+    --primary-foreground: 220 23% 96%; /* base */
+    --secondary: 223 16% 86%; /* surface0 */
+    --secondary-foreground: 234 16% 35%;
+    --muted: 223 16% 86%;
+    --muted-foreground: 233 10% 47%; /* subtext0 */
+    --accent: 223 16% 83%;
+    --accent-foreground: 234 16% 35%;
+    --destructive: 347 87% 44%; /* red */
+    --destructive-foreground: 220 23% 96%;
+    --border: 223 16% 83%; /* surface0 */
+    --input: 223 16% 83%;
+    --ring: 266 85% 58%;
     --radius: 0.5rem;
-    --chart-1: 12 76% 61%;
-    --chart-2: 173 58% 39%;
-    --chart-3: 197 37% 24%;
-    --chart-4: 43 74% 66%;
-    --chart-5: 27 87% 67%;
+    --brand: 266 85% 58%;
+    --brand-foreground: 220 23% 96%;
+    --brand-from: 266 45% 32%;
+    --brand-to: 266 52% 20%;
+    --positive: 109 58% 33%; /* green */
+    /*
+      Per-person accents, Catppuccin Latte. Peach and yellow are taken a few
+      points darker than stock Latte so the white initial stays legible.
+    */
+    --person-ink: 0 0% 100%;
+    --person-0: 266 85% 58%; /* mauve */
+    --person-1: 316 73% 69%; /* pink */
+    --person-2: 197 97% 46%; /* sky */
+    --person-3: 109 58% 40%; /* green */
+    --person-4: 22 99% 45%; /* peach */
+    --person-5: 35 77% 40%; /* yellow */
+    --person-6: 220 91% 54%; /* blue */
+    --person-7: 355 76% 59%; /* maroon */
+    --chart-1: 220 91% 54%; /* blue */
+    --chart-2: 109 58% 40%; /* green */
+    --chart-3: 22 99% 52%; /* peach */
+    --chart-4: 266 85% 58%; /* mauve */
+    --chart-5: 347 87% 44%; /* red */
   }
 
+  /*
+    Dark theme is Catppuccin Macchiato.
+    mantle #1e2030 · base #24273a · crust #181926 · surface0 #363a4f
+    surface1 #494d64 · text #cad3f5 · subtext0 #a5adcb
+    mauve #c6a0f6 · red #ed8796 · green #a6da95 · blue #8aadf4 · peach #f5a97f
+  */
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
-    --chart-1: 220 70% 50%;
-    --chart-2: 160 60% 45%;
-    --chart-3: 30 80% 55%;
-    --chart-4: 280 65% 60%;
-    --chart-5: 340 75% 55%;
+    --background: 233 23% 15%; /* mantle */
+    --foreground: 227 68% 88%; /* text */
+    --card: 232 23% 18%; /* base */
+    --card-foreground: 227 68% 88%;
+    --popover: 232 23% 18%;
+    --popover-foreground: 227 68% 88%;
+    --primary: 267 83% 80%; /* mauve */
+    --primary-foreground: 236 23% 12%; /* crust */
+    --secondary: 230 19% 26%; /* surface0 */
+    --secondary-foreground: 227 68% 88%;
+    --muted: 230 19% 26%;
+    --muted-foreground: 227 27% 72%; /* subtext0 */
+    --accent: 231 16% 34%; /* surface1 */
+    --accent-foreground: 227 68% 88%;
+    --destructive: 351 74% 73%; /* red */
+    --destructive-foreground: 236 23% 12%;
+    --border: 230 19% 26%;
+    --input: 230 19% 26%;
+    --ring: 267 83% 80%;
+    --brand: 267 83% 80%;
+    --brand-foreground: 236 23% 12%;
+    --brand-from: 267 28% 31%;
+    --brand-to: 236 23% 12%;
+    --positive: 105 48% 72%; /* green */
+    /* Per-person accents, Catppuccin Macchiato. */
+    --person-ink: 236 23% 12%; /* crust */
+    --person-0: 267 83% 80%; /* mauve */
+    --person-1: 316 74% 85%; /* pink */
+    --person-2: 189 59% 73%; /* sky */
+    --person-3: 105 48% 72%; /* green */
+    --person-4: 21 86% 73%; /* peach */
+    --person-5: 40 70% 78%; /* yellow */
+    --person-6: 220 83% 75%; /* blue */
+    --person-7: 355 71% 77%; /* maroon */
+    --chart-1: 220 83% 75%; /* blue */
+    --chart-2: 105 48% 72%; /* green */
+    --chart-3: 21 86% 73%; /* peach */
+    --chart-4: 267 83% 80%; /* mauve */
+    --chart-5: 351 74% 73%; /* red */
   }
 }
 
@@ -156,14 +208,14 @@
 */
 
 :root {
-  --sidebar: hsl(0 0% 98%);
-  --sidebar-foreground: hsl(240 5.3% 26.1%);
-  --sidebar-primary: hsl(240 5.9% 10%);
-  --sidebar-primary-foreground: hsl(0 0% 98%);
-  --sidebar-accent: hsl(240 4.8% 95.9%);
-  --sidebar-accent-foreground: hsl(240 5.9% 10%);
-  --sidebar-border: hsl(220 13% 91%);
-  --sidebar-ring: hsl(217.2 91.2% 59.8%);
+  --sidebar: hsl(220 23% 96%); /* base */
+  --sidebar-foreground: hsl(234 16% 35%); /* text */
+  --sidebar-primary: hsl(266 85% 58%); /* mauve */
+  --sidebar-primary-foreground: hsl(220 23% 96%);
+  --sidebar-accent: hsl(223 16% 86%); /* surface0 */
+  --sidebar-accent-foreground: hsl(234 16% 35%);
+  --sidebar-border: hsl(223 16% 83%);
+  --sidebar-ring: hsl(266 85% 58%);
 }
 
 /*
@@ -171,14 +223,14 @@
 */
 
 .dark {
-  --sidebar: hsl(240 5.9% 10%);
-  --sidebar-foreground: hsl(240 4.8% 95.9%);
-  --sidebar-primary: hsl(224.3 76.3% 48%);
-  --sidebar-primary-foreground: hsl(0 0% 100%);
-  --sidebar-accent: hsl(240 3.7% 15.9%);
-  --sidebar-accent-foreground: hsl(240 4.8% 95.9%);
-  --sidebar-border: hsl(240 3.7% 15.9%);
-  --sidebar-ring: hsl(217.2 91.2% 59.8%);
+  --sidebar: hsl(232 23% 18%); /* base */
+  --sidebar-foreground: hsl(227 68% 88%); /* text */
+  --sidebar-primary: hsl(267 83% 80%); /* mauve */
+  --sidebar-primary-foreground: hsl(236 23% 12%); /* crust */
+  --sidebar-accent: hsl(230 19% 26%); /* surface0 */
+  --sidebar-accent-foreground: hsl(227 68% 88%);
+  --sidebar-border: hsl(230 19% 26%);
+  --sidebar-ring: hsl(267 83% 80%);
 }
 
 /*
@@ -230,5 +282,68 @@
   }
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+/*
+  Touch behaviour. Without these the app reads as a web page in a shell: a grey
+  flash on every tap, a 300ms delay before buttons respond, the page rubber-
+  banding past its own scroll, and long presses selecting button labels.
+*/
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+    overscroll-behavior-y: none;
+  }
+
+  body {
+    -webkit-tap-highlight-color: transparent;
+    overscroll-behavior-y: contain;
+  }
+
+  button,
+  a,
+  [role="button"],
+  label,
+  summary {
+    touch-action: manipulation;
+  }
+
+  /* Labels on controls are chrome, not content — a long press shouldn't
+     select them. Inputs and copy stay selectable. */
+  button,
+  nav,
+  [role="button"],
+  [aria-pressed] {
+    -webkit-user-select: none;
+    user-select: none;
+  }
+
+  input,
+  textarea,
+  [contenteditable] {
+    -webkit-user-select: text;
+    user-select: text;
+  }
+
+  :root {
+    caret-color: hsl(var(--primary));
+  }
+
+  ::selection {
+    background: hsl(var(--primary) / 0.25);
+  }
+}
+
+/* The mobile layout leans on entrance animations; opt out when asked to. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }

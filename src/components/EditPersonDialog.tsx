@@ -1,14 +1,9 @@
+"use client";
+
 import { BillContext, BillContextType } from "@/components/BillProvider";
+import ResponsiveModal, { ModalField } from "@/components/ResponsiveModal";
 import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import React, { use, useEffect, useState } from "react";
 
 interface EditPersonDialogProps {
@@ -31,14 +26,16 @@ export default function EditPersonDialog({
 
   useEffect(() => {
     if (editingPersonIndex !== null) {
-      const person = people[editingPersonIndex];
-      setEditingPersonName(person);
+      setEditingPersonName(people[editingPersonIndex]);
     }
   }, [editingPersonIndex, people]);
 
-  function handleSaveEdit() {
+  function handleSaveEdit(event?: React.FormEvent) {
+    event?.preventDefault();
     if (editingPersonIndex === null) return;
-    onSavePerson(editingPersonIndex, editingPersonName);
+    const name = editingPersonName.trim();
+    if (!name) return;
+    onSavePerson(editingPersonIndex, name);
     onClose();
   }
 
@@ -49,34 +46,36 @@ export default function EditPersonDialog({
   }
 
   return (
-    <Dialog
+    <ResponsiveModal
       open={editingPersonIndex !== null}
-      onOpenChange={(open) => !open && onClose()}
-    >
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Edit Person</DialogTitle>
-        </DialogHeader>
-        <div className="grid gap-4 py-4">
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="name" className="text-right">
-              Name
-            </Label>
-            <Input
-              id="name"
-              value={editingPersonName}
-              onChange={(e) => setEditingPersonName(e.target.value)}
-              className="col-span-3"
-            />
-          </div>
-        </div>
-        <DialogFooter className="flex justify-between">
-          <Button variant="destructive" onClick={handleDeletePerson}>
-            Delete Person
+      onClose={onClose}
+      title="Edit person"
+      onSubmit={handleSaveEdit}
+      footer={
+        <>
+          <Button
+            type="button"
+            variant="ghost"
+            onClick={handleDeletePerson}
+            className="text-destructive hover:bg-destructive/10 hover:text-destructive sm:mr-auto"
+          >
+            Remove person
           </Button>
-          <Button onClick={handleSaveEdit}>Save Changes</Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+          <Button type="button" variant="outline" onClick={onClose}>
+            Cancel
+          </Button>
+          <Button type="submit">Save changes</Button>
+        </>
+      }
+    >
+      <ModalField label="Name" htmlFor="edit-person-name">
+        <Input
+          id="edit-person-name"
+          value={editingPersonName}
+          onChange={(event) => setEditingPersonName(event.target.value)}
+          enterKeyHint="done"
+        />
+      </ModalField>
+    </ResponsiveModal>
   );
 }

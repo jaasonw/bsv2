@@ -1,14 +1,9 @@
+"use client";
+
 import { BillContext, BillContextType } from "@/components/BillProvider";
+import ResponsiveModal, { ModalField } from "@/components/ResponsiveModal";
 import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import React, { use, useEffect, useState } from "react";
 
 interface EditItemDialogProps {
@@ -31,24 +26,25 @@ export default function EditItemDialog({
   onSaveItem,
 }: EditItemDialogProps) {
   const context = use(BillContext) as BillContextType;
-  const { items, setItems } = context;
+  const { items } = context;
 
   const [editingItemName, setEditingItemName] = useState("");
-  const [editingItemPrice, setEditingItemPrice] = useState(0);
+  const [editingItemPrice, setEditingItemPrice] = useState("");
 
   useEffect(() => {
     if (editingItemIndex !== null) {
       const item = items[editingItemIndex];
       setEditingItemName(item.name);
-      setEditingItemPrice(item.price);
+      setEditingItemPrice(String(item.price));
     }
   }, [editingItemIndex, items]);
 
-  function handleSaveEdit() {
+  function handleSaveEdit(event?: React.FormEvent) {
+    event?.preventDefault();
     if (editingItemIndex === null) return;
     onSaveItem(editingItemIndex, {
       name: editingItemName,
-      price: editingItemPrice,
+      price: parseFloat(editingItemPrice) || 0,
     });
     onClose();
   }
@@ -60,46 +56,50 @@ export default function EditItemDialog({
   }
 
   return (
-    <Dialog
+    <ResponsiveModal
       open={editingItemIndex !== null}
-      onOpenChange={(open) => !open && onClose()}
-    >
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Edit Item</DialogTitle>
-        </DialogHeader>
-        <div className="grid gap-4 py-4">
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="name" className="text-right">
-              Name
-            </Label>
-            <Input
-              id="name"
-              value={editingItemName}
-              onChange={(e) => setEditingItemName(e.target.value)}
-              className="col-span-3"
-            />
-          </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="price" className="text-right">
-              Price
-            </Label>
-            <Input
-              id="price"
-              type="number"
-              value={editingItemPrice}
-              onChange={(e) => setEditingItemPrice(Number(e.target.value))}
-              className="col-span-3"
-            />
-          </div>
-        </div>
-        <DialogFooter className="flex justify-between">
-          <Button variant="destructive" onClick={handleDeleteItem}>
-            Delete Item
+      onClose={onClose}
+      title="Edit item"
+      onSubmit={handleSaveEdit}
+      footer={
+        <>
+          <Button
+            type="button"
+            variant="ghost"
+            onClick={handleDeleteItem}
+            className="text-destructive hover:bg-destructive/10 hover:text-destructive sm:mr-auto"
+          >
+            Delete item
           </Button>
-          <Button onClick={handleSaveEdit}>Save Changes</Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+          <Button type="button" variant="outline" onClick={onClose}>
+            Cancel
+          </Button>
+          <Button type="submit">Save changes</Button>
+        </>
+      }
+    >
+      <div className="flex flex-col gap-4">
+        <ModalField label="Name" htmlFor="edit-item-name">
+          <Input
+            id="edit-item-name"
+            value={editingItemName}
+            onChange={(event) => setEditingItemName(event.target.value)}
+            enterKeyHint="next"
+          />
+        </ModalField>
+        <ModalField label="Price" htmlFor="edit-item-price">
+          <Input
+            id="edit-item-price"
+            type="number"
+            step="0.01"
+            inputMode="decimal"
+            value={editingItemPrice}
+            onChange={(event) => setEditingItemPrice(event.target.value)}
+            enterKeyHint="done"
+            className="tabular-nums"
+          />
+        </ModalField>
+      </div>
+    </ResponsiveModal>
   );
 }
