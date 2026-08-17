@@ -2,6 +2,7 @@
 
 import { BillContext, BillContextType } from "@/components/BillProvider";
 import ResponsiveModal, { ModalField } from "@/components/ResponsiveModal";
+import { noAutofill } from "@/lib/no-autofill";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import React, { use, useEffect, useState } from "react";
@@ -74,6 +75,8 @@ export default function EditPersonDialog({
           value={editingPersonName}
           onChange={(event) => setEditingPersonName(event.target.value)}
           enterKeyHint="done"
+          {...noAutofill}
+          autoCapitalize="words"
         />
       </ModalField>
     </ResponsiveModal>

@@ -2,6 +2,7 @@
 
 import { BillContext, BillContextType } from "@/components/BillProvider";
 import ResponsiveModal, { ModalField } from "@/components/ResponsiveModal";
+import { noAutofill } from "@/lib/no-autofill";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import React, { use, useEffect, useState } from "react";
@@ -85,6 +86,8 @@ export default function EditItemDialog({
             value={editingItemName}
             onChange={(event) => setEditingItemName(event.target.value)}
             enterKeyHint="next"
+            {...noAutofill}
+            autoCapitalize="sentences"
           />
         </ModalField>
         <ModalField label="Price" htmlFor="edit-item-price">
@@ -96,6 +99,7 @@ export default function EditItemDialog({
             value={editingItemPrice}
             onChange={(event) => setEditingItemPrice(event.target.value)}
             enterKeyHint="done"
+            {...noAutofill}
             className="tabular-nums"
           />
         </ModalField>

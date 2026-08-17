@@ -77,6 +77,13 @@ export default function MobileLayout({
     [tab, setTab]
   );
 
+  // People are managed on the Split tab, so adding one from Items takes you
+  // there first — otherwise the new person appears behind the current screen.
+  const addPersonFromItems = useCallback(() => {
+    selectTab("split");
+    onAddPerson();
+  }, [selectTab, onAddPerson]);
+
   return (
     <div className="mx-auto flex w-full max-w-[480px] flex-col">
       {/* Gradient hero */}
@@ -121,7 +128,7 @@ export default function MobileLayout({
           <ItemAssignList
             onEditItem={setEditingItemIndex}
             onAddItem={onAddItem}
-            onAddPerson={onAddPerson}
+            onAddPerson={addPersonFromItems}
           />
         </TabPanel>
 
