@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { useBill } from "@/components/BillProvider";
 import ResponsiveModal, { ModalField } from "@/components/ResponsiveModal";
+import { noAutofill } from "@/lib/no-autofill";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
@@ -65,6 +66,8 @@ export default function AddEntryDialog({ kind, onClose }: AddEntryDialogProps) {
             onChange={(event) => setName(event.target.value)}
             enterKeyHint={isItem ? "next" : "done"}
             placeholder={isItem ? "e.g. Truffle pasta" : "e.g. Alex"}
+            {...noAutofill}
+            autoCapitalize={isItem ? "sentences" : "words"}
           />
         </ModalField>
         {isItem && (
@@ -78,6 +81,7 @@ export default function AddEntryDialog({ kind, onClose }: AddEntryDialogProps) {
               onChange={(event) => setPrice(event.target.value)}
               enterKeyHint="done"
               placeholder="0.00"
+              {...noAutofill}
               className="tabular-nums"
             />
           </ModalField>

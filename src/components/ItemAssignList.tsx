@@ -46,12 +46,6 @@ export default function ItemAssignList({
           : "Tap a name to add or remove them from an item."}
       </p>
 
-      {people.length === 0 && (
-        <DashedButton onClick={onAddPerson}>
-          <Plus className="h-4 w-4" /> Add person
-        </DashedButton>
-      )}
-
       {items.map((item, index) => (
         <div
           key={item.id}
@@ -134,6 +128,12 @@ export default function ItemAssignList({
       <DashedButton onClick={onAddItem}>
         <Plus className="h-4 w-4" />
         {items.length === 0 ? "Add an item" : "Add another item"}
+      </DashedButton>
+
+      {/* Stays available once the tab has people — you often remember a
+          latecomer while assigning items. */}
+      <DashedButton onClick={onAddPerson}>
+        <Plus className="h-4 w-4" /> Add person
       </DashedButton>
     </div>
   );
